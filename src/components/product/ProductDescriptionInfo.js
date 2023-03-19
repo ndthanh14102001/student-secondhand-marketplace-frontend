@@ -146,20 +146,18 @@ const ProductDescriptionInfo = ({
         <div className="pro-details-cart btn-hover">
           {productStock && productStock > 0 ? (
             <button
-              onClick={() => { }
-                // addToCart(
-                //   product,
-                //   addToast,
-                //   quantityCount,
-                //   selectedProductColor,
-                //   selectedProductSize
-                // )
-              }
+              onClick={() => {
+                navigator.clipboard.writeText("0123456789");
+                addToast("Đã copy số điện thoại", {
+                  appearance: "success",
+                  autoDismiss: true
+                });
+              }}
               disabled={productCartQty >= productStock}
             >
               <PhoneInTalkIcon />
               {" "}
-              0349822717
+              0123456789
             </button>
           ) : (
             <button disabled>Out of Stock</button>

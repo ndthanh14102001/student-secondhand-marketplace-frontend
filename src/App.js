@@ -7,6 +7,7 @@ import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
+
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -28,6 +29,7 @@ const BlogDetailsStandard = lazy(() =>
 const About = lazy(() => import("./pages/other/About"));
 const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
+const MyProducts = lazy(() => import("./pages/other/my-products"));
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -123,6 +125,10 @@ const App = (props) => {
                   <Route
                     path={process.env.PUBLIC_URL + "/my-account"}
                     component={MyAccount}
+                  />
+                   <Route
+                    path={process.env.PUBLIC_URL + "/my-products"}
+                    component={MyProducts}
                   />
                   <Route
                     path={process.env.PUBLIC_URL + "/login-register"}

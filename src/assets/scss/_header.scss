@@ -43,7 +43,9 @@
   }
 
   .header-right-wrap-white {
+ 
     .same-style {
+      
       > a {
         color: #000;
       }
@@ -410,7 +412,7 @@
 
 .stick .logo,
 .stick .header-right-wrap {
-  margin-top: 22px;
+  // margin-top: 22px;
   @media #{$md-layout} {
     margin-top: 0;
   }
@@ -444,7 +446,9 @@
   display: flex;
   justify-content: flex-end;
 
-  margin-top: 32px;
+  // margin-top: 32px;
+  height: 100%;
+  align-items: center;
   @media #{$md-layout} {
     margin-top: 0;
   }
@@ -474,6 +478,15 @@
       border: none;
       background: none;
     }
+    .header-post-product{
+      color: white;
+      font-size: 1rem;
+      background-color: $theme-color;
+      margin-left: 1rem;
+      &:hover{
+        color: white;
+      }
+    }
     &:first-child {
       margin-left: 0;
     }
@@ -484,7 +497,7 @@
     .account-dropdown {
       position: absolute;
       z-index: 220;
-      top: 190%;
+      top: 100%;
       right: 0;
 
       visibility: hidden;
@@ -545,6 +558,7 @@
         }
       }
     }
+    
   }
   .same-style.account-setting {
     > a,

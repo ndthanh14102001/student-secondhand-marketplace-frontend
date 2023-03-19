@@ -3,7 +3,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-
+import { Button } from "@mui/material";
+import PostAddIcon from '@mui/icons-material/PostAdd';
 const IconGroup = ({
   currency,
   cartData,
@@ -62,6 +63,11 @@ const IconGroup = ({
                 Thông tin của tôi
               </Link>
             </li>
+            <li>
+              <Link to={process.env.PUBLIC_URL + "/my-products"}>
+                Sản phẩm của tôi
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
@@ -81,22 +87,35 @@ const IconGroup = ({
           </span>
         </Link>
       </div>
-      <div className="same-style cart-wrap d-block d-lg-none">
+      <div className="same-style">
+        <Button
+          className="header-post-product"
+          sx={{
+            fontSize: "1rem",
+            textTransform: "capitalize",
+            whiteSpace: "nowrap",
+            backgroundColor: (theme) => theme.palette.primary.main,
+          }}
+          variant="contained"
+          startIcon={<PostAddIcon />}
+        >Đăng bán</Button>
+      </div>
+      {/* <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />
           <span className="count-style">
             {cartData && cartData.length ? cartData.length : 0}
           </span>
         </Link>
-      </div>
-      <div className="same-style mobile-off-canvas d-block d-lg-none">
+      </div> */}
+      {/* <div className="same-style mobile-off-canvas d-block d-lg-none">
         <button
           className="mobile-aside-button"
           onClick={() => triggerMobileMenu()}
         >
           <i className="pe-7s-menu" />
         </button>
-      </div>
+      </div> */}
     </div>
   );
 };
