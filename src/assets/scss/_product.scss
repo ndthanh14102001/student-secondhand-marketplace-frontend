@@ -246,11 +246,14 @@
 .product-list-image-wrap {
   position: relative;
   .product-img {
+    background-color: #f7f7f7;
     position: relative;
 
     overflow: hidden;
     img {
+      object-fit: contain;
       width: 100%;
+      height: 200px;
     }
 
     &-badges {
@@ -302,7 +305,7 @@
 
       display: flex;
       align-items: center;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
 
       width: 100%;
 
@@ -480,6 +483,20 @@
 }
 
 .product-details-content {
+  .pro-details-wishlist {
+    a,
+    button {
+      font-size: 18px;
+
+      color: #000;
+      border: none;
+      background: none;
+      &:hover,
+      &.active {
+        color: $theme-color;
+      }
+    }
+  }
   @media #{$lg-layout} {
     &.ml-70 {
       margin-left: 0;
@@ -856,11 +873,11 @@
     }
   }
   .pro-details-quality {
+    flex-direction: column;
     display: flex;
-    align-items: center;
 
-    margin-top: 40px;
-    margin-bottom: 34px;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
     .cart-plus-minus {
       position: relative;
 
@@ -931,6 +948,8 @@
       }
       a,
       button {
+        width: 100%;
+        margin-bottom: 1rem;
         font-weight: bold;
         line-height: 1;
 

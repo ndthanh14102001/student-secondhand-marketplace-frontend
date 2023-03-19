@@ -4,7 +4,7 @@ const PRIMARY = {
   main: "#a749ff",
   dark: "#A340FF",
   darker: "#9B30FF",
-  contrastText: "#000",
+  contrastText: "#fff",
   rgbColor: [255, 215, 64],
   text: "#ffa000"
 };

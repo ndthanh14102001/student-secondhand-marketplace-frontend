@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import MenuCart from "./sub-components/MenuCart";
 import { deleteFromCart } from "../../redux/actions/cartActions";
 
 const IconGroup = ({
@@ -51,7 +50,7 @@ const IconGroup = ({
         <div className="account-dropdown">
           <ul>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>Dăng nhập</Link>
+              <Link to={process.env.PUBLIC_URL + "/login-register"}>Đăng nhập</Link>
             </li>
             <li>
               <Link to={process.env.PUBLIC_URL + "/login-register"}>
@@ -82,20 +81,6 @@ const IconGroup = ({
           </span>
         </Link>
       </div>
-      {/* <div className="same-style cart-wrap d-none d-lg-block">
-        <button className="icon-cart" onClick={e => handleClick(e)}>
-          <i className="pe-7s-shopbag" />
-          <span className="count-style">
-            {cartData && cartData.length ? cartData.length : 0}
-          </span>
-        </button>
-        /*menu cart 
-        <MenuCart
-          cartData={cartData}
-          currency={currency}
-          deleteFromCart={deleteFromCart}
-        />
-      </div> */}
       <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />

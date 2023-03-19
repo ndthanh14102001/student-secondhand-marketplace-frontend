@@ -8,7 +8,6 @@ import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import RelatedProductSlider from "../../wrappers/product/RelatedProductSlider";
 import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab";
 import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
-import ProductOnwerInfo from "../../wrappers/product/ProductOnwerInfo";
 
 const Product = ({ location, product }) => {
   const { pathname } = location;
@@ -39,8 +38,6 @@ const Product = ({ location, product }) => {
           product={product}
         />
 
-        {/* Product Onwer Info */}
-        <ProductOnwerInfo />
         {/* product description tab */}
         <ProductDescriptionTab
           spaceBottomClass="pb-90"

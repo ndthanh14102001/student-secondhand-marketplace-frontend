@@ -40,31 +40,11 @@ const TabProduct = ({
             </Nav.Item>
           </Nav> */}
           <Tab.Content>
-            <Tab.Pane eventKey="newArrival">
-              <div className="row">
-                <ProductGrid
-                  category={category}
-                  type="new"
-                  limit={8}
-                  spaceBottomClass="mb-25"
-                />
-              </div>
-            </Tab.Pane>
             <Tab.Pane eventKey="bestSeller">
               <div className="row">
                 <ProductGrid
                   category={category}
                   type="bestSeller"
-                  limit={8}
-                  spaceBottomClass="mb-25"
-                />
-              </div>
-            </Tab.Pane>
-            <Tab.Pane eventKey="saleItems">
-              <div className="row">
-                <ProductGrid
-                  category={category}
-                  type="saleItems"
                   limit={8}
                   spaceBottomClass="mb-25"
                 />
