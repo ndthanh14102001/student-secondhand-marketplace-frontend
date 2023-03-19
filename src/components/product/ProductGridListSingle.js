@@ -134,13 +134,13 @@ const ProductGridListSingle = ({
                 {product.name}
               </Link>
             </h3>
-            {product.rating && product.rating > 0 ? (
+            {/* {product.rating && product.rating > 0 ? (
               <div className="product-rating">
                 <Rating ratingValue={product.rating} />
               </div>
             ) : (
               ""
-            )}
+            )} */}
             <div className="product-price">
               {discountedPrice !== null ? (
                 <Fragment>
@@ -212,7 +212,7 @@ const ProductGridListSingle = ({
                     <span>{currency.currencySymbol + finalProductPrice} </span>
                   )}
                 </div>
-                {product.rating && product.rating > 0 ? (
+                {/* {product.rating && product.rating > 0 ? (
                   <div className="rating-review">
                     <div className="product-list-rating">
                       <Rating ratingValue={product.rating} />
@@ -220,7 +220,7 @@ const ProductGridListSingle = ({
                   </div>
                 ) : (
                   ""
-                )}
+                )} */}
                 {product.shortDescription ? (
                   <p>{product.shortDescription}</p>
                 ) : (

@@ -134,13 +134,13 @@ const ProductGridSingle = ({
                 {product.name}
               </Link>
             </h3>
-            {product.rating && product.rating > 0 ? (
+            {/* {product.rating && product.rating > 0 ? (
               <div className="product-rating">
                 <Rating ratingValue={product.rating} />
               </div>
             ) : (
               ""
-            )}
+            )} */}
             <div className="product-price">
               {discountedPrice !== null ? (
                 <Fragment>

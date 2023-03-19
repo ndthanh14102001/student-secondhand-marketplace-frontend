@@ -41,7 +41,7 @@ const NotFound = ({ location }) => {
                       type="text"
                       name="search"
                       id="error_search"
-                      placeholder="Search..."
+                      placeholder="Tìm kiêm..."
                       className="searchform__input"
                     />
                     <button type="submit" className="searchform__submit">
