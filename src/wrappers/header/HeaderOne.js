@@ -36,7 +36,7 @@ const HeaderOne = ({
         headerPositionClass ? headerPositionClass : ""
       }`}
     >
-      <div
+      {/* <div
         className={`${headerPaddingClass ? headerPaddingClass : ""} ${
           top === "visible" ? "d-none d-lg-block" : "d-none"
         } header-top-area ${
@@ -44,10 +44,10 @@ const HeaderOne = ({
         }`}
       >
         <div className={layout === "container-fluid" ? layout : "container"}>
-          {/* header top */}
+          header top 
           <HeaderTop borderStyle={borderStyle} />
         </div>
-      </div>
+      </div> */}
 
       <div
         className={` ${

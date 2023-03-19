@@ -51,29 +51,29 @@ const IconGroup = ({
         <div className="account-dropdown">
           <ul>
             <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>Login</Link>
+              <Link to={process.env.PUBLIC_URL + "/login-register"}>Dăng nhập</Link>
             </li>
             <li>
               <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                Register
+                Đăng ký
               </Link>
             </li>
             <li>
               <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                my account
+                Thông tin của tôi
               </Link>
             </li>
           </ul>
         </div>
       </div>
-      <div className="same-style header-compare">
+      {/* <div className="same-style header-compare">
         <Link to={process.env.PUBLIC_URL + "/compare"}>
           <i className="pe-7s-shuffle" />
           <span className="count-style">
             {compareData && compareData.length ? compareData.length : 0}
           </span>
         </Link>
-      </div>
+      </div> */}
       <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
@@ -82,20 +82,20 @@ const IconGroup = ({
           </span>
         </Link>
       </div>
-      <div className="same-style cart-wrap d-none d-lg-block">
+      {/* <div className="same-style cart-wrap d-none d-lg-block">
         <button className="icon-cart" onClick={e => handleClick(e)}>
           <i className="pe-7s-shopbag" />
           <span className="count-style">
             {cartData && cartData.length ? cartData.length : 0}
           </span>
         </button>
-        {/* menu cart */}
+        /*menu cart 
         <MenuCart
           cartData={cartData}
           currency={currency}
           deleteFromCart={deleteFromCart}
         />
-      </div>
+      </div> */}
       <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />
