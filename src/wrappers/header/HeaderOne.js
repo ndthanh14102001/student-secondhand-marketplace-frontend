@@ -59,7 +59,7 @@ const HeaderOne = ({
           </div>
         </div>
         {/* mobile menu */}
-        <MobileMenu />
+        {/* <MobileMenu /> */}
       </div>
     </header>
   );
