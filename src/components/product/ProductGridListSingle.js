@@ -1,11 +1,11 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import { getDiscountPrice } from "../../helpers/product";
 import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
-import { Tooltip } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
 
 const ProductGridListSingle = ({
   product,
@@ -19,6 +19,7 @@ const ProductGridListSingle = ({
   sliderClassName,
   spaceBottomClass
 }) => {
+  const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
 
@@ -84,12 +85,12 @@ const ProductGridListSingle = ({
           </div>
           <div className="product-content text-center">
             <Tooltip title={product.name}>
-                <h3 className="product-name">
-                  <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {product.name}
-                  </Link>
-                </h3>
-              </Tooltip>
+              <h3 className="product-name">
+                <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
+                  {product.name}
+                </Link>
+              </h3>
+            </Tooltip>
             {/* {product.rating && product.rating > 0 ? (
               <div className="product-rating">
                 <Rating ratingValue={product.rating} />
@@ -183,14 +184,25 @@ const ProductGridListSingle = ({
                   ""
                 )}
 
-                <div className="shop-list-actions d-flex align-items-center">
-                  <div className="shop-list-btn btn-hover">
-                    <Link
-                      to={`${process.env.PUBLIC_URL}/product/${product.id}`}
-                    >
+                <div className=" d-flex align-items-center">
+                  {product.stock && product.stock > 0 ?
+                    <Button variant="contained" onClick={() => {
+                      history.push(`${process.env.PUBLIC_URL}/product/${product.id}`)
+                    }}>
+                      {/* <Link
+                        to={`${process.env.PUBLIC_URL}/product/${product.id}`}
+                      >
+                        Thông tin chi tiết
+                      </Link> */}
                       Thông tin chi tiết
-                    </Link>
-                  </div>
+                    </Button>
+                    :
+                    <div className="shop-list-btn">
+                      <button disabled className="active">
+                        Ngừng bán
+                      </button>
+                    </div>}
+
 
                   <div className="shop-list-wishlist ml-10">
                     <button
