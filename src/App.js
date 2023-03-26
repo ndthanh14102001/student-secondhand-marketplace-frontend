@@ -30,6 +30,7 @@ const About = lazy(() => import("./pages/other/About"));
 const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
+const ProductPost = lazy(() => import("./pages/product-post"));
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -130,6 +131,10 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/my-products"}
                     component={MyProducts}
                   />
+                   <Route
+                    path={process.env.PUBLIC_URL + "/product-post"}
+                    component={ProductPost}
+                  />
                   <Route
                     path={process.env.PUBLIC_URL + "/login-register"}
                     component={LoginAndRegister}
@@ -156,7 +161,7 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-
+                  
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>

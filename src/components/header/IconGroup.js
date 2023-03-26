@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
 import { Button } from "@mui/material";
@@ -13,6 +13,7 @@ const IconGroup = ({
   deleteFromCart,
   iconWhiteClass
 }) => {
+  const history = useHistory();
   const handleClick = e => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
@@ -89,6 +90,7 @@ const IconGroup = ({
       </div>
       <div className="same-style">
         <Button
+          onClick={() => history.push(process.env.PUBLIC_URL + "/product-post")}
           className="header-post-product"
           sx={{
             fontSize: "1rem",
