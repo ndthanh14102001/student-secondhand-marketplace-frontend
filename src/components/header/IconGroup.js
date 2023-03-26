@@ -1,77 +1,90 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Button } from "@mui/material";
+import { Button, ClickAwayListener } from "@mui/material";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 const IconGroup = ({
   currency,
   cartData,
   wishlistData,
-  compareData,
-  deleteFromCart,
+  // compareData,
+  // deleteFromCart,
   iconWhiteClass
 }) => {
+  const accountDropRef = useRef();
+  const searchRef = useRef();
   const history = useHistory();
   const handleClick = e => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
-
-  const triggerMobileMenu = () => {
-    const offcanvasMobileMenu = document.querySelector(
-      "#offcanvas-mobile-menu"
-    );
-    offcanvasMobileMenu.classList.add("active");
+  const handleCloseAvatarDrop = e => {
+    accountDropRef.current.classList.remove("active");
   };
+  const handleCloseSearch = e => {
+    searchRef.current.classList.remove("active");
+  };
+  // const triggerMobileMenu = () => {
+  //   const offcanvasMobileMenu = document.querySelector(
+  //     "#offcanvas-mobile-menu"
+  //   );
+  //   offcanvasMobileMenu.classList.add("active");
+  // };
 
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
     >
-      <div className="same-style header-search d-none d-lg-block">
-        <button className="search-active" onClick={e => handleClick(e)}>
-          <i className="pe-7s-search" />
-        </button>
-        <div className="search-content">
-          <form action="#">
-            <input type="text" placeholder="Search" />
-            <button className="button-search">
-              <i className="pe-7s-search" />
-            </button>
-          </form>
+      <ClickAwayListener onClickAway={handleCloseSearch}>
+        <div className="same-style header-search d-none d-lg-block">
+          <button className="search-active" onClick={e => handleClick(e)}>
+            <i className="pe-7s-search" />
+          </button>
+          <div className="search-content" ref={searchRef}>
+            <form action="#">
+              <input type="text" placeholder="Search" />
+              <button className="button-search">
+                <i className="pe-7s-search" />
+              </button>
+            </form>
+          </div>
         </div>
-      </div>
-      <div className="same-style account-setting d-none d-lg-block">
-        <button
-          className="account-setting-active"
-          onClick={e => handleClick(e)}
-        >
-          <i className="pe-7s-user-female" />
-        </button>
-        <div className="account-dropdown">
-          <ul>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>Đăng nhập</Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                Đăng ký
-              </Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                Thông tin của tôi
-              </Link>
-            </li>
-            <li>
-              <Link to={process.env.PUBLIC_URL + "/my-products"}>
-                Sản phẩm của tôi
-              </Link>
-            </li>
-          </ul>
+      </ClickAwayListener>
+      <ClickAwayListener onClickAway={handleCloseAvatarDrop}>
+        <div className="same-style account-setting d-none d-lg-block">
+          <button
+            className="account-setting-active"
+            onClick={handleClick}
+          >
+            <i className="pe-7s-user-female" />
+          </button>
+
+          <div className="account-dropdown" ref={accountDropRef}>
+            <ul>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/login-register"}>Đăng nhập</Link>
+              </li>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/login-register"}>
+                  Đăng ký
+                </Link>
+              </li>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/my-account"}>
+                  Thông tin của tôi
+                </Link>
+              </li>
+              <li>
+                <Link to={process.env.PUBLIC_URL + "/my-products"}>
+                  Sản phẩm của tôi
+                </Link>
+              </li>
+            </ul>
+          </div>
+
         </div>
-      </div>
+      </ClickAwayListener>
       {/* <div className="same-style header-compare">
         <Link to={process.env.PUBLIC_URL + "/compare"}>
           <i className="pe-7s-shuffle" />
@@ -118,7 +131,7 @@ const IconGroup = ({
           <i className="pe-7s-menu" />
         </button>
       </div> */}
-    </div>
+    </div >
   );
 };
 
