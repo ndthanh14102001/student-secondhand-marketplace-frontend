@@ -25,7 +25,7 @@ const ProductPost = () => {
       </BreadcrumbsItem>
       <LayoutOne headerTop="visible">
         <Breadcrumb />
-        <div className="product-area  pb-60">
+        <div className="product-area pt-60 pb-60">
           <div className="container">
             <div className="row">
               <Grid container spacing={2}>
