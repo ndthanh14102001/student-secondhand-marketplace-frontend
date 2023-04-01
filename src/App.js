@@ -4,9 +4,10 @@ import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
+import ModalLoading from "./components/modal-loading";
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -41,6 +42,7 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+  const modalLoading = useSelector(state => state.modalLoading);
   useEffect(() => {
     props.dispatch(
       loadLanguages({
@@ -55,6 +57,7 @@ const App = (props) => {
 
   return (
     <ThemeProvider>
+      <ModalLoading open={modalLoading.open} />
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
@@ -127,11 +130,11 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/my-account"}
                     component={MyAccount}
                   />
-                   <Route
+                  <Route
                     path={process.env.PUBLIC_URL + "/my-products"}
                     component={MyProducts}
                   />
-                   <Route
+                  <Route
                     path={process.env.PUBLIC_URL + "/product-post"}
                     component={ProductPost}
                   />
@@ -161,7 +164,7 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-                  
+
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>

@@ -1,15 +1,75 @@
+import { useDispatch } from "react-redux";
+import { useToasts } from "react-toast-notifications";
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import MetaTags from "react-meta-tags";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import callApi, { RESPONSE_TYPE, STATUS_BAD_REQUEST } from "../../utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
+import { Typography } from "@mui/material";
+import { noRememberLogin, rememberLogin } from "../../utils/userLoginStorage";
+import { login } from "../../redux/actions/userStorageActions";
 
 const LoginRegister = ({ location }) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
   const { pathname } = location;
+
+  const { addToast } = useToasts();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [isCheckedRememberLogin, setIsCheckedRememberLogin] = useState(false);
+
+  const [messageError, setMessageError] = useState("");
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    dispatch(onOpenModalLoading());
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/auth/local",
+      method: "post",
+      data: {
+        identifier: email,
+        password: password
+      },
+    })
+
+    if (response.type === RESPONSE_TYPE) {
+      addToast("Đăng nhập thành công", {
+        appearance: "success",
+        autoDismiss: true
+      });
+      dispatch(login());
+      if (isCheckedRememberLogin) {
+        rememberLogin(response.data?.jwt, response.data?.user);
+      } else {
+        noRememberLogin(response.data?.jwt, response.data?.user);
+      }
+      history.push("/");
+
+    } else {
+      if (response.status === STATUS_BAD_REQUEST) {
+        setMessageError("Email hoặc mật khẩu không chính xác!")
+      }
+    }
+    dispatch(onCloseModalLoading());
+    console.log("response", response);
+  }
+  const handleChangeEmail = e => {
+    setEmail(e.target.value)
+    setMessageError("")
+  }
+  const handleChangePassword = e => {
+    setPassword(e.target.value)
+    setMessageError("")
+  }
   return (
     <Fragment>
       <MetaTags>
@@ -48,23 +108,28 @@ const LoginRegister = ({ location }) => {
                       <Tab.Pane eventKey="login">
                         <div className="login-form-container">
                           <div className="login-register-form">
-                            <form>
+                            <form onSubmit={handleLogin}>
                               <input
                                 type="text"
                                 name="user-name"
                                 placeholder="Tên đăng nhập"
+                                value={email}
+                                onChange={handleChangeEmail}
                               />
                               <input
                                 type="password"
                                 name="user-password"
                                 placeholder="mật khẩu"
+                                value={password}
+                                onChange={handleChangePassword}
                               />
+                              <Typography color="error">{messageError}</Typography>
                               <div className="button-box">
                                 <div className="login-toggle-btn">
-                                  <input type="checkbox" />
+                                  <input type="checkbox" value={isCheckedRememberLogin} onChange={e => setIsCheckedRememberLogin(e.target.checked)} />
                                   <label className="ml-10">Ghi nhớ đăng nhập</label>
                                   <Link to={process.env.PUBLIC_URL + "/"}>
-                                     Quên mật khẩu ?
+                                    Quên mật khẩu ?
                                   </Link>
                                 </div>
                                 <button type="submit">

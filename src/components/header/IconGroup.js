@@ -1,10 +1,13 @@
 import PropTypes from "prop-types";
 import React, { useRef } from "react";
 import { Link, useHistory } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
 import { Button, ClickAwayListener } from "@mui/material";
 import PostAddIcon from '@mui/icons-material/PostAdd';
+import { useToasts } from "react-toast-notifications";
+import { clearUserLogin } from "../../utils/userLoginStorage";
+import { logout } from "../../redux/actions/userStorageActions";
 const IconGroup = ({
   currency,
   cartData,
@@ -13,13 +16,17 @@ const IconGroup = ({
   // deleteFromCart,
   iconWhiteClass
 }) => {
+  const dispatch = useDispatch();
+  const isLogin = useSelector(state => state.userStorage.isLogin);
   const accountDropRef = useRef();
   const searchRef = useRef();
   const history = useHistory();
+
+  const { addToast } = useToasts();
   const handleClick = e => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
-  const handleCloseAvatarDrop = e => {
+  const handleCloseAvatarDrop = () => {
     accountDropRef.current.classList.remove("active");
   };
   const handleCloseSearch = e => {
@@ -31,7 +38,17 @@ const IconGroup = ({
   //   );
   //   offcanvasMobileMenu.classList.add("active");
   // };
+  const handleLogout = () => {
+    clearUserLogin();
+    addToast("Đăng xuất thành công", {
+      appearance: "success",
+      autoDismiss: true
+    });
+    dispatch(logout());
+    handleCloseAvatarDrop();
+  }
 
+  console.log("isLogin", isLogin);
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
@@ -62,24 +79,27 @@ const IconGroup = ({
 
           <div className="account-dropdown" ref={accountDropRef}>
             <ul>
-              <li>
+              {!isLogin && <li>
                 <Link to={process.env.PUBLIC_URL + "/login-register"}>Đăng nhập</Link>
-              </li>
-              <li>
+              </li>}
+              {!isLogin && <li>
                 <Link to={process.env.PUBLIC_URL + "/login-register"}>
                   Đăng ký
                 </Link>
-              </li>
-              <li>
+              </li>}
+              {isLogin && <li>
                 <Link to={process.env.PUBLIC_URL + "/my-account"}>
                   Thông tin của tôi
                 </Link>
-              </li>
-              <li>
+              </li>}
+              {isLogin && <li>
                 <Link to={process.env.PUBLIC_URL + "/my-products"}>
                   Sản phẩm của tôi
                 </Link>
-              </li>
+              </li>}
+              {isLogin && <li>
+                <p onClick={handleLogout} className="action">Đăng xuất</p>
+              </li>}
             </ul>
           </div>
 
@@ -101,7 +121,7 @@ const IconGroup = ({
           </span>
         </Link>
       </div>
-      <div className="same-style">
+      {isLogin && <div className="same-style">
         <Button
           onClick={() => history.push(process.env.PUBLIC_URL + "/product-post")}
           className="header-post-product"
@@ -114,7 +134,7 @@ const IconGroup = ({
           variant="contained"
           startIcon={<PostAddIcon />}
         >Đăng bán</Button>
-      </div>
+      </div>}
       {/* <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />
