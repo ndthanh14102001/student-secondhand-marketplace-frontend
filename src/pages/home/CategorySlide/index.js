@@ -1,14 +1,37 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Swiper from "react-id-swiper";
 import { IconButton } from "@mui/material";
 import CategoryItem from "./CategoryItem";
+import axios from "axios";
+import { useState } from "react";
 
 const CategorySlide = ({ product }) => {
+  const [categories, setCategories] = useState([]);
   // swiper slider settings
-
+  useEffect(() => {
+    const getCategories = async () => {
+      const response = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/categories", {
+        params: {
+          filters: {
+            parent: {
+              id: {
+                $null: true
+              }
+            }
+          },
+          populate: "*"
+        }
+      });
+      if (response?.data?.data) {
+        setCategories(response?.data?.data)
+      }
+      console.log(response);
+    }
+    getCategories();
+  }, [])
   const thumbnailSwiperParams = {
     spaceBetween: 10,
     slidesPerView: 5,
@@ -25,7 +48,7 @@ const CategorySlide = ({ product }) => {
         sx={{
           color: theme => theme.palette.primary.main,
           position: "absolute",
-          top:"calc(25% + 1rem)",
+          top: "calc(25% + 1rem)",
           left: 0,
           zIndex: 100,
         }}
@@ -37,7 +60,7 @@ const CategorySlide = ({ product }) => {
         sx={{
           color: theme => theme.palette.primary.main,
           position: "absolute",
-          top:"calc(25% + 1rem)",
+          top: "calc(25% + 1rem)",
           right: 0,
           zIndex: 100,
         }}><ArrowForwardIosIcon /></IconButton>
@@ -48,16 +71,24 @@ const CategorySlide = ({ product }) => {
     <Fragment>
       <div className="product-area" style={{ marginTop: "3rem", marginBottom: "3rem" }}>
         <div className="container">
-          <Swiper {...thumbnailSwiperParams}>
+          {categories.length > 0 && <Swiper {...thumbnailSwiperParams}>
             {
               categories.map((category, key) => {
+                const attributes = category?.attributes;
+                const imageData = attributes?.image?.data &&
+                  Array.isArray(attributes?.image?.data) &&
+                  attributes?.image?.data.length > 0 && attributes?.image?.data;
+                const image = imageData &&
+                  (attributes?.image?.data[0]?.attributes?.formats?.small?.url ||
+                    attributes?.image?.data[0]?.attributes?.url);
+                console.log("image", process.env.REACT_APP_SERVER_ENDPOINT + "/" + image);
                 return (
                   <div key={key}>
-                    <CategoryItem name={category.name} image={category.img} />
+                    <CategoryItem name={attributes.name} image={image && process.env.REACT_APP_SERVER_ENDPOINT + image} />
                   </div>
                 );
               })}
-          </Swiper>
+          </Swiper>}
         </div>
       </div>
     </Fragment>
