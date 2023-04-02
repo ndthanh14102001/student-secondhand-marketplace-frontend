@@ -36,10 +36,24 @@ import { useRef } from "react";
 import { UNIVERSITY_LIST } from "../../constants";
 import PasswordStrengthBar from "../../components/PasswordStrengthBar";
 import { useMemo } from "react";
-import { getColorToPasswordStrength } from "../../components/PasswordStrengthBar/constants";
+import { ERROR_COLOR, getColorToPasswordStrength } from "../../components/PasswordStrengthBar/constants";
 const LOGIN_KEY = "login";
 const REGISTER_KEY = "register";
 
+const REGISTER_INFO_INIT_STATE = {
+  username: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  isValidConfirmPassword: true,
+  isShowPassword: "",
+  phone: "",
+  isValidPhone: true,
+  fullName: "",
+  university: "",
+  isValidUniversity: true,
+  address: "",
+}
 const BoxInput = styled(Box)(() => ({
   marginBottom: "1rem",
 }));
@@ -58,20 +72,9 @@ const LoginRegister = ({ location }) => {
 
   const [messageError, setMessageError] = useState("");
 
-  const [registerInfo, setRegisterInfo] = useState({
-    username: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    isShowPassword: "",
-    phone: "",
-    isValidPhone: true,
-    fullName: "",
-    university: "",
-    isValidUniversity: true,
-    address: "",
-  });
+  const [registerInfo, setRegisterInfo] = useState(REGISTER_INFO_INIT_STATE);
   const refPhoneInput = useRef();
+  const refPasswordInput = useRef();
   const handleLogin = async () => {
     dispatch(onOpenModalLoading());
     const response = await callApi({
@@ -107,18 +110,29 @@ const LoginRegister = ({ location }) => {
     let result = true;
     if (!validator.isMobilePhone(registerInfo.phone, "vi-VN")) {
       result = false;
-      setRegisterInfo({
-        ...registerInfo,
+      setRegisterInfo(prev => ({
+        ...prev,
         isValidPhone: false
-      })
+      }))
       refPhoneInput.current.querySelector("input").focus()
     }
     if (!registerInfo.university) {
       result = false;
-      setRegisterInfo({
-        ...registerInfo,
+      setRegisterInfo(prev => ({
+        ...prev,
         isValidUniversity: false
-      })
+      }))
+    }
+    if (registerInfo.password !== registerInfo.confirmPassword) {
+      result = false;
+      setRegisterInfo(prev => ({
+        ...prev,
+        isValidConfirmPassword: false
+      }))
+    }
+    if (getColorToPasswordStrength(registerInfo.password) === ERROR_COLOR) {
+      result = false;
+      refPasswordInput.current.querySelector("input").focus();
     }
     return result;
   }
@@ -145,6 +159,7 @@ const LoginRegister = ({ location }) => {
           appearance: "success",
           autoDismiss: true
         });
+        setRegisterInfo(REGISTER_INFO_INIT_STATE);
         setPageSeleted(LOGIN_KEY);
       } else {
         if (response.status === STATUS_BAD_REQUEST) {
@@ -224,15 +239,25 @@ const LoginRegister = ({ location }) => {
     })
   }
   const handleChangePasswordRegister = e => {
+    let isValidConfirmPassword = false;
+    if (e.target.value === registerInfo.confirmPassword) {
+      isValidConfirmPassword = true;
+    }
     setRegisterInfo({
       ...registerInfo,
-      password: e.target.value
+      password: e.target.value,
+      isValidConfirmPassword
     })
   }
   const handleChangeConfirmPassword = e => {
+    let isValidConfirmPassword = false;
+    if (e.target.value === registerInfo.password) {
+      isValidConfirmPassword = true;
+    }
     setRegisterInfo({
       ...registerInfo,
-      confirmPassword: e.target.value
+      confirmPassword: e.target.value,
+      isValidConfirmPassword
     })
   }
   const colorValidStrengthPassword = useMemo(() => {
@@ -384,16 +409,6 @@ const LoginRegister = ({ location }) => {
                                 />
                               </BoxInput>
                               <BoxInput>
-                                {/* <TextField
-                                  required
-                                  fullWidth
-                                  name="university"
-                                  placeholder="Trường đại học"
-                                  label="Trường đại học"
-                                  type="text"
-                                  value={registerInfo.university}
-                                  onChange={handleChangeUniversity}
-                                /> */}
                                 <FormControl fullWidth error={!registerInfo.isValidUniversity}>
                                   <InputLabel id="university-select-label">Trường đại học</InputLabel>
                                   <Select
@@ -423,6 +438,7 @@ const LoginRegister = ({ location }) => {
                               </BoxInput>
                               <BoxInput>
                                 <TextField
+                                  ref={refPasswordInput}
                                   color={colorValidStrengthPassword}
                                   helperText={(
                                     "Sử dụng 6+ ký tự, kết hợp với chữ thường, chữ hoa, số, ký tự đặt biệt"
@@ -453,6 +469,8 @@ const LoginRegister = ({ location }) => {
                               <PasswordStrengthBar value={registerInfo.password} />
                               <BoxInput mt={"1rem"}>
                                 <TextField
+                                  error={!registerInfo.isValidConfirmPassword}
+                                  helperText={!registerInfo.isValidConfirmPassword && "Mật khẩu và Xác nhận mật khẩu không giống nhau"}
                                   fullWidth
                                   required
                                   type={registerInfo.isShowPassword ? "text" : "password"}

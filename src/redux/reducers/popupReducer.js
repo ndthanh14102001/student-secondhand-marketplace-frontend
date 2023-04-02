@@ -32,7 +32,10 @@ const popupReducer = (state = popupInitState, action) => {
       };
     }
     case CLOSE_POPUP: {
-      return popupInitState;
+      return {
+        ...state,
+        open: false
+      };
     }
     default: {
       return state;

@@ -1,4 +1,3 @@
-import { alpha } from "@mui/material";
 
 const headingChangePassword = {
   fontSize: "1.4rem",
