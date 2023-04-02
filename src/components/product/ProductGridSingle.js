@@ -3,7 +3,7 @@ import React, { Fragment, useState } from "react";
 import { Tooltip } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import { getDiscountPrice } from "../../helpers/product";
+// import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
 
 const ProductGridSingle = ({
@@ -20,13 +20,17 @@ const ProductGridSingle = ({
 }) => {
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
-
-  const discountedPrice = getDiscountPrice(product.price, product.discount);
-  const finalProductPrice = +(product.price * currency.currencyRate).toFixed(2);
-  const finalDiscountedPrice = +(
-    discountedPrice * currency.currencyRate
-  ).toFixed(2);
-
+  const attributes = product?.attributes;
+  const formatter = new Intl.NumberFormat("vi", {
+    style: "currency",
+    currency: "VND",
+  });
+  const finalProductPrice = formatter.format(attributes?.price || 0);
+  const images = attributes?.images?.data &&
+    Array.isArray(attributes?.images?.data) &&
+    attributes?.images?.data?.length > 0 &&
+    attributes?.images?.data;
+  console.log("image", images)
   return (
     <Fragment>
       <div
@@ -43,13 +47,13 @@ const ProductGridSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images.length > 0 && images[0]?.attributes?.url}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+              {images && images.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images.length > 0 && images[1]?.attributes?.url}`}
                   alt=""
                 />
               ) : (
@@ -95,16 +99,7 @@ const ProductGridSingle = ({
               </Tooltip>
             </div>
             <div className="product-price">
-              {discountedPrice !== null ? (
-                <Fragment>
-                  <span>{finalDiscountedPrice}</span>{" "}
-                  <span className="old">
-                    {finalProductPrice}
-                  </span>
-                </Fragment>
-              ) : (
-                <span>{finalProductPrice} </span>
-              )}
+              <span>{finalProductPrice} </span>
             </div>
           </div>
         </div>
@@ -115,9 +110,9 @@ const ProductGridSingle = ({
         onHide={() => setModalShow(false)}
         product={product}
         currency={currency}
-        discountedprice={discountedPrice}
+        // discountedprice={discountedPrice}
         finalproductprice={finalProductPrice}
-        finaldiscountedprice={finalDiscountedPrice}
+        // finaldiscountedprice={finalDiscountedPrice}
         cartitem={cartItem}
         wishlistitem={wishlistItem}
         compareitem={compareItem}
