@@ -39,7 +39,6 @@ const ProductGridSingle = ({
     attributes?.images?.data;
   const user = attributes?.userId?.data?.attributes;
   const avatar = user?.avatar?.data?.attributes?.url;
-  console.log("user", user)
   return (
     <Fragment>
       <div

@@ -22,7 +22,6 @@ const ProductGrid = ({
   spaceBottomClass
 }) => {
   const [productList, setProductList] = useState([]);
-  console.log("productList", productList)
   useEffect(() => {
     const getProductListByCategory = async () => {
       const response = await callApi({
@@ -39,7 +38,6 @@ const ProductGrid = ({
           }
         }
       });
-      console.log("response", response);
     }
     const getProductListHome = async () => {
       const response = await callApi({
