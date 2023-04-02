@@ -53,6 +53,7 @@ export const getColorToPasswordStrength = (value) => {
 export {
   PASS_WEAK,
   PASS_MEDIUM,
-  PASS_HIGH
+  PASS_HIGH,
+  ERROR_COLOR
 };
 export default checkStrengthPassword;

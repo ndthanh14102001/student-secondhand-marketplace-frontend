@@ -48,7 +48,6 @@ const IconGroup = ({
     handleCloseAvatarDrop();
   }
 
-  console.log("isLogin", isLogin);
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}

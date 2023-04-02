@@ -8,7 +8,7 @@ import CategoryItem from "./CategoryItem";
 import axios from "axios";
 import { useState } from "react";
 
-const CategorySlide = ({ product }) => {
+const CategorySlide = () => {
   const [categories, setCategories] = useState([]);
   // swiper slider settings
   useEffect(() => {
@@ -28,7 +28,6 @@ const CategorySlide = ({ product }) => {
       if (response?.data?.data) {
         setCategories(response?.data?.data)
       }
-      console.log(response);
     }
     getCategories();
   }, [])
@@ -36,7 +35,7 @@ const CategorySlide = ({ product }) => {
     spaceBetween: 10,
     slidesPerView: 5,
     loopedSlides: 5,
-    touchRatio: 0.2,
+    touchRatio: 1,
     freeMode: true,
     loop: true,
     navigation: {
@@ -92,54 +91,4 @@ const CategorySlide = ({ product }) => {
 CategorySlide.propTypes = {
   product: PropTypes.object
 };
-const categories = [
-  {
-    name: "Tài liệu học tập",
-    img: "https://cdn-icons-png.flaticon.com/512/35/35920.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  },
-  {
-    name: "Dụng cụ học tập",
-    img: "https://vppcantho.com/wp-content/uploads/2021/03/icon-stationery.png"
-  }
-]
 export default CategorySlide;

@@ -3,11 +3,13 @@ import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { getProducts } from "../../helpers/product";
 import ProductGridSingle from "../../components/product/ProductGridSingle";
-import { addToCart } from "../../redux/actions/cartActions";
 import { addToWishlist } from "../../redux/actions/wishlistActions";
-import { addToCompare } from "../../redux/actions/compareActions";
-
+import { useEffect } from "react";
+import { useState } from "react";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+export const HOME_CATEGORY = "HOME_CATEGORY";
 const ProductGrid = ({
+  category,
   products,
   currency,
   addToCart,
@@ -19,9 +21,82 @@ const ProductGrid = ({
   sliderClassName,
   spaceBottomClass
 }) => {
+  const [productList, setProductList] = useState([]);
+  useEffect(() => {
+    const getProductListByCategory = async () => {
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/products",
+        method: "get",
+        params: {
+          populate: "*",
+          filters: {
+            category: {
+              id: {
+                $eq: category
+              }
+            }
+          }
+        }
+      });
+    }
+    const getProductListHome = async () => {
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/products",
+        method: "get",
+        params: {
+          pagination: {
+            page: 1,
+            pageSize: 16
+          },
+          populate: {
+            userId: {
+              populate: "avatar"
+            },
+            category: true,
+            images: true
+          },
+        }
+      });
+      if (response.type === RESPONSE_TYPE) {
+        setProductList(response.data?.data)
+      }
+    }
+    if (category === HOME_CATEGORY) {
+      getProductListHome();
+    } else {
+      getProductListByCategory();
+    }
+  }, []);
   return (
     <Fragment>
-      {products.map(product => {
+      {/* {products.map(product => {
+        return (
+          <ProductGridSingle
+            sliderClassName={sliderClassName}
+            spaceBottomClass={spaceBottomClass}
+            product={product}
+            currency={currency}
+            addToCart={addToCart}
+            addToWishlist={addToWishlist}
+            addToCompare={addToCompare}
+            cartItem={
+              cartItems.filter(cartItem => cartItem.id === product.id)[0]
+            }
+            wishlistItem={
+              wishlistItems.filter(
+                wishlistItem => wishlistItem.id === product.id
+              )[0]
+            }
+            compareItem={
+              compareItems.filter(
+                compareItem => compareItem.id === product.id
+              )[0]
+            }
+            key={product.id}
+          />
+        );
+      })} */}
+      {productList.map(product => {
         return (
           <ProductGridSingle
             sliderClassName={sliderClassName}
@@ -82,29 +157,9 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    addToCart: (
-      item,
-      addToast,
-      quantityCount,
-      selectedProductColor,
-      selectedProductSize
-    ) => {
-      dispatch(
-        addToCart(
-          item,
-          addToast,
-          quantityCount,
-          selectedProductColor,
-          selectedProductSize
-        )
-      );
-    },
     addToWishlist: (item, addToast) => {
       dispatch(addToWishlist(item, addToast));
     },
-    addToCompare: (item, addToast) => {
-      dispatch(addToCompare(item, addToast));
-    }
   };
 };
 

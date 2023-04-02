@@ -5,6 +5,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 // import FeatureIcon from "../../wrappers/feature-icon/FeatureIcon";
 import TabProduct from "../../wrappers/product/TabProduct";
 import CategorySlide from "./CategorySlide/index";
+import { HOME_CATEGORY } from "../../wrappers/product/ProductGrid";
 
 const HomeFashion = () => {
   return (
@@ -28,7 +29,7 @@ const HomeFashion = () => {
 
         <CategorySlide />
         {/* tab product */}
-        <TabProduct spaceBottomClass="pb-60" category="fashion" />
+        <TabProduct spaceBottomClass="pb-60" category={HOME_CATEGORY} />
 
         {/* blog featured */}
         {/* <BlogFeatured spaceBottomClass="pb-55" /> */}

@@ -8,7 +8,6 @@ export const userStorage = {
 const userStorageReducer = (state = userStorage, action) => {
   switch (action.type) {
     case LOGIN: {
-      console.log("login")
       return {
         isLogin: true
       };

@@ -11,6 +11,7 @@ const TabProduct = ({
   bgColorClass,
   category
 }) => {
+
   return (
     <div
       className={`product-area ${spaceTopClass ? spaceTopClass : ""} ${spaceBottomClass ? spaceBottomClass : ""
