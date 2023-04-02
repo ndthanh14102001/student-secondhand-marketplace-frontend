@@ -637,8 +637,13 @@
   }
 
   .single-image {
+    height: 680px;
+    background-color: #ccc;
     img {
       width: 100%;
+      
+      height: 100%;
+      object-fit: contain;
     }
   }
 }
@@ -665,6 +670,13 @@
     cursor: pointer;
     img {
       width: 100%;
+      
+    }
+    object-fit: cover;
+    object-position: center;
+    height: 100px;
+    img {
+      height: 100%;
     }
   }
 
@@ -673,15 +685,6 @@
       visibility: visible;
 
       opacity: 1;
-    }
-  }
-  .single-image {
-    height: 100%;
-    img {
-      height: 100%;
-
-      object-fit: cover;
-      object-position: center;
     }
   }
   .swiper-container-vertical {

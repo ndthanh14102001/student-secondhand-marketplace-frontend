@@ -5,6 +5,9 @@ import wishlistReducer from "./wishlistReducer";
 import compareReducer from "./compareReducer";
 import { combineReducers } from "redux";
 import { createMultilanguageReducer } from "redux-multilanguage";
+import modalLoadingReducer from "./modalLoadingReducer";
+import userStorageReducer from "./userStorage";
+import popupReducer from "./popupReducer";
 
 const rootReducer = combineReducers({
   multilanguage: createMultilanguageReducer({ currentLanguageCode: "en" }),
@@ -12,7 +15,10 @@ const rootReducer = combineReducers({
   productData: productReducer,
   cartData: cartReducer,
   wishlistData: wishlistReducer,
-  compareData: compareReducer
+  compareData: compareReducer,
+  modalLoading: modalLoadingReducer,
+  userStorage: userStorageReducer,
+  popup: popupReducer
 });
 
 export default rootReducer;
