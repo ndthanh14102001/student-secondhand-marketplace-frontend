@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React from "react";
 import Tab from "react-bootstrap/Tab";
-import Nav from "react-bootstrap/Nav";
+// import Nav from "react-bootstrap/Nav";
 import SectionTitle from "../../components/section-title/SectionTitle";
 import ProductGrid from "./ProductGrid";
 
@@ -13,14 +13,13 @@ const TabProduct = ({
 }) => {
   return (
     <div
-      className={`product-area ${spaceTopClass ? spaceTopClass : ""} ${
-        spaceBottomClass ? spaceBottomClass : ""
-      } ${bgColorClass ? bgColorClass : ""}`}
+      className={`product-area ${spaceTopClass ? spaceTopClass : ""} ${spaceBottomClass ? spaceBottomClass : ""
+        } ${bgColorClass ? bgColorClass : ""}`}
     >
       <div className="container">
-        <SectionTitle titleText="DAILY DEALS!" positionClass="text-center" />
+        <SectionTitle titleText="Sản phẩm mới" positionClass="text-center mb-55" />
         <Tab.Container defaultActiveKey="bestSeller">
-          <Nav
+          {/* <Nav
             variant="pills"
             className="product-tab-list pt-30 pb-55 text-center"
           >
@@ -39,33 +38,13 @@ const TabProduct = ({
                 <h4>Sale Items</h4>
               </Nav.Link>
             </Nav.Item>
-          </Nav>
+          </Nav> */}
           <Tab.Content>
-            <Tab.Pane eventKey="newArrival">
-              <div className="row">
-                <ProductGrid
-                  category={category}
-                  type="new"
-                  limit={8}
-                  spaceBottomClass="mb-25"
-                />
-              </div>
-            </Tab.Pane>
             <Tab.Pane eventKey="bestSeller">
               <div className="row">
                 <ProductGrid
                   category={category}
                   type="bestSeller"
-                  limit={8}
-                  spaceBottomClass="mb-25"
-                />
-              </div>
-            </Tab.Pane>
-            <Tab.Pane eventKey="saleItems">
-              <div className="row">
-                <ProductGrid
-                  category={category}
-                  type="saleItems"
                   limit={8}
                   spaceBottomClass="mb-25"
                 />
