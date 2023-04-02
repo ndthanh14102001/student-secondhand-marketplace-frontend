@@ -1,3 +1,4 @@
+import validator from "validator";
 import { useDispatch } from "react-redux";
 import { useToasts } from "react-toast-notifications";
 import PropTypes from "prop-types";
@@ -7,19 +8,47 @@ import { Link, useHistory } from "react-router-dom";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
+
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import callApi, { RESPONSE_TYPE, STATUS_BAD_REQUEST } from "../../utils/callApi";
 import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
-import { Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  InputLabel,
+  Select,
+  TextField,
+  Typography,
+  styled,
+  MenuItem,
+  FormControl,
+  FormHelperText, InputAdornment, IconButton, Checkbox, FormControlLabel
+} from "@mui/material";
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+
 import { noRememberLogin, rememberLogin } from "../../utils/userLoginStorage";
 import { login } from "../../redux/actions/userStorageActions";
+import { onShowPopup, onClosePopup } from "../../redux/actions/popupActions";
+import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
+import { useRef } from "react";
+import { UNIVERSITY_LIST } from "../../constants";
+import PasswordStrengthBar from "../../components/PasswordStrengthBar";
+import { useMemo } from "react";
+import { getColorToPasswordStrength } from "../../components/PasswordStrengthBar/constants";
+const LOGIN_KEY = "login";
+const REGISTER_KEY = "register";
 
+const BoxInput = styled(Box)(() => ({
+  marginBottom: "1rem",
+}));
 const LoginRegister = ({ location }) => {
   const history = useHistory();
   const dispatch = useDispatch();
   const { pathname } = location;
 
+  const [pageSelected, setPageSeleted] = useState(LOGIN_KEY);
   const { addToast } = useToasts();
 
   const [email, setEmail] = useState("");
@@ -29,8 +58,21 @@ const LoginRegister = ({ location }) => {
 
   const [messageError, setMessageError] = useState("");
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  const [registerInfo, setRegisterInfo] = useState({
+    username: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    isShowPassword: "",
+    phone: "",
+    isValidPhone: true,
+    fullName: "",
+    university: "",
+    isValidUniversity: true,
+    address: "",
+  });
+  const refPhoneInput = useRef();
+  const handleLogin = async () => {
     dispatch(onOpenModalLoading());
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/auth/local",
@@ -60,7 +102,80 @@ const LoginRegister = ({ location }) => {
       }
     }
     dispatch(onCloseModalLoading());
-    console.log("response", response);
+  }
+  const checkValidInputRegister = () => {
+    let result = true;
+    if (!validator.isMobilePhone(registerInfo.phone, "vi-VN")) {
+      result = false;
+      setRegisterInfo({
+        ...registerInfo,
+        isValidPhone: false
+      })
+      refPhoneInput.current.querySelector("input").focus()
+    }
+    if (!registerInfo.university) {
+      result = false;
+      setRegisterInfo({
+        ...registerInfo,
+        isValidUniversity: false
+      })
+    }
+    return result;
+  }
+  const handleRegister = async () => {
+
+    if (checkValidInputRegister()) {
+      dispatch(onOpenModalLoading());
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/auth/local/register",
+        method: "post",
+        data: {
+          username: registerInfo.username,
+          email: registerInfo.email,
+          password: registerInfo.password,
+          fullName: registerInfo.fullName,
+          phone: registerInfo.phone,
+          address: registerInfo.address,
+          university: registerInfo.university
+        },
+      })
+
+      if (response.type === RESPONSE_TYPE) {
+        addToast("Đăng ký thành công", {
+          appearance: "success",
+          autoDismiss: true
+        });
+        setPageSeleted(LOGIN_KEY);
+      } else {
+        if (response.status === STATUS_BAD_REQUEST) {
+          dispatch(onShowPopup({
+            type: POPUP_TYPE_ERROR,
+            clickOkeAction: () => dispatch(onClosePopup()),
+            closeAction: () => dispatch(onClosePopup()),
+            showButtonCancel: false,
+            content: "Username hoặc Email đã tồn tại",
+            title: "Error"
+          }))
+        }
+      }
+      dispatch(onCloseModalLoading());
+    }
+  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (pageSelected === LOGIN_KEY) {
+      await handleLogin();
+    }
+    else {
+      await handleRegister();
+    }
+  }
+  const handleClickShowPassword = () => {
+    setRegisterInfo({
+      ...registerInfo,
+      isShowPassword: !registerInfo.isShowPassword
+    })
   }
   const handleChangeEmail = e => {
     setEmail(e.target.value)
@@ -70,6 +185,62 @@ const LoginRegister = ({ location }) => {
     setPassword(e.target.value)
     setMessageError("")
   }
+  const handleChangeUsername = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      username: e.target.value
+    })
+  }
+  const handleChangeEmailRegister = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      email: e.target.value
+    })
+  }
+  const handleChangeFullName = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      fullName: e.target.value
+    })
+  }
+  const handleChangePhone = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      phone: e.target.value,
+      isValidPhone: true
+    })
+  }
+  const handleChangeUniversity = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      university: e.target.value,
+      isValidUniversity: true
+    })
+  }
+  const handleChangeAddress = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      address: e.target.value
+    })
+  }
+  const handleChangePasswordRegister = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      password: e.target.value
+    })
+  }
+  const handleChangeConfirmPassword = e => {
+    setRegisterInfo({
+      ...registerInfo,
+      confirmPassword: e.target.value
+    })
+  }
+  const colorValidStrengthPassword = useMemo(() => {
+    if (registerInfo.password.length > 0) {
+      return getColorToPasswordStrength(registerInfo.password);
+    }
+    return "primary";
+  }, [registerInfo.password]);
   return (
     <Fragment>
       <MetaTags>
@@ -91,104 +262,224 @@ const LoginRegister = ({ location }) => {
             <div className="row">
               <div className="col-lg-7 col-md-12 ml-auto mr-auto">
                 <div className="login-register-wrapper">
-                  <Tab.Container defaultActiveKey="login">
-                    <Nav variant="pills" className="login-register-tab-list">
+                  <Tab.Container defaultActiveKey={LOGIN_KEY} activeKey={pageSelected}>
+                    <Nav variant="pills" className="login-register-tab-list" onSelect={(key) => setPageSeleted(key)}>
                       <Nav.Item>
-                        <Nav.Link eventKey="login">
+                        <Nav.Link eventKey={LOGIN_KEY}>
                           <h4>Đăng nhập</h4>
                         </Nav.Link>
                       </Nav.Item>
                       <Nav.Item>
-                        <Nav.Link eventKey="register">
+                        <Nav.Link eventKey={REGISTER_KEY}>
                           <h4>Đăng ký</h4>
                         </Nav.Link>
                       </Nav.Item>
                     </Nav>
                     <Tab.Content>
-                      <Tab.Pane eventKey="login">
+                      <Tab.Pane eventKey={LOGIN_KEY}>
                         <div className="login-form-container">
-                          <div className="login-register-form">
-                            <form onSubmit={handleLogin}>
-                              <input
-                                type="text"
-                                name="user-name"
-                                placeholder="Tên đăng nhập"
-                                value={email}
-                                onChange={handleChangeEmail}
-                              />
-                              <input
-                                type="password"
-                                name="user-password"
-                                placeholder="mật khẩu"
-                                value={password}
-                                onChange={handleChangePassword}
-                              />
+                          <div>
+                            <form onSubmit={handleSubmit}>
+                              <BoxInput>
+                                <TextField
+                                  fullWidth
+                                  type="text"
+                                  name="user-name"
+                                  placeholder="Email hoặc Tên đăng nhập"
+                                  label="Email hoặc Tên đăng nhập"
+                                  value={email}
+                                  onChange={handleChangeEmail}
+                                />
+                              </BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  fullWidth
+                                  type="password"
+                                  name="user-password"
+                                  placeholder="Mật khẩu"
+                                  label="Mật khẩu"
+                                  value={password}
+                                  onChange={handleChangePassword}
+                                />
+                              </BoxInput>
                               <Typography color="error">{messageError}</Typography>
-                              <div className="button-box">
-                                <div className="login-toggle-btn">
-                                  <input type="checkbox" value={isCheckedRememberLogin} onChange={e => setIsCheckedRememberLogin(e.target.checked)} />
-                                  <label className="ml-10">Ghi nhớ đăng nhập</label>
+                              <Box sx={{
+
+                              }}>
+                                <Box sx={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center"
+                                }}>
+                                  <FormControlLabel
+                                    control={<Checkbox
+                                      checked={isCheckedRememberLogin}
+                                      onChange={e => setIsCheckedRememberLogin(e.target.checked)}
+                                    />}
+                                    label="Ghi nhớ đăng nhập" />
                                   <Link to={process.env.PUBLIC_URL + "/"}>
                                     Quên mật khẩu ?
                                   </Link>
-                                </div>
-                                <button type="submit">
+                                </Box>
+                                <Button type="submit" variant="contained">
                                   <span>Đăng nhập</span>
-                                </button>
-                              </div>
+                                </Button>
+                              </Box>
                             </form>
                           </div>
                         </div>
                       </Tab.Pane>
-                      <Tab.Pane eventKey="register">
+                      <Tab.Pane eventKey={REGISTER_KEY}>
                         <div className="login-form-container">
-                          <div className="login-register-form">
-                            <form>
-                              <input
-                                type="text"
-                                name="user-name"
-                                placeholder="Tên đăng nhập"
-                              />
-                              <input
-                                name="user-email"
-                                placeholder="Email"
-                                type="email"
-                              />
-                              <input
-                                type="text"
-                                name="full-name"
-                                placeholder="Họ tên"
-                              />
-                              <input
-                                name="phone-number"
-                                placeholder="Số điện thoại"
-                                type="text"
-                              />
-                              <input
-                                name="university"
-                                placeholder="Trường đại học"
-                                type="text"
-                              />
-                              <input
-                                name="address"
-                                placeholder="Địa chỉ"
-                                type="text"
-                              />
-                              <input
-                                type="password"
-                                name="user-password"
-                                placeholder="Mật khẩu"
-                              />
-                              <input
-                                type="confirm-password"
-                                name="user-confirm-password"
-                                placeholder="Xác nhận mật khẩu"
-                              />
-
-                              <div className="button-box">
-                                <button type="submit">
+                          <div >
+                            <form onSubmit={handleSubmit}>
+                              <BoxInput>
+                                <TextField
+                                  required
+                                  fullWidth
+                                  type="text"
+                                  name="user-name"
+                                  placeholder="Tên đăng nhập"
+                                  label={"Tên đăng nhập"}
+                                  value={registerInfo.username}
+                                  onChange={handleChangeUsername}
+                                />
+                              </BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  required
+                                  fullWidth
+                                  name="user-email"
+                                  placeholder="Email"
+                                  label="Email"
+                                  type="email"
+                                  value={registerInfo.email}
+                                  onChange={handleChangeEmailRegister}
+                                />
+                              </BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  required
+                                  fullWidth
+                                  type="text"
+                                  name="full-name"
+                                  placeholder="Họ tên"
+                                  label="Họ tên"
+                                  value={registerInfo.fullName}
+                                  onChange={handleChangeFullName}
+                                /></BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  error={!registerInfo.isValidPhone}
+                                  helperText={!registerInfo.isValidPhone && "Số điện thoại không hợp lệ"}
+                                  ref={refPhoneInput}
+                                  required
+                                  fullWidth
+                                  name="phone-number"
+                                  placeholder="Số điện thoại"
+                                  label="Số điện thoại"
+                                  type="text"
+                                  value={registerInfo.phone}
+                                  onChange={handleChangePhone}
+                                />
+                              </BoxInput>
+                              <BoxInput>
+                                {/* <TextField
+                                  required
+                                  fullWidth
+                                  name="university"
+                                  placeholder="Trường đại học"
+                                  label="Trường đại học"
+                                  type="text"
+                                  value={registerInfo.university}
+                                  onChange={handleChangeUniversity}
+                                /> */}
+                                <FormControl fullWidth error={!registerInfo.isValidUniversity}>
+                                  <InputLabel id="university-select-label">Trường đại học</InputLabel>
+                                  <Select
+                                    labelId="university-select-label"
+                                    value={registerInfo.university}
+                                    label="Trường đại học"
+                                    onChange={handleChangeUniversity}
+                                  >
+                                    {UNIVERSITY_LIST.map((university, indexUniversity) => {
+                                      return <MenuItem value={university} key={indexUniversity}>{university}</MenuItem>
+                                    })}
+                                  </Select>
+                                  {!registerInfo.isValidUniversity && <FormHelperText>Hãy chọn Trường Đại Học</FormHelperText>}
+                                </FormControl>
+                              </BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  required
+                                  fullWidth
+                                  name="address"
+                                  placeholder="Địa chỉ"
+                                  label="Địa chỉ"
+                                  type="text"
+                                  value={registerInfo.address}
+                                  onChange={handleChangeAddress}
+                                />
+                              </BoxInput>
+                              <BoxInput>
+                                <TextField
+                                  color={colorValidStrengthPassword}
+                                  helperText={(
+                                    "Sử dụng 6+ ký tự, kết hợp với chữ thường, chữ hoa, số, ký tự đặt biệt"
+                                  )}
+                                  required
+                                  fullWidth
+                                  type={registerInfo.isShowPassword ? "text" : "password"}
+                                  name="user-password"
+                                  placeholder="Mật khẩu"
+                                  label="Mật khẩu"
+                                  value={registerInfo.password}
+                                  onChange={handleChangePasswordRegister}
+                                  InputProps={
+                                    {
+                                      endAdornment: <InputAdornment position="end">
+                                        <IconButton
+                                          aria-label="toggle password visibility"
+                                          onClick={handleClickShowPassword}
+                                          edge="end"
+                                        >
+                                          {registerInfo.isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                      </InputAdornment>
+                                    }
+                                  }
+                                />
+                              </BoxInput>
+                              <PasswordStrengthBar value={registerInfo.password} />
+                              <BoxInput mt={"1rem"}>
+                                <TextField
+                                  fullWidth
+                                  required
+                                  type={registerInfo.isShowPassword ? "text" : "password"}
+                                  name="user-confirm-password"
+                                  placeholder="Xác nhận mật khẩu"
+                                  label="Xác nhận mật khẩu"
+                                  value={registerInfo.confirmPassword}
+                                  onChange={handleChangeConfirmPassword}
+                                  InputProps={
+                                    {
+                                      endAdornment: <InputAdornment position="end">
+                                        <IconButton
+                                          aria-label="toggle password visibility"
+                                          onClick={handleClickShowPassword}
+                                          edge="end"
+                                        >
+                                          {registerInfo.isShowPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                      </InputAdornment>
+                                    }
+                                  }
+                                />
+                              </BoxInput>
+                              <div >
+                                <Button type="submit" variant="contained">
                                   <span>Đăng ký</span>
-                                </button>
+                                </Button>
                               </div>
                             </form>
                           </div>
@@ -209,5 +500,4 @@ const LoginRegister = ({ location }) => {
 LoginRegister.propTypes = {
   location: PropTypes.object
 };
-
 export default LoginRegister;

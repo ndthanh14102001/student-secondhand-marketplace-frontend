@@ -75,13 +75,7 @@ const CategorySlide = ({ product }) => {
             {
               categories.map((category, key) => {
                 const attributes = category?.attributes;
-                const imageData = attributes?.image?.data &&
-                  Array.isArray(attributes?.image?.data) &&
-                  attributes?.image?.data.length > 0 && attributes?.image?.data;
-                const image = imageData &&
-                  (attributes?.image?.data[0]?.attributes?.formats?.small?.url ||
-                    attributes?.image?.data[0]?.attributes?.url);
-                console.log("image", process.env.REACT_APP_SERVER_ENDPOINT + "/" + image);
+                const image = attributes?.image?.data?.attributes?.url;
                 return (
                   <div key={key}>
                     <CategoryItem name={attributes.name} image={image && process.env.REACT_APP_SERVER_ENDPOINT + image} />

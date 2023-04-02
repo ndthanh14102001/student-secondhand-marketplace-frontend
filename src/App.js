@@ -8,6 +8,7 @@ import { connect, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 import ModalLoading from "./components/modal-loading";
+import Popup from "./components/Popup";
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -42,6 +43,7 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+  const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
   useEffect(() => {
     props.dispatch(
@@ -57,6 +59,16 @@ const App = (props) => {
 
   return (
     <ThemeProvider>
+      <Popup
+        isOpen={popup.open}
+        onClose={popup.actions.closeAction}
+        onButtonClick={popup.actions.clickOkeAction}
+        type={popup.type}
+        title={popup.title}
+        isShowButtonCancel={popup.showButtonCancel}
+        onButtonCancelClick={popup.actions.clickCancelButton}
+        content={popup.content}
+      />
       <ModalLoading open={modalLoading.open} />
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
