@@ -22,7 +22,7 @@ const ProductGrid = ({
   spaceBottomClass
 }) => {
   const [productList, setProductList] = useState([]);
-  console.log("productList",productList)
+  console.log("productList", productList)
   useEffect(() => {
     const getProductListByCategory = async () => {
       const response = await callApi({
@@ -50,7 +50,13 @@ const ProductGrid = ({
             page: 1,
             pageSize: 16
           },
-          populate: "*",
+          populate: {
+            userId: {
+              populate: "avatar"
+            },
+            category: true,
+            images: true
+          },
         }
       });
       if (response.type === RESPONSE_TYPE) {

@@ -1,11 +1,18 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
-import { Tooltip } from "@mui/material";
+import { Avatar, Box, Tooltip, Typography } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 // import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
-
+import { ddmmyyhhmm } from "../../utils/DateFormat";
+import styled from "@emotion/styled";
+const BoxInfo = styled(Box)(() => ({
+  display: "flex",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  marginTop: "0.6rem"
+}));
 const ProductGridSingle = ({
   product,
   currency,
@@ -30,7 +37,9 @@ const ProductGridSingle = ({
     Array.isArray(attributes?.images?.data) &&
     attributes?.images?.data?.length > 0 &&
     attributes?.images?.data;
-  console.log("image", images)
+  const user = attributes?.userId?.data?.attributes;
+  const avatar = user?.avatar?.data?.attributes?.url;
+  console.log("user", user)
   return (
     <Fragment>
       <div
@@ -88,19 +97,37 @@ const ProductGridSingle = ({
               </div>
             </div>
           </div>
-          <div className="product-content text-center">
+          <div className="product-content ">
             <div>
-              <Tooltip title={product.name}>
+              <Tooltip title={attributes?.name}>
                 <h3 className="product-name">
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {product.name}
+                    {attributes?.name}
                   </Link>
                 </h3>
               </Tooltip>
             </div>
-            <div className="product-price">
-              <span>{finalProductPrice} </span>
+            <div className="product-price" >
+              <span style={{ margin: 0 }}>{finalProductPrice} </span>
             </div>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.updatedAt))} </Typography>
+            <BoxInfo>
+              <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
+              <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                marginLeft: "1rem"
+              }}>
+                <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
+                <Typography component={"span"}
+                  sx={{
+                    fontSize: "0.8rem",
+                  }}
+                >{user?.university || ""}</Typography>
+              </Box>
+            </BoxInfo>
           </div>
         </div>
       </div>
