@@ -109,7 +109,7 @@ const ProductGridSingle = ({
             <div className="product-price" >
               <span style={{ margin: 0 }}>{finalProductPrice} </span>
             </div>
-            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.updatedAt))} </Typography>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt))} </Typography>
             <BoxInfo>
               <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
               <Box sx={{

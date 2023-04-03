@@ -14,42 +14,26 @@ import { connect } from "react-redux";
 import { Button } from "@mui/material";
 
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { ddmmyyhhmm } from "../../utils/DateFormat";
 function ProductModal(props) {
   const { product } = props;
-  const { currency } = props;
-  const { discountedprice } = props;
+  const attributes = product?.attributes;
+  const images = attributes?.images?.data &&
+    Array.isArray(attributes?.images?.data) &&
+    attributes?.images?.data?.length > 0 &&
+    attributes?.images?.data;
+  const user = attributes?.userId?.data?.attributes;
   const { finalproductprice } = props;
-  const { finaldiscountedprice } = props;
 
   const [gallerySwiper, getGallerySwiper] = useState(null);
   const [thumbnailSwiper, getThumbnailSwiper] = useState(null);
-  const [selectedProductColor, setSelectedProductColor] = useState(
-    product.variation ? product.variation[0].color : ""
-  );
-  const [selectedProductSize, setSelectedProductSize] = useState(
-    product.variation ? product.variation[0].size[0].name : ""
-  );
-  const [productStock, setProductStock] = useState(
-    product.variation ? product.variation[0].size[0].stock : product.stock
-  );
-  const [quantityCount, setQuantityCount] = useState(1);
 
   const wishlistItem = props.wishlistitem;
-  const compareItem = props.compareitem;
 
-  const addToCart = props.addtocart;
   const addToWishlist = props.addtowishlist;
-  const addToCompare = props.addtocompare;
 
   const addToast = props.addtoast;
-  const cartItems = props.cartitems;
-
-  const productCartQty = getProductCartQuantity(
-    cartItems,
-    product,
-    selectedProductColor,
-    selectedProductSize
-  );
 
   useEffect(() => {
     if (
@@ -75,7 +59,7 @@ function ProductModal(props) {
     spaceBetween: 10,
     slidesPerView: 4,
     loopedSlides: 4,
-    touchRatio: 0.2,
+    touchRatio: 1,
     freeMode: true,
     loop: true,
     slideToClickedSlide: true,
@@ -109,13 +93,13 @@ function ProductModal(props) {
             <div className="col-md-5 col-sm-12 col-xs-12">
               <div className="product-large-image-wrapper">
                 <Swiper {...gallerySwiperParams}>
-                  {product.image &&
-                    product.image.map((single, key) => {
+                  {images && Array.isArray(images) &&
+                    images.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.PUBLIC_URL + single}
+                              src={process.env.REACT_APP_SERVER_ENDPOINT + single?.attributes?.url}
                               className="img-fluid"
                               alt=""
                             />
@@ -127,13 +111,13 @@ function ProductModal(props) {
               </div>
               <div className="product-small-image-wrapper mt-15">
                 <Swiper {...thumbnailSwiperParams}>
-                  {product.image &&
-                    product.image.map((single, key) => {
+                  {images && Array.isArray(images) &&
+                    images.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.PUBLIC_URL + single}
+                              src={process.env.REACT_APP_SERVER_ENDPOINT + single?.attributes?.url}
                               className="img-fluid"
                               alt=""
                             />
@@ -146,29 +130,24 @@ function ProductModal(props) {
             </div>
             <div className="col-md-7 col-sm-12 col-xs-12">
               <div className="product-details-content quickview-content">
-                <h2>{product.name}</h2>
+                <h2>{attributes?.name || ""}</h2>
                 <div className="product-details-price">
-                  {discountedprice !== null ? (
-                    <Fragment>
-                      <span>
-                        {currency.currencySymbol + finaldiscountedprice}
-                      </span>{" "}
-                      <span className="old">
-                        {currency.currencySymbol + finalproductprice}
-                      </span>
-                    </Fragment>
-                  ) : (
-                    <span>{currency.currencySymbol + finalproductprice} </span>
-                  )}
+                  <span >
+                    {finalproductprice}
+                  </span>
                 </div>
 
+                <div className="pro-details-date">
+                  {console.log("product", product)}
+                  <p style={{ color: "inherit" }}>{ddmmyyhhmm(new Date(attributes?.createdAt))}</p>
+                </div>
                 <div className="pro-details-list">
                   <p>{product.shortDescription}</p>
                 </div>
 
                 <div className="pro-details-quality">
                   <div className="pro-details-cart btn-hover">
-                    {productStock && productStock > 0 ? (
+                    {attributes?.status && attributes?.status === PRODUCT_ON_SALE_STATUS ? (
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText("0123456789");
@@ -177,11 +156,10 @@ function ProductModal(props) {
                             autoDismiss: true
                           });
                         }}
-                        disabled={productCartQty >= productStock}
                       >
                         <PhoneInTalkIcon />
                         {" "}
-                        0123456789
+                        {user?.phone}
                       </button>
                     ) : (
                       <button disabled>Out of Stock</button>
@@ -189,7 +167,6 @@ function ProductModal(props) {
                   </div>
                   <div className="pro-details-cart btn-hover">
                     <button
-                      disabled={productCartQty >= productStock}
                     >
                       <ChatIcon />
                       {" "}
@@ -213,7 +190,7 @@ function ProductModal(props) {
                   </div>
                 </div>
                 <div>
-                  <ProductOwnerInfo />
+                  <ProductOwnerInfo user={user} />
                 </div>
               </div>
             </div>
@@ -226,25 +203,14 @@ function ProductModal(props) {
 
 ProductModal.propTypes = {
   addtoast: PropTypes.func,
-  addtocart: PropTypes.func,
-  addtocompare: PropTypes.func,
   addtowishlist: PropTypes.func,
   cartitems: PropTypes.array,
-  compareitem: PropTypes.object,
-  currency: PropTypes.object,
-  discountedprice: PropTypes.number,
-  finaldiscountedprice: PropTypes.number,
-  finalproductprice: PropTypes.number,
+  finalproductprice: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   onHide: PropTypes.func,
   product: PropTypes.object,
   show: PropTypes.bool,
   wishlistitem: PropTypes.object
 };
 
-const mapStateToProps = state => {
-  return {
-    cartitems: state.cartData
-  };
-};
 
-export default connect(mapStateToProps)(ProductModal);
+export default ProductModal;

@@ -56,7 +56,7 @@ const ProductGrid = ({
           },
           populate: {
             userId: {
-              populate: "avatar"
+              populate: "*"
             },
             category: true,
             images: true
@@ -67,7 +67,7 @@ const ProductGrid = ({
             }
           },
           sort: {
-            updatedAt: "desc"
+            createdAt: "desc"
           }
         }
       });

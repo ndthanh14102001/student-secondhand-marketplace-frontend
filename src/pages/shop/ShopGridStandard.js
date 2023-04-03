@@ -89,7 +89,7 @@ const ShopGridStandard = ({ location, products }) => {
                     },
                     populate: {
                         userId: {
-                            populate: "avatar"
+                            populate: "*"
                         },
                         category: true,
                         images: true
@@ -131,7 +131,9 @@ const ShopGridStandard = ({ location, products }) => {
                                 {/* shop page content default */}
                                 {/* <ShopProducts layout={layout} products={currentData} /> */}
                                 <ShopProducts layout={layout} products={productList} />
-
+                                {productList.length === 0 && <div>
+                                    Không có kết quả
+                                </div>}
                                 {/* shop product pagination */}
                                 <div className="pro-pagination-style text-center mt-30">
                                     {/* <Paginator

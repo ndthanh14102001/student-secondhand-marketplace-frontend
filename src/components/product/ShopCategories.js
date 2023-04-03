@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { setActiveSort } from "../../helpers/product";
 import { useDispatch } from "react-redux";
 import { setCategoryFilter } from "../../redux/actions/categoryActions";
@@ -37,7 +37,10 @@ import { setCategoryFilter } from "../../redux/actions/categoryActions";
 export const ALL_CATEGORY = "All Category"
 const ShopCategories = ({ categories, getSortParams }) => {
   const dispatch = useDispatch();
-
+  const checkboxCategoryRef = useRef();
+  useLayoutEffect(() => {
+    checkboxCategoryRef.current.click();
+  }, []);
   return (
     <div className="sidebar-widget">
       <h4 className="pro-sidebar-title">Danh mục </h4>
@@ -47,13 +50,14 @@ const ShopCategories = ({ categories, getSortParams }) => {
             <li>
               <div className="sidebar-widget-list-left">
                 <button
+                  ref={checkboxCategoryRef}
                   onClick={e => {
                     // getSortParams("category", "");
                     dispatch(setCategoryFilter(ALL_CATEGORY));
                     setActiveSort(e);
                   }}
                 >
-                  <span className="checkmark" /> All Categories
+                  <span className="checkmark" /> Tất cả
                 </button>
               </div>
             </li>
