@@ -11,9 +11,12 @@ import ShopSidebar from '../../wrappers/product/ShopSidebar';
 import ShopTopbar from '../../wrappers/product/ShopTopbar';
 import ShopProducts from '../../wrappers/product/ShopProducts';
 import callApi from "../../utils/callApi";
+import { ALL_UNIVERSITY } from "../../components/product/ShopUniversityFilter";
 
 const ShopGridStandard = ({ location, products }) => {
-    const categoriesFilter = useSelector(state => state.category.filter);
+    const categoriesFilter = useSelector(state => state.filter.category);
+    const universityFilter = useSelector(state => state.filter.university);
+
     const [productList, setProductList] = useState([]);
     const [totalProduct, setTotalProduct] = useState(0);
 
@@ -40,7 +43,6 @@ const ShopGridStandard = ({ location, products }) => {
     }
 
     const getFilterSortParams = (sortType, sortValue) => {
-        console.log("sortType", sortType)
         setFilterSortType(sortType);
         setFilterSortValue(sortValue);
     }
@@ -81,6 +83,11 @@ const ShopGridStandard = ({ location, products }) => {
                         $or: categoriesQuery,
                         status: {
                             $eq: "onSale"
+                        },
+                        userId: {
+                            university: {
+                                $eq: universityFilter === ALL_UNIVERSITY ? undefined : universityFilter
+                            },
                         }
                     },
                     pagination: {
@@ -102,7 +109,7 @@ const ShopGridStandard = ({ location, products }) => {
         if (categoriesFilter) {
             filterProduct();
         }
-    }, [offset, currentPage, products, sortType, sortValue, filterSortType, filterSortValue, categoriesFilter]);
+    }, [offset, currentPage, products, sortType, sortValue, filterSortType, filterSortValue, universityFilter, categoriesFilter]);
     return (
         <Fragment>
             <MetaTags>

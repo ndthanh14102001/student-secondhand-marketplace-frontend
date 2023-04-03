@@ -14,6 +14,8 @@ import ShopTag from "../../components/product/ShopTag";
 import { useEffect } from "react";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import { useState } from "react";
+import ShopUniversityFilter, { ALL_UNIVERSITY } from "../../components/product/ShopUniversityFilter";
+import { UNIVERSITY_LIST } from "../../constants";
 
 const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
   const uniqueCategories = getIndividualCategories(products);
@@ -21,7 +23,7 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
   const uniqueSizes = getProductsIndividualSizes(products);
   const uniqueTags = getIndividualTags(products);
   const [categories, setCategories] = useState([]);
- 
+
   useEffect(() => {
     const getAllCategory = async () => {
       const response = await callApi({
@@ -55,7 +57,7 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
     <div className={`sidebar-style ${sideSpaceClass ? sideSpaceClass : ""}`}>
       {/* shop search */}
       <ShopSearch />
-
+      <ShopUniversityFilter  />
       {/* filter by categories */}
       {/* <ShopCategories
         categories={uniqueCategories}

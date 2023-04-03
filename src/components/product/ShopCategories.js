@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import React, { useLayoutEffect, useRef } from "react";
 import { setActiveSort } from "../../helpers/product";
 import { useDispatch } from "react-redux";
-import { setCategoryFilter } from "../../redux/actions/categoryActions";
+import { setCategoryFilter } from "../../redux/actions/filterActions";
 // const ChildsCategoires = ({ attributes }) => {
 //   const dispatch = useDispatch();
 //   let childCategories = attributes?.children?.data;
