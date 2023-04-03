@@ -91,24 +91,8 @@ const ProductGridListSingle = ({
                 </Link>
               </h3>
             </Tooltip>
-            {/* {product.rating && product.rating > 0 ? (
-              <div className="product-rating">
-                <Rating ratingValue={product.rating} />
-              </div>
-            ) : (
-              ""
-            )} */}
             <div className="product-price">
-              {discountedPrice !== null ? (
-                <Fragment>
-                  <span>{currency.currencySymbol + finalDiscountedPrice}</span>{" "}
-                  <span className="old">
-                    {currency.currencySymbol + finalProductPrice}
-                  </span>
-                </Fragment>
-              ) : (
-                <span>{currency.currencySymbol + finalProductPrice} </span>
-              )}
+              <span>{currency.currencySymbol + finalProductPrice} </span>
             </div>
           </div>
         </div>
@@ -133,18 +117,6 @@ const ProductGridListSingle = ({
                       ""
                     )}
                   </Link>
-                  {product.discount || product.new ? (
-                    <div className="product-img-badges">
-                      {product.discount ? (
-                        <span className="pink">-{product.discount}%</span>
-                      ) : (
-                        ""
-                      )}
-                      {product.new ? <span className="purple">New</span> : ""}
-                    </div>
-                  ) : (
-                    ""
-                  )}
                 </div>
               </div>
             </div>
@@ -156,18 +128,7 @@ const ProductGridListSingle = ({
                   </Link>
                 </h3>
                 <div className="product-list-price">
-                  {discountedPrice !== null ? (
-                    <Fragment>
-                      <span>
-                        {currency.currencySymbol + finalDiscountedPrice}
-                      </span>{" "}
-                      <span className="old">
-                        {currency.currencySymbol + finalProductPrice}
-                      </span>
-                    </Fragment>
-                  ) : (
-                    <span>{currency.currencySymbol + finalProductPrice} </span>
-                  )}
+                  <span>{currency.currencySymbol + finalProductPrice} </span>
                 </div>
                 {/* {product.rating && product.rating > 0 ? (
                   <div className="rating-review">

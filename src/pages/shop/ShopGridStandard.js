@@ -3,15 +3,18 @@ import React, { Fragment, useState, useEffect } from 'react';
 import MetaTags from 'react-meta-tags';
 import Paginator from 'react-hooks-paginator';
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { getSortedProducts } from '../../helpers/product';
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
 import ShopSidebar from '../../wrappers/product/ShopSidebar';
 import ShopTopbar from '../../wrappers/product/ShopTopbar';
 import ShopProducts from '../../wrappers/product/ShopProducts';
+import callApi from "../../utils/callApi";
 
-const ShopGridStandard = ({location, products}) => {
+const ShopGridStandard = ({ location, products }) => {
+    const categoriesFilter = useSelector(state => state.category.filter);
+    console.log("categoriesFilter", categoriesFilter);
     const [layout, setLayout] = useState('grid three-column');
     const [sortType, setSortType] = useState('');
     const [sortValue, setSortValue] = useState('');
@@ -23,7 +26,7 @@ const ShopGridStandard = ({location, products}) => {
     const [sortedProducts, setSortedProducts] = useState([]);
 
     const pageLimit = 15;
-    const {pathname} = location;
+    const { pathname } = location;
 
     const getLayout = (layout) => {
         setLayout(layout)
@@ -39,14 +42,37 @@ const ShopGridStandard = ({location, products}) => {
         setFilterSortValue(sortValue);
     }
 
+    // useEffect(() => {
+    //     let sortedProducts = getSortedProducts(products, sortType, sortValue);
+    //     const filterSortedProducts = getSortedProducts(sortedProducts, filterSortType, filterSortValue);
+    //     sortedProducts = filterSortedProducts;
+    //     setSortedProducts(sortedProducts);
+    //     setCurrentData(sortedProducts.slice(offset, offset + pageLimit));
+    // }, [offset, products, sortType, sortValue, filterSortType, filterSortValue]);
     useEffect(() => {
-        let sortedProducts = getSortedProducts(products, sortType, sortValue);
-        const filterSortedProducts = getSortedProducts(sortedProducts, filterSortType, filterSortValue);
-        sortedProducts = filterSortedProducts;
-        setSortedProducts(sortedProducts);
-        setCurrentData(sortedProducts.slice(offset, offset + pageLimit));
-    }, [offset, products, sortType, sortValue, filterSortType, filterSortValue ]);
-
+        const filterProduct = async () => {
+            const response = await callApi({
+                url: process.env.REACT_APP_API_ENDPOINT + "/products",
+                method: "get",
+                params: {
+                    filters: {
+                        category: {
+                            id: {
+                                $eq: categoriesFilter?.id
+                            }
+                        },
+                        status: {
+                            $eq: "onSale"
+                        }
+                    }
+                }
+            })
+            console.log("response", response)
+        }
+        if (categoriesFilter) {
+            filterProduct();
+        }
+    }, [offset, products, sortType, sortValue, filterSortType, filterSortValue, categoriesFilter]);
     return (
         <Fragment>
             <MetaTags>
@@ -66,7 +92,7 @@ const ShopGridStandard = ({location, products}) => {
                         <div className="row">
                             <div className="col-lg-3 order-2 order-lg-1">
                                 {/* shop sidebar */}
-                                <ShopSidebar products={products} getSortParams={getSortParams} sideSpaceClass="mr-30"/>
+                                <ShopSidebar products={products} getSortParams={getSortParams} sideSpaceClass="mr-30" />
                             </div>
                             <div className="col-lg-9 order-1 order-lg-2">
                                 {/* shop topbar default */}
@@ -99,12 +125,12 @@ const ShopGridStandard = ({location, products}) => {
 }
 
 ShopGridStandard.propTypes = {
-  location: PropTypes.object,
-  products: PropTypes.array
+    location: PropTypes.object,
+    products: PropTypes.array
 }
 
 const mapStateToProps = state => {
-    return{
+    return {
         products: state.productData.products
     }
 }
