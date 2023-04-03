@@ -21,6 +21,7 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
   const uniqueSizes = getProductsIndividualSizes(products);
   const uniqueTags = getIndividualTags(products);
   const [categories, setCategories] = useState([]);
+ 
   useEffect(() => {
     const getAllCategory = async () => {
       const response = await callApi({
@@ -36,11 +37,7 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
           },
           populate: {
             children: {
-              populate: {
-                children: {
-                  populate: "children"
-                }
-              }
+              populate: "children"
             },
           },
           sort: {

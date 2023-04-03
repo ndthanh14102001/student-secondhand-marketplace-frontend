@@ -14,7 +14,9 @@ import callApi from "../../utils/callApi";
 
 const ShopGridStandard = ({ location, products }) => {
     const categoriesFilter = useSelector(state => state.category.filter);
-    console.log("categoriesFilter", categoriesFilter);
+    const [productList, setProductList] = useState([]);
+    const [totalProduct, setTotalProduct] = useState(0);
+
     const [layout, setLayout] = useState('grid three-column');
     const [sortType, setSortType] = useState('');
     const [sortValue, setSortValue] = useState('');
@@ -22,9 +24,9 @@ const ShopGridStandard = ({ location, products }) => {
     const [filterSortValue, setFilterSortValue] = useState('');
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
-    const [currentData, setCurrentData] = useState([]);
-    const [sortedProducts, setSortedProducts] = useState([]);
-
+    // const [currentData, setCurrentData] = useState([]);
+    // const [sortedProducts, setSortedProducts] = useState([]);
+    console.log("filterSortValue", filterSortValue);
     const pageLimit = 15;
     const { pathname } = location;
 
@@ -38,10 +40,10 @@ const ShopGridStandard = ({ location, products }) => {
     }
 
     const getFilterSortParams = (sortType, sortValue) => {
+        console.log("sortType", sortType)
         setFilterSortType(sortType);
         setFilterSortValue(sortValue);
     }
-
     // useEffect(() => {
     //     let sortedProducts = getSortedProducts(products, sortType, sortValue);
     //     const filterSortedProducts = getSortedProducts(sortedProducts, filterSortType, filterSortValue);
@@ -51,28 +53,56 @@ const ShopGridStandard = ({ location, products }) => {
     // }, [offset, products, sortType, sortValue, filterSortType, filterSortValue]);
     useEffect(() => {
         const filterProduct = async () => {
+
+            const categoriesQuery = [{
+                category: {
+                    id: {
+                        $eq: categoriesFilter?.id
+                    }
+                }
+            },];
+            const categoriesChild = categoriesFilter?.attributes?.children?.data;
+            if (categoriesChild && Array.isArray(categoriesChild)) {
+                categoriesChild.forEach(category => {
+                    categoriesQuery.push({
+                        category: {
+                            id: {
+                                $eq: category?.id
+                            }
+                        },
+                    })
+                })
+            }
             const response = await callApi({
                 url: process.env.REACT_APP_API_ENDPOINT + "/products",
                 method: "get",
                 params: {
                     filters: {
-                        category: {
-                            id: {
-                                $eq: categoriesFilter?.id
-                            }
-                        },
+                        $or: categoriesQuery,
                         status: {
                             $eq: "onSale"
                         }
-                    }
+                    },
+                    pagination: {
+                        page: currentPage || 1,
+                        pageSize: pageLimit,
+                    },
+                    populate: {
+                        userId: {
+                            populate: "avatar"
+                        },
+                        category: true,
+                        images: true
+                    },
                 }
             })
-            console.log("response", response)
+            setProductList(response.data?.data)
+            setTotalProduct(response?.data?.meta?.pagination?.total);
         }
         if (categoriesFilter) {
             filterProduct();
         }
-    }, [offset, products, sortType, sortValue, filterSortType, filterSortValue, categoriesFilter]);
+    }, [offset, currentPage, products, sortType, sortValue, filterSortType, filterSortValue, categoriesFilter]);
     return (
         <Fragment>
             <MetaTags>
@@ -96,15 +126,27 @@ const ShopGridStandard = ({ location, products }) => {
                             </div>
                             <div className="col-lg-9 order-1 order-lg-2">
                                 {/* shop topbar default */}
-                                <ShopTopbar getLayout={getLayout} getFilterSortParams={getFilterSortParams} productCount={products.length} sortedProductCount={currentData.length} />
+                                <ShopTopbar getLayout={getLayout} getFilterSortParams={getFilterSortParams} productCount={totalProduct} sortedProductCount={productList?.length || 0} />
 
                                 {/* shop page content default */}
-                                <ShopProducts layout={layout} products={currentData} />
+                                {/* <ShopProducts layout={layout} products={currentData} /> */}
+                                <ShopProducts layout={layout} products={productList} />
 
                                 {/* shop product pagination */}
                                 <div className="pro-pagination-style text-center mt-30">
-                                    <Paginator
+                                    {/* <Paginator
                                         totalRecords={sortedProducts.length}
+                                        pageLimit={pageLimit}
+                                        pageNeighbours={2}
+                                        setOffset={setOffset}
+                                        currentPage={currentPage}
+                                        setCurrentPage={setCurrentPage}
+                                        pageContainerClass="mb-0 mt-0"
+                                        pagePrevText="«"
+                                        pageNextText="»"
+                                    /> */}
+                                    <Paginator
+                                        totalRecords={totalProduct}
                                         pageLimit={pageLimit}
                                         pageNeighbours={2}
                                         setOffset={setOffset}
