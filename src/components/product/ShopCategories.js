@@ -44,8 +44,6 @@ const ShopCategories = ({ categories, getSortParams }) => {
     if (checkboxCategoryRef.current?.click) {
       checkboxCategoryRef.current.click();
     }
-
-    console.log("checkboxCategoryRef", checkboxCategoryRef)
   }, [firstLoad]);
   return (
     <div className="sidebar-widget">

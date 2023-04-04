@@ -385,10 +385,10 @@
 
       margin: 0;
     }
-    .product-name{
+    .product-name {
       overflow: hidden;
       text-overflow: ellipsis;
-      white-space: nowrap;  
+      white-space: nowrap;
     }
     .product-rating {
       margin: 3px 0 3px;
@@ -531,6 +531,9 @@
 
     color: #010101;
   }
+  .product-details-sold-status {
+    color: #fe5252;
+  }
   .product-details-price {
     display: flex;
     align-items: center;
@@ -604,7 +607,7 @@
 
     color: #333;
   }
-  .pro-details-date{
+  .pro-details-date {
     color: #9b9b9b;
   }
   .pro-details-list {
