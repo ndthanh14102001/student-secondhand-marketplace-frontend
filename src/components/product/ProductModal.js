@@ -138,7 +138,6 @@ function ProductModal(props) {
                 </div>
 
                 <div className="pro-details-date">
-                  {console.log("product", product)}
                   <p style={{ color: "inherit" }}>{ddmmyyhhmm(new Date(attributes?.createdAt))}</p>
                 </div>
                 <div className="pro-details-list">

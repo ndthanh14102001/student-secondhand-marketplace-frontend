@@ -43,7 +43,7 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
             },
           },
           sort: {
-            name: "asc"
+            name: "desc"
           }
         }
       });

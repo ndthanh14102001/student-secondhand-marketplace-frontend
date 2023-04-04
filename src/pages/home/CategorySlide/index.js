@@ -7,8 +7,13 @@ import { IconButton } from "@mui/material";
 import CategoryItem from "./CategoryItem";
 import axios from "axios";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCategoryFilter } from "../../../redux/actions/filterActions";
 
 const CategorySlide = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
   const [categories, setCategories] = useState([]);
   // swiper slider settings
   useEffect(() => {
@@ -22,7 +27,10 @@ const CategorySlide = () => {
               }
             }
           },
-          populate: "*"
+          populate: "*",
+          sort: {
+            name: "desc"
+          }
         }
       });
       if (response?.data?.data) {
@@ -34,10 +42,10 @@ const CategorySlide = () => {
   const thumbnailSwiperParams = {
     spaceBetween: 10,
     slidesPerView: 5,
-    loopedSlides: 5,
+    // loopedSlides: 5,
     touchRatio: 1,
     freeMode: true,
-    loop: true,
+    // loop: true,
     navigation: {
       nextEl: ".swiper-button-mui-next",
       prevEl: ".swiper-button-mui-prev"
@@ -65,18 +73,21 @@ const CategorySlide = () => {
         }}><ArrowForwardIosIcon /></IconButton>
     )
   };
-
+  const handleClickCategoryItem = (category) => {
+    dispatch(setCategoryFilter(category))
+    history.push("/category");
+  }
   return (
     <Fragment>
       <div className="product-area" style={{ marginTop: "3rem", marginBottom: "3rem" }}>
         <div className="container">
-          {categories.length > 0 && <Swiper {...thumbnailSwiperParams}>
+          {categories.length > 0 && <Swiper {...thumbnailSwiperParams} >
             {
               categories.map((category, key) => {
                 const attributes = category?.attributes;
                 const image = attributes?.image?.data?.attributes?.url;
                 return (
-                  <div key={key}>
+                  <div key={key} onClick={() => handleClickCategoryItem(category)}>
                     <CategoryItem name={attributes.name} image={image && process.env.REACT_APP_SERVER_ENDPOINT + image} />
                   </div>
                 );

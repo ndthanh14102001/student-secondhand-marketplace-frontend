@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { setActiveSort } from "../../helpers/product";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setCategoryFilter } from "../../redux/actions/filterActions";
 // const ChildsCategoires = ({ attributes }) => {
 //   const dispatch = useDispatch();
@@ -37,20 +37,26 @@ import { setCategoryFilter } from "../../redux/actions/filterActions";
 export const ALL_CATEGORY = "All Category"
 const ShopCategories = ({ categories, getSortParams }) => {
   const dispatch = useDispatch();
+  const categoriesFilter = useSelector(state => state.filter.category);
   const checkboxCategoryRef = useRef();
-  useLayoutEffect(() => {
-    checkboxCategoryRef.current.click();
-  }, []);
+  const [firstLoad, setFirsLoad] = useState(true);
+  useEffect(() => {
+    if (checkboxCategoryRef.current?.click) {
+      checkboxCategoryRef.current.click();
+    }
+
+    console.log("checkboxCategoryRef", checkboxCategoryRef)
+  }, [firstLoad]);
   return (
     <div className="sidebar-widget">
       <h4 className="pro-sidebar-title">Danh mục </h4>
       <div className="sidebar-widget-list mt-30">
         {categories ? (
           <ul>
-            <li>
+            <li key={ALL_CATEGORY}>
               <div className="sidebar-widget-list-left">
                 <button
-                  ref={checkboxCategoryRef}
+                  ref={categoriesFilter === ALL_CATEGORY ? checkboxCategoryRef : null}
                   onClick={e => {
                     // getSortParams("category", "");
                     dispatch(setCategoryFilter(ALL_CATEGORY));
@@ -64,11 +70,15 @@ const ShopCategories = ({ categories, getSortParams }) => {
             {categories.map((category, key) => {
               const attributes = category?.attributes;
               const childsCategories = attributes?.children?.data;
+              if (categoriesFilter?.id === category?.id && firstLoad) {
+                setFirsLoad(false)
+              }
               return (
                 <>
                   <li key={key}>
                     <div className="sidebar-widget-list-left">
                       <button
+                        ref={categoriesFilter?.id === category?.id ? checkboxCategoryRef : null}
                         onClick={e => {
                           // getSortParams("category", category);
                           dispatch(setCategoryFilter(category));
@@ -83,9 +93,13 @@ const ShopCategories = ({ categories, getSortParams }) => {
                   </li>
                   {/* <ChildsCategoires attributes={attributes} /> */}
                   {childsCategories && childsCategories.map((child) => {
+                    if (categoriesFilter?.id === child?.id && firstLoad) {
+                      setFirsLoad(false)
+                    }
                     return <li key={child?.id} style={{ marginLeft: "2rem" }}>
                       <div className="sidebar-widget-list-left">
                         <button
+                          ref={categoriesFilter?.id === child?.id ? checkboxCategoryRef : null}
                           onClick={(e) => {
                             dispatch(setCategoryFilter(child));
                             setActiveSort(e);

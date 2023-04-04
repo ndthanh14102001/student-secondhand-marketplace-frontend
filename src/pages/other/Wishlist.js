@@ -30,7 +30,6 @@ const Wishlist = ({
   });
   const { addToast } = useToasts();
   const { pathname } = location;
-  console.log("wishlistItems", wishlistItems);
   return (
     <Fragment>
       <MetaTags>
