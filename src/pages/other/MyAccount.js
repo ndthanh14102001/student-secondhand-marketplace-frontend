@@ -1,14 +1,78 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment,useCallback,useState } from "react";
+import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import { rememberLogin } from "../../utils/userLoginStorage";
 
 const MyAccount = ({ location }) => {
   const { pathname } = location;
+
+  const user = getUserLogin();
+
+  const { addToast } = useToasts();
+
+  const [readonly, setReadonly] = useState(true);
+
+  const [inputValue, setInputValue] = useState({
+    username: user.user.username,
+    fullName: user.user.fullName,
+    email: user.user.email,
+    address: user.user.address,
+    phone: user.user.phone,
+    university: user.user.university
+  });
+
+  const [buttonPressed, setButtonPressed] = useState(false);
+
+  const [statusProfile, setStatusProfile] = useState(0);
+  const [isChangeInput, setIsChangeInput] = useState(false);
+
+  const handleInputChange = useCallback(({target: {name, value}}) => {
+    setInputValue((prevData) => ({ ...prevData, [name]: value}))
+    setIsChangeInput(true);
+  }, []);
+
+  const handleChangeProfile =  async() =>{
+    if(statusProfile === 0){
+      setReadonly(false);
+      setButtonPressed(true);
+      setStatusProfile(1);
+    }
+    else if(statusProfile === 1){
+      if(isChangeInput){
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+        method: "put",
+        data: {
+          username: inputValue.username,
+          fullName: inputValue.fullName,
+          email: inputValue.email,
+          address: inputValue.address,
+          phone: inputValue.phone,
+          university: inputValue.university
+        }
+      })
+
+      if (response.type === RESPONSE_TYPE) {
+        addToast("thay đổi thông tin cá nhân thành công", {
+          appearance: "success",
+          autoDismiss: true
+        });
+        // rememberLogin(response.data?.jwt, response.data?.user);
+      }
+    } 
+      setReadonly(true);
+      setButtonPressed(false);
+      setStatusProfile(0);
+    }
+  }
 
   return (
     <Fragment>
@@ -50,38 +114,44 @@ const MyAccount = ({ location }) => {
                             <div className="row">
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>First Name</label>
-                                  <input type="text" />
+                                  <label>User Name</label>
+                                  <input type="text" name="username" value={inputValue.username} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>Last Name</label>
-                                  <input type="text" />
+                                  <label>Full Name</label>
+                                  <input type="text" name="fullName" value={inputValue.fullName} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>Email Address</label>
-                                  <input type="email" />
+                                  <label>Email </label>
+                                  <input id="email" name="email"  type="email" value={inputValue.email} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                </div>
+                              </div>
+                              <div className="col-lg-12 col-md-12">
+                                <div className="billing-info">
+                                  <label>Address</label>
+                                  <input id="address" name="address" type="email" value={inputValue.address} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Telephone</label>
-                                  <input type="text" />
+                                  <input id="phone" name="phone" type="text" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>Fax</label>
-                                  <input type="text" />
+                                  <label>university</label>
+                                  <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="submit">Continue</button>
+                                <button type="button" onClick={handleChangeProfile}>Change</button>
                               </div>
                             </div>
                           </div>
