@@ -19,7 +19,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc }) => {
                 <Nav.Link eventKey="productDescription">Mô tả</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="productReviews">Bình luận(2)</Nav.Link>
+                <Nav.Link disabled eventKey="productReviews">Bình luận(2)</Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content className="description-review-bottom">
