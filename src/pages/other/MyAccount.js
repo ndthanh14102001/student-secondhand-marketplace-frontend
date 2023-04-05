@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment,useCallback,useState,useEffect } from "react";
+import React, { Fragment, useCallback, useState, useEffect } from "react";
 import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
@@ -37,6 +37,7 @@ const MyAccount = ({ location }) => {
   const [isChangeInput, setIsChangeInput] = useState(false);
   const [isChangeAvatar, setIsChangeAvatar] = useState(false);
   const [urlAvatar, setUrlAvatar] = useState();
+  const [fileAvatarInput, setFileAvatarInput] = useState(null);
 
   async function fetchData() {
     const response = await callApi({
@@ -47,74 +48,71 @@ const MyAccount = ({ location }) => {
       setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
     }
   }
-  
+
   useEffect(() => {
     fetchData();
   }, []);
 
-  const handleInputChange = useCallback(({target: {name, value}}) => {
-    setInputValue((prevData) => ({ ...prevData, [name]: value}))
+  const handleInputChange = useCallback(({ target: { name, value } }) => {
+    setInputValue((prevData) => ({ ...prevData, [name]: value }))
     setIsChangeInput(true);
   }, []);
 
-  const handleChangeProfile =  async() =>{
-    if(statusProfile === 0){
+  const handleChangeProfile = async () => {
+    if (statusProfile === 0) {
       setReadonly(false);
       setButtonPressed(true);
       setStatusProfile(1);
     }
-    else if(statusProfile === 1){
+    else if (statusProfile === 1) {
       let toast = 0;
-      if(isChangeInput){
-      const response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
-        method: "put",
-        data: {
-          username: inputValue.username,
-          fullName: inputValue.fullName,
-          email: inputValue.email,
-          address: inputValue.address,
-          phone: inputValue.phone,
-          university: inputValue.university
-        },
-        // headers: {
-        //   Authorization: user.token,
-        // }
-      })
-       if (response.type === RESPONSE_TYPE) {
-        toast++;
-        updateUser(response.data);
+      if (isChangeInput) {
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+          method: "put",
+          data: {
+            username: inputValue.username,
+            fullName: inputValue.fullName,
+            email: inputValue.email,
+            address: inputValue.address,
+            phone: inputValue.phone,
+            university: inputValue.university
+          },
+          // headers: {
+          //   Authorization: user.token,
+          // }
+        })
+        if (response.type === RESPONSE_TYPE) {
+          toast++;
+          updateUser(response.data);
+        }
       }
-    } 
-    if(isChangeAvatar){
+      if (isChangeAvatar) {
 
-      let formData = new FormData();
-      formData.append('files',urlAvatar ); 
-      await axios.post(process.env.REACT_APP_API_ENDPOINT + "/upload", formData, {
+        let formData = new FormData();
+        formData.append('files', fileAvatarInput);
+
+        const response1 = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/upload",
+          method: "post",
+          data: formData,
           headers: { 'Content-Type': 'multipart/form-data' },
         })
+        if (response1.type === RESPONSE_TYPE) {
+          toast++;
+        }
+        // console.log(response1)
+      }
+      if (toast > 0) {
+        addToast("thay đổi thông tin cá nhân thành công", {
+          appearance: "success",
+          autoDismiss: true
+        });
+      }
 
-      // const response1 = await callApi({
-      //   url: process.env.REACT_APP_API_ENDPOINT + "/upload" ,
-      //   method: "post",
-      //   data: {formData},
-      //   headers: { 'Content-Type': 'multipart/form-data' },
-      // })
-      // if (response1.type === RESPONSE_TYPE) {
-        
-      // }
-      // console.log(response1)
-    }
-    if(toast > 0){
-      addToast("thay đổi thông tin cá nhân thành công", {
-        appearance: "success",
-        autoDismiss: true
-      });
-    }
-
-    setReadonly(true);
-    setButtonPressed(false);
-    setStatusProfile(0);
+      setReadonly(true);
+      setButtonPressed(false);
+      setStatusProfile(0);
     }
   }
 
@@ -124,6 +122,7 @@ const MyAccount = ({ location }) => {
     input.accept = 'image/*';
     input.onchange = (event) => {
       const file = event.target.files[0];
+      setFileAvatarInput(file);
       if (file) {
         const reader = new FileReader();
         reader.onload = () => {
@@ -175,18 +174,18 @@ const MyAccount = ({ location }) => {
                               <h5>Your Personal Details</h5>
                             </div>
                             <div className="row">
-                            <div className="col-lg-12 col-md-12">
+                              <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <Avatar sx={{ 
+                                  <Avatar sx={{
                                     width: 150,
                                     height: 150,
                                     m: "auto",
-                                   }} 
-                                   alt="avatar" 
-                                   src={urlAvatar? urlAvatar: "abc"} 
-                                   onClick={readonly? null : handleOpenImage}
-                                   className={buttonPressed ? "input-style-active pointer" : ""}
-                                   />
+                                  }}
+                                    alt="avatar"
+                                    src={urlAvatar ? urlAvatar : "abc"}
+                                    onClick={readonly ? null : handleOpenImage}
+                                    className={buttonPressed ? "input-style-active pointer" : ""}
+                                  />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
@@ -198,31 +197,31 @@ const MyAccount = ({ location }) => {
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Full Name</label>
-                                  <input type="text" name="fullName" value={inputValue.fullName} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input type="text" name="fullName" value={inputValue.fullName} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Email </label>
-                                  <input id="email" name="email"  type="email" value={inputValue.email} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="email" name="email" type="email" value={inputValue.email} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Address</label>
-                                  <input id="address" name="address" type="email" value={inputValue.address} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="address" name="address" type="email" value={inputValue.address} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Telephone</label>
-                                  <input id="phone" name="phone" type="text" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="phone" name="phone" type="text" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>university</label>
-                                  <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange}  className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                 </div>
                               </div>
                             </div>
