@@ -34,10 +34,16 @@ const ProductGrid = ({
               id: {
                 $eq: category
               }
+            },
+            status: {
+              $eq: "onSale"
             }
           }
         }
       });
+      if (response.type === RESPONSE_TYPE) {
+        setProductList(response.data?.data)
+      }
     }
     const getProductListHome = async () => {
       const response = await callApi({
@@ -50,11 +56,19 @@ const ProductGrid = ({
           },
           populate: {
             userId: {
-              populate: "avatar"
+              populate: "*"
             },
             category: true,
             images: true
           },
+          filters: {
+            status: {
+              $eq: "onSale"
+            }
+          },
+          sort: {
+            createdAt: "desc"
+          }
         }
       });
       if (response.type === RESPONSE_TYPE) {

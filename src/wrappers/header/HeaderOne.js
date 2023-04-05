@@ -31,19 +31,16 @@ const HeaderOne = ({
 
   return (
     <header
-      className={`header-area clearfix ${headerBgClass ? headerBgClass : ""} ${
-        headerPositionClass ? headerPositionClass : ""
-      }`}
+      className={`header-area clearfix ${headerBgClass ? headerBgClass : ""} ${headerPositionClass ? headerPositionClass : ""
+        }`}
     >
       <div
-        className={` ${
-          headerPaddingClass ? headerPaddingClass : ""
-        } sticky-bar header-res-padding clearfix ${
-          scroll > headerTop ? "stick" : ""
-        }`}
+        className={` ${headerPaddingClass ? headerPaddingClass : ""
+          } sticky-bar header-res-padding clearfix ${scroll > headerTop ? "stick" : ""
+          }`}
       >
         <div className={layout === "container-fluid" ? layout : "container"}>
-          <div className="row">
+          <div className="row" style={{ alignItems: "center" }}>
             <div className="col-xl-2 col-lg-2 col-md-6 col-4">
               {/* header logo */}
               <Logo imageUrl="/assets/img/logo/logo.png" logoClass="logo" />

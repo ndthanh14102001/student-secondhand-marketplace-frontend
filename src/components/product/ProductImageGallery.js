@@ -6,7 +6,7 @@ import Swiper from "react-id-swiper";
 const ProductImageGallery = ({ product }) => {
   const [gallerySwiper, getGallerySwiper] = useState(null);
   const [thumbnailSwiper, getThumbnailSwiper] = useState(null);
-
+  const imagesPorduct = product?.attributes?.images?.data;
   // effect for swiper slider synchronize
   useEffect(() => {
     if (
@@ -57,7 +57,7 @@ const ProductImageGallery = ({ product }) => {
   return (
     <Fragment>
       <div className="product-large-image-wrapper">
-        {product.discount || product.new ? (
+        {/* {product.discount || product.new ? (
           <div className="product-img-badges">
             {product.discount ? (
               <span className="pink">-{product.discount}%</span>
@@ -68,16 +68,17 @@ const ProductImageGallery = ({ product }) => {
           </div>
         ) : (
           ""
-        )}
+        )} */}
         <LightgalleryProvider>
           <Swiper {...gallerySwiperParams}>
-            {product.image &&
-              product.image.map((single, key) => {
+            {imagesPorduct && Array.isArray(imagesPorduct) &&
+              imagesPorduct.map((single, key) => {
+                const singleUrl = single?.attributes?.url;
                 return (
                   <div key={key}>
                     <LightgalleryItem
                       group="any"
-                      src={process.env.PUBLIC_URL + single}
+                      src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
                     >
                       <button>
                         <i className="pe-7s-expand1"></i>
@@ -85,7 +86,7 @@ const ProductImageGallery = ({ product }) => {
                     </LightgalleryItem>
                     <div className="single-image">
                       <img
-                        src={process.env.PUBLIC_URL + single}
+                        src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
                         className="img-fluid"
                         alt=""
                       />
@@ -98,13 +99,14 @@ const ProductImageGallery = ({ product }) => {
       </div>
       <div className="product-small-image-wrapper mt-15">
         <Swiper {...thumbnailSwiperParams}>
-          {product.image &&
-            product.image.map((single, key) => {
+          {imagesPorduct && Array.isArray(imagesPorduct) &&
+            imagesPorduct.map((single, key) => {
+              const singleUrl = single?.attributes?.url;
               return (
                 <div key={key}>
                   <div className="single-image">
                     <img
-                      src={process.env.PUBLIC_URL + single}
+                      src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
                       className="img-fluid"
                       alt=""
                     />
