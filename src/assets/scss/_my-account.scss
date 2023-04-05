@@ -102,6 +102,9 @@
         box-shadow: $shadow-offset-x $shadow-offset-y $shadow-blur $shadow-spread rgba($shadow-color, $shadow-opacity);
 
       }
+      .pointer{
+        cursor: pointer;
+      }
     }
     .billing-back-btn {
       display: flex;
