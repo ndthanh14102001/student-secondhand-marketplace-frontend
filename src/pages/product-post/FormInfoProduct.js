@@ -8,11 +8,34 @@ import {
   Select,
   TextField
 } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import validator from 'validator';
+import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
+export function MyListSubheader(
+  props
+) {
+  const { muiSkipListHighlight, ...other } = props;
+  return <ListSubheader {...other} />;
+}
+const renderSelectGroup = category => {
+  const attributesCategory = category?.attributes;
+  const childs = attributesCategory?.children?.data;
+  const childItems = childs.map(child => {
+    const attributesChild = child?.attributes;
+    return <MenuItem
+      sx={{ marginLeft: "1rem" }}
+      value={child?.id}
+      key={child?.id}
+    >
+      {attributesChild?.name}
+    </MenuItem>
+  });
+  return [<ListSubheader>{attributesCategory?.name}</ListSubheader>, childItems];
+};
 const ActionStyles = {
   flex: 1
 }
+
 const InputProductInfo = (props) => {
   return (
     <Box
@@ -32,15 +55,48 @@ const InputProductInfo = (props) => {
     </Box>
   );
 };
-const FormInfoProduct = () => {
-  const [price, setPrice] = useState(0);
+const FormInfoProduct = ({ categoryChoose, setCategoryChoose, price, setPrice }) => {
+
+  const [categories, setCategories] = useState([]);
+
+  console.log("categoryChoose", categoryChoose)
   const handleChangePrice = (e) => {
     if (validator.isNumeric(e.target.value)) {
       setPrice(e.target.value)
     }
   };
+  useEffect(() => {
+    const getAllCategory = async () => {
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/categories",
+        method: "get",
+        params: {
+          filters: {
+            parent: {
+              id: {
+                $null: true
+              }
+            }
+          },
+          populate: {
+            children: {
+              populate: "children"
+            },
+          },
+          sort: {
+            name: "desc"
+          }
+        }
+      });
+      if (response.type === RESPONSE_TYPE) {
+        setCategories(response.data?.data);
+      }
+    }
+    getAllCategory();
+  }, []);
+
   return (
-    <Box>
+    <Box >
       <InputProductInfo label="Tên sản phẩm" required />
       <InputProductInfo
         required
@@ -52,24 +108,29 @@ const FormInfoProduct = () => {
         marginBottom: "1rem"
       }} fullWidth>
         <InputLabel htmlFor="category-select">Danh mục</InputLabel>
-        <Select defaultValue="" id="category-select" label="Danh mục">
-          <ListSubheader>Danh mục 1</ListSubheader>
-          <MenuItem value={1}>Option 1</MenuItem>
-          <MenuItem value={2}>Option 2</MenuItem>
-          <ListSubheader>Danh mục 2</ListSubheader>
-          <MenuItem value={3}>Option 3</MenuItem>
-          <MenuItem value={4}>Option 4</MenuItem>
+        <Select
+          id="category-select"
+          label="Danh mục"
+          onChange={(e) => {
+            setCategoryChoose(e.target.value)
+          }}
+          value={categoryChoose}
+        >
+          {categories && categories.map((category) => {
+            return renderSelectGroup(category);
+          })}
         </Select>
       </FormControl>
+
       <InputProductInfo required label="Mô tả" multiline rows={4} />
       <Box sx={{
         display: "flex",
         justifyContent: "space-between"
       }}>
-        <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }}>Xem trước</Button>
-        <Button variant='contained' sx={ActionStyles} >Đăng bán</Button>
+        <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }} type="button">Xem trước</Button>
+        <Button variant='contained' sx={ActionStyles} type="submit" >Đăng bán</Button>
       </Box>
-    </Box>
+    </Box >
   )
 }
 

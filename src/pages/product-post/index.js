@@ -1,4 +1,4 @@
-import { Grid } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import React, { Fragment } from 'react'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
 import { MetaTags } from 'react-meta-tags'
@@ -7,9 +7,16 @@ import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
 import FormInfoProduct from './FormInfoProduct';
 import ImageUpload from './ImageUpload';
+import { useState } from 'react';
 
 const ProductPost = () => {
   const { pathname } = useLocation();
+  const [price, setPrice] = useState(0);
+  const [categoryChoose, setCategoryChoose] = useState("");
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    alert("submit")
+  }
   return (
     <Fragment>
       <MetaTags>
@@ -28,10 +35,17 @@ const ProductPost = () => {
         <div className="product-area pt-60 pb-60">
           <div className="container">
             <div className="row">
-              <Grid container spacing={2}>
-                <Grid item xs={4}><ImageUpload /></Grid>
-                <Grid item xs={8}><FormInfoProduct /></Grid>
-              </Grid>
+              <Box sx={{ width: "100%" }} component={"form"} onSubmit={handleSubmit}>
+                <Grid container spacing={2}>
+                  <Grid item xs={4}><ImageUpload /></Grid>
+                  <Grid item xs={8}>
+                    <FormInfoProduct price={price} setPrice={setPrice}
+                      categoryChoose={categoryChoose}
+                      setCategoryChoose={setCategoryChoose}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
             </div>
           </div>
         </div>

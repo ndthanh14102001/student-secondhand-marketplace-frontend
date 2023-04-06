@@ -65,7 +65,7 @@ const ImageUpload = () => {
               width: "60px",
             }}
           />
-          <Typography fontWeight={"bold"}> Đăng từ 1 đến 6 hình ảnh</Typography>
+          <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
         </Box>}
         {files.length > 0}
         {files.length > 0 && <Grid container spacing={2}>
