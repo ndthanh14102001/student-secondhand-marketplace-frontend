@@ -1,5 +1,4 @@
 import axios from "axios";
-const FormData = require('form-data');
 
 const METHOD_MUST_DATA = ["post", "put", "patch"];
 const METHOD_MUST_NOT_DATA = ["request", "get", "delete", "head", "options"];

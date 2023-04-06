@@ -12,6 +12,7 @@ import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 
+
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -35,6 +36,7 @@ const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
+const ProductUpdate = lazy(() => import("./pages/product-update"));
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -162,6 +164,12 @@ const App = (props) => {
                   <Route
                     path={process.env.PUBLIC_URL + "/product-post"}
                     component={ProductPost}
+                  />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/product-update/:id"}
+                    render={(routeProps) => (
+                      <ProductUpdate {...routeProps} key={routeProps.match.params.id} updatePage={true} />
+                    )}
                   />
                   <Route
                     path={process.env.PUBLIC_URL + "/login-register"}

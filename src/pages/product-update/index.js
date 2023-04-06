@@ -1,8 +1,8 @@
-import { Box, Grid, colors } from '@mui/material';
+import { Box, Grid } from '@mui/material';
 import React, { Fragment, useEffect } from 'react'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
 import { MetaTags } from 'react-meta-tags'
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
 import FormInfoProduct from './FormInfoProduct';
@@ -24,18 +24,63 @@ const PRODUCT_INFO_INIT_STATE = {
   name: "",
   categoryChoose: "",
   images: [],
+  imagesBeforeUpdate: [],
+  status: "",
   isValidPrice: true,
   isValidDescription: true,
   isValidName: true,
   isValidCategoryChoose: true,
   isValidImages: true,
 }
-const ProductPost = () => {
+const ProductUpdate = ({ match }) => {
+  const productId = match.params.id
 
+  const history = useHistory();
   const dispatch = useDispatch();
   const { pathname } = useLocation();
   const [productInfo, setProductInfo] = useState(PRODUCT_INFO_INIT_STATE);
   const { addToast } = useToasts();
+  useEffect(() => {
+    dispatch(onOpenModalLoading())
+    const getProductById = async () => {
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/products/" + productId,
+        method: "get",
+        params: {
+          populate: {
+            userId: {
+              populate: "*"
+            },
+            category: true,
+            images: true
+          }
+        }
+      });
+      if (response.type === RESPONSE_TYPE) {
+        const productData = response.data?.data;
+        const productDataAttributes = productData?.attributes;
+        setProductInfo(prev => ({
+          ...prev,
+          categoryChoose: productDataAttributes?.category?.data?.id,
+          name: productDataAttributes?.name,
+          price: productDataAttributes?.price,
+          description: productDataAttributes?.description,
+          images: productDataAttributes?.images?.data || [],
+          imagesBeforeUpdate: productDataAttributes?.images?.data || [],
+          status: productDataAttributes?.status
+        }));
+      }
+      dispatch(onCloseModalLoading())
+    }
+    getProductById();
+  }, [productId, dispatch])
+  const handleUpdateSuccess = () => {
+    addToast("Cập nhật thông tin thành công !", {
+      appearance: "success",
+      autoDismiss: true
+    });
+    history.push(process.env.PUBLIC_URL + "/my-products")
+  }
   const isValidFormInput = () => {
     let isValidPrice = true;;
     let isValidName = true;;
@@ -83,11 +128,37 @@ const ProductPost = () => {
 
     return result;
   }
-  const handleCreateProduct = async (user) => {
+  const handleDeleteFileInApi = async (productImagesDelete) => {
+    for (let indexProductImagesDelete = 0; indexProductImagesDelete < productImagesDelete.length; indexProductImagesDelete++) {
+      const imageProductDelete = productImagesDelete[indexProductImagesDelete];
+      console.log("delete");
+      await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/upload/files/" + imageProductDelete?.id,
+        method: "delete",
+      })
+    }
+  }
+  const handleUpdateProduct = async (user) => {
     dispatch(onOpenModalLoading())
+    const imagesOld = [];
+    const imagesNew = [];
+    let productImagesDelete = productInfo.imagesBeforeUpdate;
+    for (let indexImages = 0; indexImages < productInfo.images.length; indexImages++) {
+      const image = productInfo.images[indexImages];
+      if (image?.id) {
+        imagesOld.push(image)
+        productImagesDelete = productImagesDelete.filter(imageBefore => imageBefore?.id !== image?.id)
+      } else {
+        imagesNew.push(image)
+      }
+    }
+
+    if (productImagesDelete.length > 0) {
+      await handleDeleteFileInApi(productImagesDelete);
+    }
     let response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/products",
-      method: "post",
+      url: process.env.REACT_APP_API_ENDPOINT + "/products/" + productId,
+      method: "put",
       data: {
         data: {
           name: productInfo.name,
@@ -95,36 +166,35 @@ const ProductPost = () => {
           category: productInfo.categoryChoose,
           price: productInfo.price,
           description: productInfo.description,
+          images: imagesOld.map(image => image?.id)
         }
       },
     })
 
     if (response.type === RESPONSE_TYPE) {
-      const productResponse = response.data?.data;
-      let formData = new FormData();
-      productInfo.images.forEach((image) => {
-        formData.append('files', image);
-      })
-      formData.append("ref", "api::product.product")
-      formData.append("refId", productResponse?.id)
-      formData.append("field", "images")
+      if (imagesNew.length > 0) {
+        let formData = new FormData();
+        imagesNew.forEach((image) => {
+          formData.append('files', image);
+        })
+        formData.append("ref", "api::product.product")
+        formData.append("refId", productId)
+        formData.append("field", "images")
 
-      response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/upload",
-        method: "post",
-        data: formData,
-        headers: { 'Content-Type': 'multipart/form-data' },
-      })
-      if (response.type === RESPONSE_TYPE) {
-        setProductInfo(PRODUCT_INFO_INIT_STATE)
-        addToast("Đăng bán Sản phẩm thành công !", {
-          appearance: "success",
-          autoDismiss: true
-        });
+        response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/upload",
+          method: "post",
+          data: formData,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+        if (response.type === RESPONSE_TYPE) {
+          handleUpdateSuccess();
+        } else {
+          dispatch(onShowPopupErrorBase(response));
+        }
       } else {
-        dispatch(onShowPopupErrorBase(response));
+        handleUpdateSuccess();
       }
-
     } else {
       dispatch(onShowPopupErrorBase(response));
     }
@@ -135,7 +205,7 @@ const ProductPost = () => {
     if (isValidFormInput()) {
       const user = getUserLogin()?.user;
       if (user) {
-        await handleCreateProduct(user)
+        await handleUpdateProduct(user)
       }
     }
   }
@@ -176,4 +246,4 @@ const ProductPost = () => {
   )
 }
 
-export default ProductPost
+export default ProductUpdate
