@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Avatar, Box, Grid, IconButton, Typography } from '@mui/material'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,22 +16,35 @@ const ImageUploadBoxStyle = {
   padding: "1rem",
   border: (theme) => "2px dashed " + theme.palette.primary.main
 }
-const ImageUpload = () => {
+const ImageUpload = ({ productInfo, setProductInfo }) => {
   const inputFileRef = useRef();
   const inputFileAddRef = useRef();
-  const [files, setFiles] = useState([]);
   const handleUploadImages = (e) => {
-    setFiles(Object.values(e.target.files));
+
+    setProductInfo(prev => ({
+      ...prev,
+      images: Object.values(e.target.files)
+    }));
   }
   const handleAddImage = (e) => {
-    setFiles(prev => [...prev, ...Object.values(e.target.files)]);
+    // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
+    setProductInfo(prev => ({
+      ...prev,
+      images: [...prev.images, ...Object.values(e.target.files)]
+    }));
   }
   const handleRemoveImage = (index) => {
-    setFiles(prev => {
-      return prev.filter((file, indexFile) => {
+    // setFiles(prev => {
+    //   return prev.filter((file, indexFile) => {
+    //     return index !== indexFile
+    //   });
+    // });
+    setProductInfo(prev => ({
+      ...prev,
+      images: prev.images.filter((file, indexFile) => {
         return index !== indexFile
-      });
-    });
+      })
+    }));
   };
   return (
     <>
@@ -52,7 +65,7 @@ const ImageUpload = () => {
         multiple
       />
       <Box height="100%">
-        {files.length === 0 && <Box
+        {productInfo.images.length === 0 && <Box
           onClick={() => inputFileRef.current.click()}
           sx={{
             height: "100%",
@@ -67,8 +80,8 @@ const ImageUpload = () => {
           />
           <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
         </Box>}
-        {files.length > 0}
-        {files.length > 0 && <Grid container spacing={2}>
+        {productInfo.images.length > 0}
+        {productInfo.images.length > 0 && <Grid container spacing={2}>
           <Grid item xs={3}>
             <Box
               onClick={() => inputFileAddRef.current.click()}
@@ -83,7 +96,7 @@ const ImageUpload = () => {
               }} />
             </Box>
           </Grid>
-          {files.map((file, index) => {
+          {productInfo.images.map((file, index) => {
             return <Grid item xs={3}>
               <Box sx={{ position: "relative" }}>
                 <IconButton

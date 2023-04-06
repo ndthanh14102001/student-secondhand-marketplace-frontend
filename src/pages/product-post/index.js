@@ -8,14 +8,57 @@ import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
 import FormInfoProduct from './FormInfoProduct';
 import ImageUpload from './ImageUpload';
 import { useState } from 'react';
+import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
+import { getUserLogin } from '../../utils/userLoginStorage';
 
 const ProductPost = () => {
   const { pathname } = useLocation();
-  const [price, setPrice] = useState(0);
-  const [categoryChoose, setCategoryChoose] = useState("");
-  const handleSubmit = (e) => {
+  const [productInfo, setProductInfo] = useState({
+    price: 0,
+    description: "",
+    name: "",
+    categoryChoose: "",
+    images: [],
+  });
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    alert("submit")
+
+    const user = getUserLogin()?.user;
+    if (user) {
+      let response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/products",
+        method: "post",
+        data: {
+          data: {
+            name: productInfo.name,
+            userId: user?.id,
+            category: productInfo.categoryChoose,
+            price: productInfo.price,
+            description: productInfo.description,
+          }
+        },
+      })
+
+      if (response.type === RESPONSE_TYPE) {
+        const productResponse = response.data?.data;
+        let formData = new FormData();
+        productInfo.images.forEach((image) => {
+          formData.append('files', image);
+        })
+        formData.append("ref", "api::product.product")
+        formData.append("refId", productResponse?.id)
+        formData.append("field", "images")
+
+        response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/upload",
+          method: "post",
+          data: formData,
+          headers: { 'Content-Type': 'multipart/form-data' },
+        })
+
+
+      }
+    }
   }
   return (
     <Fragment>
@@ -37,11 +80,9 @@ const ProductPost = () => {
             <div className="row">
               <Box sx={{ width: "100%" }} component={"form"} onSubmit={handleSubmit}>
                 <Grid container spacing={2}>
-                  <Grid item xs={4}><ImageUpload /></Grid>
+                  <Grid item xs={4}><ImageUpload productInfo={productInfo} setProductInfo={setProductInfo} /></Grid>
                   <Grid item xs={8}>
-                    <FormInfoProduct price={price} setPrice={setPrice}
-                      categoryChoose={categoryChoose}
-                      setCategoryChoose={setCategoryChoose}
+                    <FormInfoProduct productInfo={productInfo} setProductInfo={setProductInfo}
                     />
                   </Grid>
                 </Grid>

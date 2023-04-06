@@ -55,14 +55,17 @@ const InputProductInfo = (props) => {
     </Box>
   );
 };
-const FormInfoProduct = ({ categoryChoose, setCategoryChoose, price, setPrice }) => {
+const FormInfoProduct = ({ productInfo, setProductInfo }) => {
 
   const [categories, setCategories] = useState([]);
 
-  console.log("categoryChoose", categoryChoose)
   const handleChangePrice = (e) => {
     if (validator.isNumeric(e.target.value)) {
-      setPrice(e.target.value)
+      setProductInfo(prev => ({
+        ...prev,
+        price: e.target.value
+      }))
+
     }
   };
   useEffect(() => {
@@ -97,10 +100,13 @@ const FormInfoProduct = ({ categoryChoose, setCategoryChoose, price, setPrice })
 
   return (
     <Box >
-      <InputProductInfo label="Tên sản phẩm" required />
+      <InputProductInfo label="Tên sản phẩm" required onChange={(e) => setProductInfo(prev => ({
+        ...prev,
+        name: e.target.value
+      }))} />
       <InputProductInfo
         required
-        value={price}
+        value={productInfo.price}
         onChange={handleChangePrice}
         label="Giá"
       />
@@ -112,9 +118,12 @@ const FormInfoProduct = ({ categoryChoose, setCategoryChoose, price, setPrice })
           id="category-select"
           label="Danh mục"
           onChange={(e) => {
-            setCategoryChoose(e.target.value)
+            setProductInfo(prev => ({
+              ...prev,
+              categoryChoose: e.target.value
+            }))
           }}
-          value={categoryChoose}
+          value={productInfo.categoryChoose}
         >
           {categories && categories.map((category) => {
             return renderSelectGroup(category);
@@ -122,7 +131,13 @@ const FormInfoProduct = ({ categoryChoose, setCategoryChoose, price, setPrice })
         </Select>
       </FormControl>
 
-      <InputProductInfo required label="Mô tả" multiline rows={4} />
+      <InputProductInfo required label="Mô tả" multiline rows={4}
+        value={productInfo.description}
+        onChange={e => setProductInfo(prev => ({
+          ...prev,
+          description: e.target.value
+        }))}
+      />
       <Box sx={{
         display: "flex",
         justifyContent: "space-between"
