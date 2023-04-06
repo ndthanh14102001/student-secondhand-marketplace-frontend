@@ -23,14 +23,16 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
 
     setProductInfo(prev => ({
       ...prev,
-      images: Object.values(e.target.files)
+      images: Object.values(e.target.files),
+      isValidImages: true
     }));
   }
   const handleAddImage = (e) => {
     // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
     setProductInfo(prev => ({
       ...prev,
-      images: [...prev.images, ...Object.values(e.target.files)]
+      images: [...prev.images, ...Object.values(e.target.files)],
+      isValidImages: true
     }));
   }
   const handleRemoveImage = (index) => {
@@ -43,7 +45,8 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
       ...prev,
       images: prev.images.filter((file, indexFile) => {
         return index !== indexFile
-      })
+      }),
+      isValidImages: true
     }));
   };
   return (

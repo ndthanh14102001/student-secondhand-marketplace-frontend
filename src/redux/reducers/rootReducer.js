@@ -9,6 +9,7 @@ import modalLoadingReducer from "./modalLoadingReducer";
 import userStorageReducer from "./userStorage";
 import popupReducer from "./popupReducer";
 import filterReducer from "./filterReducer"
+import { popupErrorBaseReducer } from "./popupErrorBase";
 
 const rootReducer = combineReducers({
   multilanguage: createMultilanguageReducer({ currentLanguageCode: "en" }),
@@ -20,7 +21,8 @@ const rootReducer = combineReducers({
   modalLoading: modalLoadingReducer,
   userStorage: userStorageReducer,
   popup: popupReducer,
-  filter: filterReducer
+  filter: filterReducer,
+  popupErrorBase: popupErrorBaseReducer
 });
 
 export default rootReducer;

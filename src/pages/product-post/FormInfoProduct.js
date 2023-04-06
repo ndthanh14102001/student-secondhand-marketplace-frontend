@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   ListSubheader,
   MenuItem,
@@ -97,52 +98,72 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
     }
     getAllCategory();
   }, []);
-
+  const handleChangeName = (e) => setProductInfo(prev => ({
+    ...prev,
+    name: e.target.value,
+    isValidName: true,
+  }))
+  const handleChangeCategoryChoose = (e) => {
+    setProductInfo(prev => ({
+      ...prev,
+      categoryChoose: e.target.value,
+      isValidCategoryChoose: true
+    }))
+  }
+  const handleChangeDescription = e => setProductInfo(prev => ({
+    ...prev,
+    description: e.target.value,
+    isValidDescription: true,
+  }))
   return (
     <Box >
-      <InputProductInfo label="Tên sản phẩm" required onChange={(e) => setProductInfo(prev => ({
-        ...prev,
-        name: e.target.value
-      }))} />
+      <InputProductInfo
+        error={!productInfo.isValidName}
+        helperText={!productInfo.isValidName && "Tên sản phẩm phải lớn hơn hoặc bằng 6 ký tự"}
+        label="Tên sản phẩm"
+        required
+        value={productInfo.name}
+        onChange={handleChangeName} />
       <InputProductInfo
         required
         value={productInfo.price}
         onChange={handleChangePrice}
         label="Giá"
       />
-      <FormControl required sx={{
-        marginBottom: "1rem"
-      }} fullWidth>
+      <FormControl required
+        error={!productInfo.isValidCategoryChoose}
+        sx={{
+          marginBottom: "1rem"
+        }} fullWidth>
         <InputLabel htmlFor="category-select">Danh mục</InputLabel>
         <Select
           id="category-select"
           label="Danh mục"
-          onChange={(e) => {
-            setProductInfo(prev => ({
-              ...prev,
-              categoryChoose: e.target.value
-            }))
-          }}
+          onChange={handleChangeCategoryChoose}
           value={productInfo.categoryChoose}
         >
           {categories && categories.map((category) => {
             return renderSelectGroup(category);
           })}
         </Select>
+        {!productInfo.isValidCategoryChoose && <FormHelperText>Hãy chọn Danh mục</FormHelperText>}
       </FormControl>
 
-      <InputProductInfo required label="Mô tả" multiline rows={4}
+      <InputProductInfo
+        error={!productInfo.isValidDescription}
+        helperText={!productInfo.isValidDescription && "Mô tả phải lớn hơn hoặc bằng 10 từ"}
+        required
+        label="Mô tả"
+        multiline
+        rows={4}
         value={productInfo.description}
-        onChange={e => setProductInfo(prev => ({
-          ...prev,
-          description: e.target.value
-        }))}
+        onChange={handleChangeDescription}
       />
       <Box sx={{
         display: "flex",
         justifyContent: "space-between"
       }}>
-        <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }} type="button">Xem trước</Button>
+        <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }} disabled type="button">Xem trước</Button>
         <Button variant='contained' sx={ActionStyles} type="submit" >Đăng bán</Button>
       </Box>
     </Box >

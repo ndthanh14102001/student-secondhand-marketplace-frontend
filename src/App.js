@@ -9,6 +9,8 @@ import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 import ModalLoading from "./components/modal-loading";
 import Popup from "./components/Popup";
+import PopupErrorBase from "./components/popup-error-base";
+import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -45,6 +47,7 @@ const NotFound = lazy(() => import("./pages/other/NotFound"));
 const App = (props) => {
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
+  const popupErrorBase = useSelector(state => state.popupErrorBase);
   useEffect(() => {
     props.dispatch(
       loadLanguages({
@@ -69,10 +72,20 @@ const App = (props) => {
         onButtonCancelClick={popup.actions.clickCancelButton}
         content={popup.content}
       />
+
       <ModalLoading open={modalLoading.open} />
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
+            <PopupErrorBase
+              open={popupErrorBase.open}
+              onClose={() => {
+                props.dispatch(onClosePopupErrorBase());
+              }}
+              type={popupErrorBase.type}
+              title={popupErrorBase.title}
+              content={popupErrorBase.content}
+            />
             <ScrollToTop>
               <Suspense
                 fallback={
