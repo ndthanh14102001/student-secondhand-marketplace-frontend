@@ -1,18 +1,35 @@
+import { Box, IconButton, InputAdornment, TextField } from "@mui/material";
 import React from "react";
-
+import SearchIcon from '@mui/icons-material/Search';
+import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import { setNameFilter } from "../../redux/actions/filterActions";
 const ShopSearch = () => {
+  const dispatch = useDispatch();
+  const nameFilter = useSelector(state => state.filter.name)
+  const [searchValue, setSearchValue] = useState(nameFilter);
+  const handleClickSearch = () => {
+    dispatch(setNameFilter(searchValue.trim()));
+  }
   return (
-    <div className="sidebar-widget">
-      <h4 className="pro-sidebar-title">Tìm Kiếm </h4>
-      <div className="pro-sidebar-search mb-25 mt-25">
-        <form className="pro-sidebar-search-form" action="#">
-          <input type="text" placeholder="Tìm kiếm..." />
-          <button>
-            <i className="pe-7s-search" />
-          </button>
-        </form>
-      </div>
-    </div>
+    <Box mb="2rem">
+      <TextField
+        value={searchValue}
+        onChange={e => setSearchValue(e.target.value)}
+        fullWidth
+        label="Tìm kiếm..."
+        InputProps={{
+          endAdornment: <InputAdornment position="end">
+            <IconButton
+              onClick={handleClickSearch}
+              edge="end"
+            >
+              <SearchIcon />
+            </IconButton>
+          </InputAdornment>,
+        }}
+      />
+    </Box>
   );
 };
 

@@ -100,7 +100,7 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
 
   return (
     <Box >
-      <InputProductInfo label="Tên sản phẩm" required onChange={(e) => setProductInfo(prev => ({
+      <InputProductInfo value={productInfo.name} label="Tên sản phẩm" required onChange={(e) => setProductInfo(prev => ({
         ...prev,
         name: e.target.value
       }))} />

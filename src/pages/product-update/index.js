@@ -166,7 +166,8 @@ const ProductUpdate = ({ match }) => {
           category: productInfo.categoryChoose,
           price: productInfo.price,
           description: productInfo.description,
-          images: imagesOld.map(image => image?.id)
+          images: imagesOld.map(image => image?.id),
+          status: productInfo.status
         }
       },
     })
