@@ -14,16 +14,16 @@ import { connect } from "react-redux";
 import { Button } from "@mui/material";
 
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
-import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from "../../constants";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
+import { getProductImages } from "../../utils/handleData";
 function ProductModal(props) {
-  const { product } = props;
+  const { product, onHide } = props;
+
   const attributes = product?.attributes;
-  const images = attributes?.images?.data &&
-    Array.isArray(attributes?.images?.data) &&
-    attributes?.images?.data?.length > 0 &&
-    attributes?.images?.data;
-  const user = attributes?.userId?.data?.attributes;
+  const images = getProductImages(attributes) || product?.images;
+  const user = attributes?.userId?.data || product?.userId;
+
   const { finalproductprice } = props;
 
   const [gallerySwiper, getGallerySwiper] = useState(null);
@@ -99,7 +99,7 @@ function ProductModal(props) {
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.REACT_APP_SERVER_ENDPOINT + single?.attributes?.url}
+                              src={process.env.REACT_APP_SERVER_ENDPOINT + (single?.attributes?.url || single?.url)}
                               className="img-fluid"
                               alt=""
                             />
@@ -117,7 +117,7 @@ function ProductModal(props) {
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.REACT_APP_SERVER_ENDPOINT + single?.attributes?.url}
+                              src={process.env.REACT_APP_SERVER_ENDPOINT + (single?.attributes?.url || single?.url)}
                               className="img-fluid"
                               alt=""
                             />
@@ -130,7 +130,10 @@ function ProductModal(props) {
             </div>
             <div className="col-md-7 col-sm-12 col-xs-12">
               <div className="product-details-content quickview-content">
-                <h2>{attributes?.name || ""}</h2>
+                <h2>{attributes?.name || product?.name || ""}</h2>
+                {(product?.status === PRODUCT_SOLD_STATUS || attributes?.status === PRODUCT_SOLD_STATUS) && <div className="product-details-sold-status">
+                  <span>Đã bán</span>
+                </div>}
                 <div className="product-details-price">
                   <span >
                     {finalproductprice}
@@ -138,7 +141,7 @@ function ProductModal(props) {
                 </div>
 
                 <div className="pro-details-date">
-                  <p style={{ color: "inherit" }}>{ddmmyyhhmm(new Date(attributes?.createdAt))}</p>
+                  <p style={{ color: "inherit" }}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))}</p>
                 </div>
                 <div className="pro-details-list">
                   <p>{product.shortDescription}</p>
@@ -146,23 +149,19 @@ function ProductModal(props) {
 
                 <div className="pro-details-quality">
                   <div className="pro-details-cart btn-hover">
-                    {attributes?.status && attributes?.status === PRODUCT_ON_SALE_STATUS ? (
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText("0123456789");
-                          addToast("Đã copy số điện thoại", {
-                            appearance: "success",
-                            autoDismiss: true
-                          });
-                        }}
-                      >
-                        <PhoneInTalkIcon />
-                        {" "}
-                        {user?.phone}
-                      </button>
-                    ) : (
-                      <button disabled>Out of Stock</button>
-                    )}
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText("0123456789");
+                        addToast("Đã copy số điện thoại", {
+                          appearance: "success",
+                          autoDismiss: true
+                        });
+                      }}
+                    >
+                      <PhoneInTalkIcon />
+                      {" "}
+                      {user?.phone || user?.attributes?.phone}
+                    </button>
                   </div>
                   <div className="pro-details-cart btn-hover">
                     <button
@@ -189,7 +188,7 @@ function ProductModal(props) {
                   </div>
                 </div>
                 <div>
-                  <ProductOwnerInfo user={user} />
+                  <ProductOwnerInfo user={user} onHideModal={onHide} />
                 </div>
               </div>
             </div>

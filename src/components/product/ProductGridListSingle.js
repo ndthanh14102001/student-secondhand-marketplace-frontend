@@ -7,6 +7,8 @@ import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
 import { Avatar, Box, Button, Tooltip, Typography, styled } from "@mui/material";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { getProductImages } from "../../utils/handleData";
 
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
@@ -36,14 +38,10 @@ const ProductGridListSingle = ({
     style: "currency",
     currency: "VND",
   });
-  const finalProductPrice = formatter.format(attributes?.price || 0);
-  const images = attributes?.images?.data &&
-    Array.isArray(attributes?.images?.data) &&
-    attributes?.images?.data?.length > 0 &&
-    attributes?.images?.data;
-
-  const user = attributes?.userId?.data?.attributes;
-  const avatar = user?.avatar?.data?.attributes?.url;
+  const finalProductPrice = formatter.format(attributes?.price || product?.price || 0);
+  const images = getProductImages(attributes) || product?.images;
+  const user = attributes?.userId?.data?.attributes || product?.userId;
+  const avatar = user?.avatar?.data?.attributes?.url || user?.avatar?.url;
 
   return (
     <Fragment>
@@ -58,13 +56,13 @@ const ProductGridListSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && images[0]?.attributes?.url}`}
+                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && (images[0]?.attributes?.url || images[0]?.url)}`}
                 alt=""
               />
               {images && images?.length && images.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && images[1]?.attributes?.url}`}
+                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && (images[1]?.attributes?.url || images[1]?.url)}`}
                   alt=""
                 />
               ) : (
@@ -101,10 +99,10 @@ const ProductGridListSingle = ({
           </div>
           <div className="product-content">
             <div>
-              <Tooltip title={attributes?.name}>
+              <Tooltip title={attributes?.name || product?.name}>
                 <h3 className="product-name">
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {attributes?.name}
+                    {attributes?.name || product?.name}
                   </Link>
                 </h3>
               </Tooltip>
@@ -112,7 +110,7 @@ const ProductGridListSingle = ({
             <div className="product-price" >
               <span style={{ margin: 0 }}>{finalProductPrice} </span>
             </div>
-            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt))} </Typography>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))} </Typography>
             <BoxInfo>
               <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
               <Box sx={{
@@ -160,7 +158,7 @@ const ProductGridListSingle = ({
               <div className="shop-list-content">
                 <h3>
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {attributes.name}
+                    {attributes?.name || product?.name}
                   </Link>
                 </h3>
                 <div className="product-list-price">
@@ -182,7 +180,7 @@ const ProductGridListSingle = ({
                 )}
 
                 <div className=" d-flex align-items-center">
-                  {attributes.status && attributes.status === "onSale" ?
+                  {(attributes?.status && attributes?.status === PRODUCT_ON_SALE_STATUS) || (product?.status === PRODUCT_ON_SALE_STATUS) ?
                     <Button variant="contained" onClick={() => {
                       history.push(`${process.env.PUBLIC_URL}/product/${product.id}`)
                     }}>

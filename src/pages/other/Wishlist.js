@@ -14,7 +14,8 @@ import {
 import { addToCart } from "../../redux/actions/cartActions";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
 const Wishlist = ({
   location,
   cartItems,
@@ -24,10 +25,6 @@ const Wishlist = ({
   deleteFromWishlist,
   deleteAllFromWishlist
 }) => {
-  const formatter = new Intl.NumberFormat("vi", {
-    style: "currency",
-    currency: "VND",
-  });
   const { addToast } = useToasts();
   const { pathname } = location;
   return (
@@ -52,7 +49,7 @@ const Wishlist = ({
           <div className="container">
             {wishlistItems && wishlistItems.length >= 1 ? (
               <Fragment>
-                <h3 className="cart-page-title">Your wishlist items</h3>
+                <h3 className="cart-page-title">Danh sách sản phẩm yêu thích của bạn</h3>
                 <div className="row">
                   <div className="col-12">
                     <div className="table-content table-responsive cart-table-content">
@@ -62,12 +59,14 @@ const Wishlist = ({
                             <th>Hình ảnh</th>
                             <th>Tên sản phẩm</th>
                             <th>Giá</th>
+                            <th>Trạng thái</th>
                             <th>Hành động</th>
                           </tr>
                         </thead>
                         <tbody>
                           {wishlistItems.map((wishlistItem, key) => {
-                            const wishlistItemAtrributes = wishlistItem?.attributes;
+                            const wishlistItemAtrributes = wishlistItem?.attributes || wishlistItem;
+                            console.log("wishlistItemAtrributes", wishlistItemAtrributes)
                             // const discountedPrice = getDiscountPrice(
                             //   wishlistItem.price,
                             //   wishlistItem.discount
@@ -75,14 +74,12 @@ const Wishlist = ({
                             // const finalProductPrice = (
                             //   wishlistItem.price * currency.currencyRate
                             // ).toFixed(2);
-                            const finalProductPrice = formatter.format(wishlistItemAtrributes?.price);
+                            const finalProductPrice = getVietNamMoneyFormat(wishlistItemAtrributes?.price);
                             // const cartItem = cartItems.filter(
                             //   item => item.id === wishlistItem.id
                             // )[0];
-                            const wishlistItemImages = wishlistItemAtrributes?.images?.data &&
-                              Array.isArray(wishlistItemAtrributes?.images?.data) &&
-                              wishlistItemAtrributes?.images?.data?.length > 0 &&
-                              wishlistItemAtrributes?.images?.data;
+                            const wishlistItemImages = getProductImages(wishlistItemAtrributes) || wishlistItemAtrributes?.images;
+                            console.log("wishlistItemImages", wishlistItemImages)
                             return (
                               <tr key={key}>
                                 <td className="product-thumbnail">
@@ -97,7 +94,7 @@ const Wishlist = ({
                                       className="img-fluid"
                                       src={
                                         process.env.REACT_APP_SERVER_ENDPOINT +
-                                        wishlistItemImages[0]?.attributes?.url
+                                        (wishlistItemImages[0]?.attributes?.url || wishlistItemImages[0]?.url)
                                       }
                                       alt=""
                                     />
@@ -121,7 +118,11 @@ const Wishlist = ({
                                     {finalProductPrice}
                                   </span>
                                 </td>
-
+                                <td>
+                                  <span className={wishlistItemAtrributes?.status !== PRODUCT_ON_SALE_STATUS && "product-details-sold-status"}>
+                                    {wishlistItemAtrributes?.status === PRODUCT_ON_SALE_STATUS ? "Đang bán" : "Đã bán"}
+                                  </span>
+                                </td>
                                 {/* <td className="product-wishlist-cart">
                                   {wishlistItem.affiliateLink ? (
                                     <a

@@ -1,5 +1,4 @@
 import axios from "axios";
-const FormData = require('form-data');
 
 const METHOD_MUST_DATA = ["post", "put", "patch"];
 const METHOD_MUST_NOT_DATA = ["request", "get", "delete", "head", "options"];
@@ -44,47 +43,6 @@ const callApi = async ({ url, method, data, headers, params }) => {
 
   }
 };
-// const callApiUpload = async ({url, method, formData, headers, params}) =>{
-//   try{
-//     let response = {};
-//     const formData = new FormData();
-//    if (METHOD_MUST_DATA.includes(method)) {
-//     response = await axios[method](url, { headers, params });
-//    }
-//   }
-//   catch (error) {
-//     // eslint-disable-next-line no-console
-//     if (error.response) {
-//       return createResponse(ERROR_TYPE, error.response.status, error.response.data);
-//     }
-//     if (!window.navigator.onLine && !error.response && error.code === ERROR_NETWORK_AXIOS_STATUS) {
-//       return createResponse(ERROR_TYPE, NETWORK_ERROR, error);
-//     }
-//     return createResponse(ERROR_TYPE, SERVER_CONNECT_ERROR, error);
-
-//   }
-// }
-// Example
-// React.useEffect(() => {
-//   const testAPI = async () => {
-//     const result = await callApi({
-//       url: "http://localhost:8000/v1/auth/login",
-//       method: "post",
-//       data: {
-//         "username": "nguyenducthanh123",
-//         "password": "nguyenducthanh1233"
-//       }
-//     });
-//     if (result.type === RESPONSE_TYPE) {
-//       // Handle data receive from Server
-//       console.log("response", result);
-//     } else if (result.type === ERROR_TYPE) {
-//       // Handle Error
-//       console.log("error", result);
-//     }
-//   };
-//   testAPI();
-// }, []);
 export default callApi;
 export {
   NETWORK_ERROR,

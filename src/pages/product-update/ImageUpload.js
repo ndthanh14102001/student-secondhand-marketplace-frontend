@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRef } from 'react';
 import { Avatar, Box, Grid, IconButton, Typography } from '@mui/material'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
@@ -19,6 +19,7 @@ const ImageUploadBoxStyle = {
 const ImageUpload = ({ productInfo, setProductInfo }) => {
   const inputFileRef = useRef();
   const inputFileAddRef = useRef();
+  const [resetValueInput, setResetValueInput] = useState(false);
   const handleUploadImages = (e) => {
 
     setProductInfo(prev => ({
@@ -26,6 +27,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
       images: Object.values(e.target.files),
       isValidImages: true
     }));
+    setResetValueInput(prev => !prev)
   }
   const handleAddImage = (e) => {
     // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
@@ -69,6 +71,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
       />
       <input
         ref={inputFileRef}
+        key={resetValueInput || ''}
         onChange={handleUploadImages}
         hidden
         accept='image/*'
@@ -76,67 +79,67 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
         multiple
       />
       <Box height="100%">
-        {productInfo.images.length === 0 && <Box
-          onClick={() => inputFileRef.current.click()}
-          sx={{
-            height: "100%",
-            ...ImageUploadBoxStyle
-          }}>
-          <AddPhotoAlternateIcon
+        {(!productInfo.images || productInfo.images?.length === 0) ?
+          <Box
+            onClick={() => inputFileRef.current.click()}
             sx={{
-              color: (theme) => theme.palette.primary.main,
-              height: "60px",
-              width: "60px",
-            }}
-          />
-          <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
-        </Box>}
-        {productInfo.images.length > 0}
-        {productInfo.images.length > 0 && <Grid container spacing={2}>
-          <Grid item xs={3}>
-            <Box
-              onClick={() => inputFileAddRef.current.click()}
+              height: "100%",
+              ...ImageUploadBoxStyle
+            }}>
+            <AddPhotoAlternateIcon
               sx={{
-                height: "100%",
-                ...ImageUploadBoxStyle
-              }}>
-              <AddIcon sx={{
                 color: (theme) => theme.palette.primary.main,
-                height: "40px",
-                width: "40px",
-              }} />
-            </Box>
-          </Grid>
-          {productInfo.images.map((file, index) => {
-            return <Grid item xs={3}>
-              <Box sx={{ position: "relative" }}>
-                <IconButton
-                  onClick={() => handleRemoveImage(index)}
-                  sx={{
-                    zIndex: 100,
-                    position: "absolute",
-                    top: 0,
-                    right: 0,
-                    transform: "translate(40%, -50%)",
-                  }}>
-                  <CloseIcon />
-                </IconButton>
-                <Avatar
-                  src={handleShowImage(file)}
-                  variant="square"
-                  sx={{
-                    width: "80px", height: "80px",
-                    border: "1px solid #ccc",
-                    "& img": {
-                      objectFit: "contain",
-                      background: "#f7f7f7"
-                    }
-                  }}
-                />
+                height: "60px",
+                width: "60px",
+              }}
+            />
+            <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
+          </Box> :
+          <Grid container spacing={2}>
+            <Grid item xs={3}>
+              <Box
+                onClick={() => inputFileAddRef.current.click()}
+                sx={{
+                  height: "100%",
+                  ...ImageUploadBoxStyle
+                }}>
+                <AddIcon sx={{
+                  color: (theme) => theme.palette.primary.main,
+                  height: "40px",
+                  width: "40px",
+                }} />
               </Box>
-            </Grid>;
-          })}
-        </Grid>}
+            </Grid>
+            {productInfo.images.map((file, index) => {
+              return <Grid item xs={3} key={index}>
+                <Box sx={{ position: "relative" }}>
+                  <IconButton
+                    onClick={() => handleRemoveImage(index)}
+                    sx={{
+                      zIndex: 100,
+                      position: "absolute",
+                      top: 0,
+                      right: 0,
+                      transform: "translate(40%, -50%)",
+                    }}>
+                    <CloseIcon />
+                  </IconButton>
+                  <Avatar
+                    src={handleShowImage(file)}
+                    variant="square"
+                    sx={{
+                      width: "80px", height: "80px",
+                      border: "1px solid #ccc",
+                      "& img": {
+                        objectFit: "contain",
+                        background: "#f7f7f7"
+                      }
+                    }}
+                  />
+                </Box>
+              </Grid>;
+            })}
+          </Grid>}
       </Box >
     </>
   )

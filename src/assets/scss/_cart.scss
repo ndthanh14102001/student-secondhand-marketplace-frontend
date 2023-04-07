@@ -15,6 +15,9 @@ h3.cart-page-title {
 }
 
 .cart-table-content {
+  .product-details-sold-status {
+    color: #fe5252;
+  }
   table {
     border: 1px solid #ebebeb;
     thead > tr {
@@ -327,12 +330,12 @@ h3.cart-page-title {
           cursor: pointer;
 
           color: #242424;
-//background: #fff url("../../assets/img/icon-img/cart.png") no-repeat scroll right 18px center;
+          //background: #fff url("../../assets/img/icon-img/cart.png") no-repeat scroll right 18px center;
           border: 1px solid #ebebeb;
           box-shadow: none;
 
           -webkit-appearance: none;
-             -moz-appearance: none;
+          -moz-appearance: none;
         }
         input {
           height: 40px;

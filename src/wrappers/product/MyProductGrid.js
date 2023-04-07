@@ -1,14 +1,21 @@
+// Product Grid Two
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
-import { connect } from "react-redux";
+import React, { Fragment, useEffect, useState } from "react";
+import { connect, useDispatch } from "react-redux";
 import { getProducts } from "../../helpers/product";
 import ProductGridSingleTwo from "../../components/product/ProductGridSingleTwo";
 import { addToCart } from "../../redux/actions/cartActions";
 import { addToWishlist } from "../../redux/actions/wishlistActions";
 import { addToCompare } from "../../redux/actions/compareActions";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import { onShowPopupErrorBase } from "../../redux/actions/popupErrorBaseActions";
+import { useMemo } from "react";
+import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from "../../constants";
+import { PRODUCT_ON_SALE_KEY } from "../../pages/other/my-products/constants";
 
-const ProductGridTwo = ({
-  products,
+const MyProductGrid = ({
+  // products,
   currency,
   addToCart,
   addToWishlist,
@@ -19,11 +26,61 @@ const ProductGridTwo = ({
   sliderClassName,
   spaceBottomClass,
   colorClass,
-  titlePriceClass
+  titlePriceClass,
+  productStatus
 }) => {
+  const [products, setProducts] = useState([]);
+  console.log("products", products);
+  const productsShow = useMemo(() => {
+    if (productStatus === PRODUCT_ON_SALE_KEY) {
+      return products.filter(product => {
+        return product?.attributes?.status === PRODUCT_ON_SALE_STATUS
+      })
+    } else {
+      return products.filter(product => product?.attributes?.status === PRODUCT_SOLD_STATUS)
+    }
+  }, [productStatus, products])
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getAllMyProduct = async () => {
+      const user = getUserLogin()?.user;
+      if (user) {
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/products",
+          method: "get",
+          params: {
+            populate: {
+              images: {
+                populate: "*"
+              },
+              userId: {
+                populate: "*"
+              }
+            },
+            filters: {
+              userId: {
+                id: {
+                  $eq: user?.id
+                }
+              }
+            },
+            sort: {
+              updatedAt: "desc"
+            }
+          }
+        })
+        if (response.type === RESPONSE_TYPE) {
+          setProducts(response.data?.data);
+        } else {
+          dispatch(onShowPopupErrorBase(response));
+        }
+      }
+    }
+    getAllMyProduct();
+  }, [dispatch])
   return (
     <Fragment>
-      {products.map((product) => {
+      {productsShow.map((product) => {
         return (
           <ProductGridSingleTwo
             sliderClassName={sliderClassName}
@@ -56,7 +113,7 @@ const ProductGridTwo = ({
   );
 };
 
-ProductGridTwo.propTypes = {
+MyProductGrid.propTypes = {
   addToCart: PropTypes.func,
   addToCompare: PropTypes.func,
   addToWishlist: PropTypes.func,
@@ -68,7 +125,8 @@ ProductGridTwo.propTypes = {
   spaceBottomClass: PropTypes.string,
   colorClass: PropTypes.string,
   titlePriceClass: PropTypes.string,
-  wishlistItems: PropTypes.array
+  wishlistItems: PropTypes.array,
+  productStatus: PropTypes.number
 };
 
 const mapStateToProps = (state, ownProps) => {
@@ -114,4 +172,4 @@ const mapDispatchToProps = (dispatch) => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProductGridTwo);
+export default connect(mapStateToProps, mapDispatchToProps)(MyProductGrid);

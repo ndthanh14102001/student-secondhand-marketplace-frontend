@@ -1,7 +1,7 @@
 import React from 'react'
 import ProductGridSingleTwo from '../../../components/product/ProductGridSingleTwo';
-import ProductGridTwo from '../../../wrappers/product/ProductGridTwo';
-import { PRODUCT_ON_SELL_KEY } from './constants';
+import MyProductGrid from '../../../wrappers/product/MyProductGrid';
+import { PRODUCT_ON_SALE_KEY } from './constants';
 
 const ProductPostList = (props) => {
   const { children, value, index, ...other } = props;
@@ -15,8 +15,9 @@ const ProductPostList = (props) => {
       aria-labelledby={`products-tab-${index}`}
       {...other}
     >
-      <ProductGridTwo
-        category={value === PRODUCT_ON_SELL_KEY ? "fashion" : "men"}
+      <MyProductGrid
+        productStatus={value}
+        category={value === PRODUCT_ON_SALE_KEY ? "fashion" : "men"}
         type="bestSeller"
         limit={8}
         spaceBottomClass="mb-25" />

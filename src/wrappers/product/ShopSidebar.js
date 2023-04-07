@@ -1,5 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
+import { useDispatch } from "react-redux";
 import {
   getIndividualCategories,
   getIndividualTags,
@@ -16,16 +17,17 @@ import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import { useState } from "react";
 import ShopUniversityFilter, { ALL_UNIVERSITY } from "../../components/product/ShopUniversityFilter";
 import { UNIVERSITY_LIST } from "../../constants";
-
+import { onOpenModalLoading, onCloseModalLoading } from "../../redux/actions/modalLoadingActions"
 const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
   const uniqueCategories = getIndividualCategories(products);
   const uniqueColors = getIndividualColors(products);
   const uniqueSizes = getProductsIndividualSizes(products);
   const uniqueTags = getIndividualTags(products);
   const [categories, setCategories] = useState([]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const getAllCategory = async () => {
+      dispatch(onOpenModalLoading())
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/categories",
         method: "get",
@@ -50,14 +52,15 @@ const ShopSidebar = ({ products, getSortParams, sideSpaceClass }) => {
       if (response.type === RESPONSE_TYPE) {
         setCategories(response.data?.data);
       }
+      dispatch(onCloseModalLoading())
     }
     getAllCategory();
-  }, []);
+  }, [dispatch]);
   return (
     <div className={`sidebar-style ${sideSpaceClass ? sideSpaceClass : ""}`}>
       {/* shop search */}
       <ShopSearch />
-      <ShopUniversityFilter  />
+      <ShopUniversityFilter />
       {/* filter by categories */}
       {/* <ShopCategories
         categories={uniqueCategories}
