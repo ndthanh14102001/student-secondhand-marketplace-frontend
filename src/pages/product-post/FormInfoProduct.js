@@ -2,6 +2,7 @@ import {
   Box,
   Button,
   FormControl,
+  FormHelperText,
   InputLabel,
   ListSubheader,
   MenuItem,
@@ -97,22 +98,29 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
     }
     getAllCategory();
   }, []);
-
   return (
     <Box >
-      <InputProductInfo value={productInfo.name} label="Tên sản phẩm" required onChange={(e) => setProductInfo(prev => ({
-        ...prev,
-        name: e.target.value
-      }))} />
+      <InputProductInfo
+        error={!productInfo.isValidName}
+        helperText={!productInfo.isValidName && "Tên sản phẩm phải lớn hơn 6 chữ"}
+        value={productInfo.name}
+        label="Tên sản phẩm"
+        required onChange={(e) => setProductInfo(prev => ({
+          ...prev,
+          name: e.target.value,
+          isValidName: true
+        }))} />
       <InputProductInfo
         required
         value={productInfo.price}
         onChange={handleChangePrice}
         label="Giá"
       />
-      <FormControl required sx={{
-        marginBottom: "1rem"
-      }} fullWidth>
+      <FormControl
+        error={!productInfo.isValidCategoryChoose}
+        required sx={{
+          marginBottom: "1rem"
+        }} fullWidth>
         <InputLabel htmlFor="category-select">Danh mục</InputLabel>
         <Select
           id="category-select"
@@ -120,7 +128,8 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
           onChange={(e) => {
             setProductInfo(prev => ({
               ...prev,
-              categoryChoose: e.target.value
+              categoryChoose: e.target.value,
+              isValidCategoryChoose: true
             }))
           }}
           value={productInfo.categoryChoose}
@@ -129,13 +138,17 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
             return renderSelectGroup(category);
           })}
         </Select>
+        {!productInfo.isValidCategoryChoose && <FormHelperText>Hãy chọn danh mục </FormHelperText>}
       </FormControl>
 
       <InputProductInfo required label="Mô tả" multiline rows={4}
+        error={!productInfo?.isValidDescription}
+        helperText={!productInfo?.isValidDescription && "Mô tả phải lớn hơn hoặc bằng 10 từ"}
         value={productInfo.description}
         onChange={e => setProductInfo(prev => ({
           ...prev,
-          description: e.target.value
+          description: e.target.value,
+          isValidDescription: true
         }))}
       />
       <Box sx={{

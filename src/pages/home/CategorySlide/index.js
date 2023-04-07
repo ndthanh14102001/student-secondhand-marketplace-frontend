@@ -41,7 +41,7 @@ const CategorySlide = () => {
       dispatch(onCloseModalLoading())
     }
     getCategories();
-  }, [])
+  }, [dispatch])
   const thumbnailSwiperParams = {
     spaceBetween: 10,
     slidesPerView: 5,

@@ -30,6 +30,7 @@ const MyProductGrid = ({
   productStatus
 }) => {
   const [products, setProducts] = useState([]);
+  console.log("products", products);
   const productsShow = useMemo(() => {
     if (productStatus === PRODUCT_ON_SALE_KEY) {
       return products.filter(product => {
@@ -48,7 +49,14 @@ const MyProductGrid = ({
           url: process.env.REACT_APP_API_ENDPOINT + "/products",
           method: "get",
           params: {
-            populate: "*",
+            populate: {
+              images: {
+                populate: "*"
+              },
+              userId: {
+                populate: "*"
+              }
+            },
             filters: {
               userId: {
                 id: {

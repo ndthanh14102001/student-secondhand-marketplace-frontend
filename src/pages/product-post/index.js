@@ -47,7 +47,7 @@ const ProductPost = () => {
       result = false;
       isValidPrice = false
     }
-    if (productInfo.name.trim() < 6) {
+    if (productInfo.name.trim().length < 6) {
       result = false;
       isValidName = false
     }
