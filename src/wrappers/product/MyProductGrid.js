@@ -33,7 +33,6 @@ const MyProductGrid = ({
   const productsShow = useMemo(() => {
     if (productStatus === PRODUCT_ON_SALE_KEY) {
       return products.filter(product => {
-        console.log("product", product)
         return product?.attributes?.status === PRODUCT_ON_SALE_STATUS
       })
     } else {

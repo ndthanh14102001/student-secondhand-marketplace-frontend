@@ -131,7 +131,6 @@ const ProductUpdate = ({ match }) => {
   const handleDeleteFileInApi = async (productImagesDelete) => {
     for (let indexProductImagesDelete = 0; indexProductImagesDelete < productImagesDelete.length; indexProductImagesDelete++) {
       const imageProductDelete = productImagesDelete[indexProductImagesDelete];
-      console.log("delete");
       await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/upload/files/" + imageProductDelete?.id,
         method: "delete",

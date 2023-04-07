@@ -31,7 +31,7 @@ const ProductDescriptionInfo = ({
   addToCompare
 }) => {
   const attributes = product?.attributes;
-  const user = attributes?.userId?.data?.attributes;
+  const user = attributes?.userId?.data;
 
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
@@ -155,7 +155,7 @@ const ProductDescriptionInfo = ({
           >
             <PhoneInTalkIcon />
             {" "}
-            {user?.phone}
+            {user?.attributes?.phone}
           </button>
         </div>
         <div className="pro-details-cart btn-hover">

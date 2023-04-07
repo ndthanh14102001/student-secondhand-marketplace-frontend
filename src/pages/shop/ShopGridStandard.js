@@ -4,7 +4,6 @@ import MetaTags from 'react-meta-tags';
 import Paginator from 'react-hooks-paginator';
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { getSortedProducts } from '../../helpers/product';
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
 import ShopSidebar from '../../wrappers/product/ShopSidebar';
@@ -30,7 +29,7 @@ const ShopGridStandard = ({ location, products }) => {
     const [sortType, setSortType] = useState('');
     const [sortValue, setSortValue] = useState('');
     const [filterSortType, setFilterSortType] = useState('');
-    const [filterSortValue, setFilterSortValue] = useState('');
+    // const [filterSortValue, setFilterSortValue] = useState('');
     const [offset, setOffset] = useState(0);
     const [currentPage, setCurrentPage] = useState(1);
 
@@ -131,7 +130,7 @@ const ShopGridStandard = ({ location, products }) => {
         if (categoriesFilter) {
             filterProduct();
         }
-    }, [offset, currentPage, products, sortType, sortValue, filterSortType, filterSortValue, universityFilter, categoriesFilter, nameFilter, priceSortType]);
+    }, [offset, currentPage, products, sortType, sortValue, filterSortType, universityFilter, categoriesFilter, nameFilter, priceSortType]);
     return (
         <Fragment>
             <MetaTags>

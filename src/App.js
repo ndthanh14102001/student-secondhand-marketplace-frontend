@@ -37,6 +37,8 @@ const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
 const ProductUpdate = lazy(() => import("./pages/product-update"));
+const UserInfo = lazy(() => import("./pages/user-info"));
+
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -169,6 +171,12 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/product-update/:id"}
                     render={(routeProps) => (
                       <ProductUpdate {...routeProps} key={routeProps.match.params.id} updatePage={true} />
+                    )}
+                  />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/user/info/:id"}
+                    render={(routeProps) => (
+                      <UserInfo {...routeProps} key={routeProps.match.params.id} />
                     )}
                   />
                   <Route
