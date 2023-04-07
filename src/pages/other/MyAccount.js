@@ -7,11 +7,11 @@ import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import callApi, { RESPONSE_TYPE,STATUS_BAD_REQUEST } from "../../utils/callApi";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { updateUser } from "../../utils/userLoginStorage";
 import Avatar from '@mui/material/Avatar';
-import axios from "axios";
+import Typography from '@mui/material/Typography';
 
 const MyAccount = ({ location }) => {
   const { pathname } = location;
@@ -21,6 +21,11 @@ const MyAccount = ({ location }) => {
   const { addToast } = useToasts();
 
   const [readonly, setReadonly] = useState(true);
+  const [messageError, setMessageError] = useState({
+    currentPassword: "",
+    password: "",
+    passwordConfirm: "",
+  });
 
   const [inputValue, setInputValue] = useState({
     username: user.user.username,
@@ -29,6 +34,12 @@ const MyAccount = ({ location }) => {
     address: user.user.address,
     phone: user.user.phone,
     university: user.user.university
+  });
+
+  const [inputPassword, setInputPassword] = useState({
+    currentPassword: "",
+    password: "",
+    passwordConfirm: "",
   });
 
   const [buttonPressed, setButtonPressed] = useState(false);
@@ -54,8 +65,12 @@ const MyAccount = ({ location }) => {
   }, []);
 
   const handleInputChange = useCallback(({ target: { name, value } }) => {
-    setInputValue((prevData) => ({ ...prevData, [name]: value }))
+    setInputValue((prevData) => ({ ...prevData, [name]: value }));
     setIsChangeInput(true);
+  }, []);
+
+  const handleChangePassword = useCallback(({ target: { name, value } }) => {
+    setInputPassword((prevData) => ({ ...prevData, [name]: value }))
   }, []);
 
   const handleChangeProfile = async () => {
@@ -96,12 +111,26 @@ const MyAccount = ({ location }) => {
           url: process.env.REACT_APP_API_ENDPOINT + "/upload",
           method: "post",
           data: formData,
-          headers: { 'Content-Type': 'multipart/form-data' },
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            Authorization: user.token,
+           },
         })
         if (response1.type === RESPONSE_TYPE) {
-          toast++;
+          const response2 = await callApi({
+            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+            method: "put",
+            data: {
+              "avatar": response1.data[0].id,
+            },
+            // headers: { 
+            //   Authorization: user.token,
+            // },
+          })
+          if (response2.type === RESPONSE_TYPE) {
+            toast++;
+          }
         }
-        // console.log(response1)
       }
       if (toast > 0) {
         addToast("thay đổi thông tin cá nhân thành công", {
@@ -135,6 +164,64 @@ const MyAccount = ({ location }) => {
     input.click();
     setIsChangeAvatar(true);
   };
+
+  const handlePasswordChange = async() => {
+    let count = 0;
+    if(inputPassword.currentPassword === ""){
+      setMessageError((prev) => ({
+        ...prev,
+        currentPassword: "bạn chưa nhập mật khẩu hiện tại"
+      }))
+      count++;
+    }
+    if(inputPassword.password === ""){
+      setMessageError((prev) => ({
+        ...prev,
+        password: "bạn chưa nhập mật khẩu mới"
+      }))
+      count++;
+    }
+    if(inputPassword.passwordConfirm === ""){
+      setMessageError((prev) => ({
+        ...prev,
+        passwordConfirm: "bạn chưa nhập lại mật khẩu"
+      }))
+      count++;
+    }
+    if(count === 0 ){ 
+      if(inputPassword.password !== inputPassword.passwordConfirm) {
+        setMessageError((prev) => ({
+          ...prev,
+          passwordConfirm: "mật khẩu chưa chính xác"
+        }))
+      }
+      else{
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/auth/change-password/",
+          method: "post",
+          data: {
+            currentPassword: inputPassword.currentPassword,
+            password: inputPassword.password,
+            passwordConfirmation: inputPassword.passwordConfirm
+          },
+          headers: {
+            Authorization: user.token,
+          }
+        })
+        if (response.type === RESPONSE_TYPE) {
+          addToast("thay đổi mật khẩu thành công", {
+            appearance: "success",
+            autoDismiss: true
+          });
+        }
+        else {
+          if (response.status === STATUS_BAD_REQUEST) {
+            setMessageError("mật khẩu không chính xác!")
+          }
+        }
+      }
+    }
+  }
 
   return (
     <Fragment>
@@ -252,20 +339,29 @@ const MyAccount = ({ location }) => {
                             <div className="row">
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>Password</label>
-                                  <input type="password" />
+                                  <label>Current Password </label>
+                                  <input type="password" name="currentPassword" onChange={handleChangePassword} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.currentPassword}</Typography>
+                                </div>
+                              </div>
+                              <div className="col-lg-12 col-md-12">
+                                <div className="billing-info">
+                                  <label>New Password</label>
+                                  <input type="password" name="password" onChange={handleChangePassword} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.password}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Password Confirm</label>
-                                  <input type="password" />
+                                  <input type="password" name="passwordConfirm" onChange={handleChangePassword} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.passwordConfirm}</Typography>
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="submit">Continue</button>
+                                <button type="button" onClick={handlePasswordChange}>Change</button>
                               </div>
                             </div>
                           </div>

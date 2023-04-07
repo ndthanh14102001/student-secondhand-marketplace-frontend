@@ -71,6 +71,7 @@ const Product = ({ location, match }) => {
         {product && <ProductDescriptionTab
           spaceBottomClass="pb-90"
           productFullDesc={product?.attributes?.description}
+          id={product?.id}
         />}
 
         {/* related product slider */}
