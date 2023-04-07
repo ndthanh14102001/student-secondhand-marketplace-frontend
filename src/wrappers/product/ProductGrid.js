@@ -80,7 +80,7 @@ const ProductGrid = ({
     } else {
       getProductListByCategory();
     }
-  }, []);
+  }, [category]);
   return (
     <Fragment>
       {/* {products.map(product => {

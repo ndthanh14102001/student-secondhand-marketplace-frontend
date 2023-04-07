@@ -9,8 +9,10 @@ import RelatedProductSlider from "../../wrappers/product/RelatedProductSlider";
 import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab";
 import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
 const Product = ({ location, match }) => {
+  const dispatch = useDispatch();
   const { pathname } = location;
   // const itemId = location.match.params.id;
   const [product, setProduct] = useState(null);
@@ -18,6 +20,7 @@ const Product = ({ location, match }) => {
   useEffect(() => {
 
     const getProductById = async () => {
+      dispatch(onOpenModalLoading())
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/products/" + productId,
         method: "get",
@@ -34,10 +37,10 @@ const Product = ({ location, match }) => {
       if (response.type === RESPONSE_TYPE) {
         setProduct(response.data?.data);
       }
-
+      dispatch(onCloseModalLoading())
     }
     getProductById();
-  }, [productId])
+  }, [productId,dispatch])
   return (
     <Fragment>
       <MetaTags>

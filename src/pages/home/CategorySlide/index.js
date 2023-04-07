@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCategoryFilter } from "../../../redux/actions/filterActions";
+import { onCloseModalLoading, onOpenModalLoading } from "../../../redux/actions/modalLoadingActions";
 
 const CategorySlide = () => {
   const dispatch = useDispatch();
@@ -18,6 +19,7 @@ const CategorySlide = () => {
   // swiper slider settings
   useEffect(() => {
     const getCategories = async () => {
+      dispatch(onOpenModalLoading())
       const response = await axios.get(process.env.REACT_APP_API_ENDPOINT + "/categories", {
         params: {
           filters: {
@@ -36,6 +38,7 @@ const CategorySlide = () => {
       if (response?.data?.data) {
         setCategories(response?.data?.data)
       }
+      dispatch(onCloseModalLoading())
     }
     getCategories();
   }, [])

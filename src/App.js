@@ -7,7 +7,7 @@ import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
-import ModalLoading from "./components/modal-loading";
+// import ModalLoading from "./components/modal-loading";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
@@ -77,7 +77,13 @@ const App = (props) => {
         content={popup.content}
       />
 
-      <ModalLoading open={modalLoading.open} />
+      {/* <ModalLoading open={modalLoading.open} /> */}
+      {modalLoading.open && < div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>}
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
@@ -213,7 +219,7 @@ const App = (props) => {
           </Router>
         </BreadcrumbsProvider>
       </ToastProvider>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 

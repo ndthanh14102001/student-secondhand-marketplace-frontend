@@ -14,6 +14,7 @@ import { ALL_UNIVERSITY } from "../../components/product/ShopUniversityFilter";
 import { setSortPriceFilter } from "../../redux/actions/filterActions";
 import { PRICE_HIGH_TO_LOW_SORT, PRICE_LOW_TO_HIGH_SORT } from "../../components/product/ShopTopAction";
 import { useMemo } from "react";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
 const ShopGridStandard = ({ location, products }) => {
     const dispatch = useDispatch();
@@ -70,7 +71,7 @@ const ShopGridStandard = ({ location, products }) => {
     }, [priceFilter])
     useEffect(() => {
         const filterProduct = async () => {
-
+            dispatch(onOpenModalLoading())
             const categoriesQuery = [{
                 category: {
                     id: {
@@ -126,11 +127,12 @@ const ShopGridStandard = ({ location, products }) => {
             })
             setProductList(response.data?.data)
             setTotalProduct(response?.data?.meta?.pagination?.total);
+            dispatch(onCloseModalLoading())
         }
         if (categoriesFilter) {
             filterProduct();
         }
-    }, [offset, currentPage, products, sortType, sortValue, filterSortType, universityFilter, categoriesFilter, nameFilter, priceSortType]);
+    }, [offset, currentPage, products, sortType, sortValue, filterSortType, universityFilter, categoriesFilter, nameFilter, priceSortType, dispatch]);
     return (
         <Fragment>
             <MetaTags>
