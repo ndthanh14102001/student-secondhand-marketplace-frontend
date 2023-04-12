@@ -7,8 +7,11 @@ import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
-import ModalLoading from "./components/modal-loading";
+// import ModalLoading from "./components/modal-loading";
 import Popup from "./components/Popup";
+import PopupErrorBase from "./components/popup-error-base";
+import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
+
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -33,6 +36,9 @@ const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
+const ProductUpdate = lazy(() => import("./pages/product-update"));
+const UserInfo = lazy(() => import("./pages/user-info"));
+
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
@@ -45,6 +51,7 @@ const NotFound = lazy(() => import("./pages/other/NotFound"));
 const App = (props) => {
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
+  const popupErrorBase = useSelector(state => state.popupErrorBase);
   useEffect(() => {
     props.dispatch(
       loadLanguages({
@@ -69,10 +76,26 @@ const App = (props) => {
         onButtonCancelClick={popup.actions.clickCancelButton}
         content={popup.content}
       />
-      <ModalLoading open={modalLoading.open} />
+
+      {/* <ModalLoading open={modalLoading.open} /> */}
+      {modalLoading.open && < div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>}
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
+            <PopupErrorBase
+              open={popupErrorBase.open}
+              onClose={() => {
+                props.dispatch(onClosePopupErrorBase());
+              }}
+              type={popupErrorBase.type}
+              title={popupErrorBase.title}
+              content={popupErrorBase.content}
+            />
             <ScrollToTop>
               <Suspense
                 fallback={
@@ -99,7 +122,7 @@ const App = (props) => {
 
                   {/* Shop pages */}
                   <Route
-                    path={process.env.PUBLIC_URL + "/shop-grid-standard"}
+                    path={process.env.PUBLIC_URL + "/category"}
                     component={ShopGridStandard}
                   />
 
@@ -151,6 +174,18 @@ const App = (props) => {
                     component={ProductPost}
                   />
                   <Route
+                    path={process.env.PUBLIC_URL + "/product-update/:id"}
+                    render={(routeProps) => (
+                      <ProductUpdate {...routeProps} key={routeProps.match.params.id} updatePage={true} />
+                    )}
+                  />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/user/info/:id"}
+                    render={(routeProps) => (
+                      <UserInfo {...routeProps} key={routeProps.match.params.id} />
+                    )}
+                  />
+                  <Route
                     path={process.env.PUBLIC_URL + "/login-register"}
                     component={LoginAndRegister}
                   />
@@ -184,7 +219,7 @@ const App = (props) => {
           </Router>
         </BreadcrumbsProvider>
       </ToastProvider>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 

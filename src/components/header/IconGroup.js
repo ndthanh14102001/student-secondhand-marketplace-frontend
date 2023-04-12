@@ -39,6 +39,7 @@ const IconGroup = ({
   //   offcanvasMobileMenu.classList.add("active");
   // };
   const handleLogout = () => {
+    history.push(process.env.PUBLIC_URL)
     clearUserLogin();
     addToast("Đăng xuất thành công", {
       appearance: "success",

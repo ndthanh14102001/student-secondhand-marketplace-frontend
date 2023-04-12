@@ -2,9 +2,11 @@ import { Avatar, Box, Button, Typography } from '@mui/material'
 import palette from '../../assets/palette'
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { fontWeight } from '@mui/system'
+import { ddmmyy } from '../../utils/DateFormat'
 
-const ProductOwnerInfo = () => {
+const ProductOwnerInfo = ({ user, onHideModal }) => {
+  const userAttributes = user?.attributes
+
   return (
     <Box
       className="product-onwer-info"
@@ -13,8 +15,8 @@ const ProductOwnerInfo = () => {
       <Avatar
         sx={{ width: 100, height: 100 }}
         variant="rounded"
-        alt="avatar"
-        src="/static/images/avatar/1.jpg"
+        alt={userAttributes?.name}
+        src={process.env.REACT_APP_SERVER_ENDPOINT + (userAttributes?.avatar?.data?.attributes?.url || user?.avatar?.url)}
       />
       <Box
         ml="1rem"
@@ -23,13 +25,14 @@ const ProductOwnerInfo = () => {
         justifyContent={"space-between"}
       >
         <Link
-          to="/my-account"
+          onClick={onHideModal}
+          to={`/user/info/${user?.id}`}
           style={{
             color: palette.primary.main,
             fontWeight: "bold"
           }}
         >
-          Tên người bán
+          {userAttributes?.fullName || user?.fullName}
         </Link>
         <Box display={"flex"}>
           <p>Ngày tham gia :</p>
@@ -37,20 +40,20 @@ const ProductOwnerInfo = () => {
             component="span"
             fontWeight="bold"
             marginLeft={"0.4rem"}
-          >10/10/2001</Typography>
+          >{ddmmyy(new Date(userAttributes?.createdAt || user?.createdAt))}</Typography>
         </Box>
         <Box display={"flex"}>
           <p>Sản phẩm :</p>
           <Typography component="span"
             fontWeight="bold"
-            marginLeft={"0.4rem"}>10</Typography>
+            marginLeft={"0.4rem"}>{userAttributes?.product?.data?.length || user?.product?.length || 0}</Typography>
         </Box>
 
         <Box display={"flex"}>
-          <p>Số lượt thích :</p>
+          <p>Vị trí :</p>
           <Typography component="span"
             fontWeight="bold"
-            marginLeft={"0.4rem"}>10</Typography>
+            marginLeft={"0.4rem"}>{userAttributes?.university || user?.university || ""}</Typography>
         </Box>
       </Box>
       <Box

@@ -8,6 +8,8 @@ import { createMultilanguageReducer } from "redux-multilanguage";
 import modalLoadingReducer from "./modalLoadingReducer";
 import userStorageReducer from "./userStorage";
 import popupReducer from "./popupReducer";
+import filterReducer from "./filterReducer"
+import { popupErrorBaseReducer } from "./popupErrorBase";
 
 const rootReducer = combineReducers({
   multilanguage: createMultilanguageReducer({ currentLanguageCode: "en" }),
@@ -18,7 +20,9 @@ const rootReducer = combineReducers({
   compareData: compareReducer,
   modalLoading: modalLoadingReducer,
   userStorage: userStorageReducer,
-  popup: popupReducer
+  popup: popupReducer,
+  filter: filterReducer,
+  popupErrorBase: popupErrorBaseReducer
 });
 
 export default rootReducer;

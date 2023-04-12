@@ -43,27 +43,6 @@ const callApi = async ({ url, method, data, headers, params }) => {
 
   }
 };
-// Example
-// React.useEffect(() => {
-//   const testAPI = async () => {
-//     const result = await callApi({
-//       url: "http://localhost:8000/v1/auth/login",
-//       method: "post",
-//       data: {
-//         "username": "nguyenducthanh123",
-//         "password": "nguyenducthanh1233"
-//       }
-//     });
-//     if (result.type === RESPONSE_TYPE) {
-//       // Handle data receive from Server
-//       console.log("response", result);
-//     } else if (result.type === ERROR_TYPE) {
-//       // Handle Error
-//       console.log("error", result);
-//     }
-//   };
-//   testAPI();
-// }, []);
 export default callApi;
 export {
   NETWORK_ERROR,

@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import { connect } from "react-redux";
-import { getDiscountPrice } from "../../helpers/product";
+// import { getDiscountPrice } from "../../helpers/product";
 import {
   addToWishlist,
   deleteFromWishlist,
@@ -14,7 +14,8 @@ import {
 import { addToCart } from "../../redux/actions/cartActions";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
 const Wishlist = ({
   location,
   cartItems,
@@ -26,7 +27,6 @@ const Wishlist = ({
 }) => {
   const { addToast } = useToasts();
   const { pathname } = location;
-
   return (
     <Fragment>
       <MetaTags>
@@ -49,35 +49,37 @@ const Wishlist = ({
           <div className="container">
             {wishlistItems && wishlistItems.length >= 1 ? (
               <Fragment>
-                <h3 className="cart-page-title">Your wishlist items</h3>
+                <h3 className="cart-page-title">Danh sách sản phẩm yêu thích của bạn</h3>
                 <div className="row">
                   <div className="col-12">
                     <div className="table-content table-responsive cart-table-content">
                       <table>
                         <thead>
                           <tr>
-                            <th>Image</th>
-                            <th>Product Name</th>
-                            <th>Unit Price</th>
-                            <th>Add To Cart</th>
-                            <th>action</th>
+                            <th>Hình ảnh</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
                           </tr>
                         </thead>
                         <tbody>
                           {wishlistItems.map((wishlistItem, key) => {
-                            const discountedPrice = getDiscountPrice(
-                              wishlistItem.price,
-                              wishlistItem.discount
-                            );
-                            const finalProductPrice = (
-                              wishlistItem.price * currency.currencyRate
-                            ).toFixed(2);
-                            const finalDiscountedPrice = (
-                              discountedPrice * currency.currencyRate
-                            ).toFixed(2);
-                            const cartItem = cartItems.filter(
-                              item => item.id === wishlistItem.id
-                            )[0];
+                            const wishlistItemAtrributes = wishlistItem?.attributes || wishlistItem;
+                            console.log("wishlistItemAtrributes", wishlistItemAtrributes)
+                            // const discountedPrice = getDiscountPrice(
+                            //   wishlistItem.price,
+                            //   wishlistItem.discount
+                            // );
+                            // const finalProductPrice = (
+                            //   wishlistItem.price * currency.currencyRate
+                            // ).toFixed(2);
+                            const finalProductPrice = getVietNamMoneyFormat(wishlistItemAtrributes?.price);
+                            // const cartItem = cartItems.filter(
+                            //   item => item.id === wishlistItem.id
+                            // )[0];
+                            const wishlistItemImages = getProductImages(wishlistItemAtrributes) || wishlistItemAtrributes?.images;
+                            console.log("wishlistItemImages", wishlistItemImages)
                             return (
                               <tr key={key}>
                                 <td className="product-thumbnail">
@@ -91,8 +93,8 @@ const Wishlist = ({
                                     <img
                                       className="img-fluid"
                                       src={
-                                        process.env.PUBLIC_URL +
-                                        wishlistItem.image[0]
+                                        process.env.REACT_APP_SERVER_ENDPOINT +
+                                        (wishlistItemImages[0]?.attributes?.url || wishlistItemImages[0]?.url)
                                       }
                                       alt=""
                                     />
@@ -107,31 +109,21 @@ const Wishlist = ({
                                       wishlistItem.id
                                     }
                                   >
-                                    {wishlistItem.name}
+                                    {wishlistItemAtrributes?.name}
                                   </Link>
                                 </td>
 
                                 <td className="product-price-cart">
-                                  {discountedPrice !== null ? (
-                                    <Fragment>
-                                      <span className="amount old">
-                                        {currency.currencySymbol +
-                                          finalProductPrice}
-                                      </span>
-                                      <span className="amount">
-                                        {currency.currencySymbol +
-                                          finalDiscountedPrice}
-                                      </span>
-                                    </Fragment>
-                                  ) : (
-                                    <span className="amount">
-                                      {currency.currencySymbol +
-                                        finalProductPrice}
-                                    </span>
-                                  )}
+                                  <span className="amount">
+                                    {finalProductPrice}
+                                  </span>
                                 </td>
-
-                                <td className="product-wishlist-cart">
+                                <td>
+                                  <span className={wishlistItemAtrributes?.status !== PRODUCT_ON_SALE_STATUS && "product-details-sold-status"}>
+                                    {wishlistItemAtrributes?.status === PRODUCT_ON_SALE_STATUS ? "Đang bán" : "Đã bán"}
+                                  </span>
+                                </td>
+                                {/* <td className="product-wishlist-cart">
                                   {wishlistItem.affiliateLink ? (
                                     <a
                                       href={wishlistItem.affiliateLink}
@@ -156,7 +148,7 @@ const Wishlist = ({
                                       }
                                       className={
                                         cartItem !== undefined &&
-                                        cartItem.quantity > 0
+                                          cartItem.quantity > 0
                                           ? "active"
                                           : ""
                                       }
@@ -171,7 +163,7 @@ const Wishlist = ({
                                       }
                                     >
                                       {cartItem !== undefined &&
-                                      cartItem.quantity > 0
+                                        cartItem.quantity > 0
                                         ? "Added"
                                         : "Add to cart"}
                                     </button>
@@ -180,7 +172,7 @@ const Wishlist = ({
                                       Out of stock
                                     </button>
                                   )}
-                                </td>
+                                </td> */}
 
                                 <td className="product-remove">
                                   <button
@@ -205,14 +197,14 @@ const Wishlist = ({
                     <div className="cart-shiping-update-wrapper">
                       <div className="cart-shiping-update">
                         <Link
-                          to={process.env.PUBLIC_URL + "/shop-grid-standard"}
+                          to={process.env.PUBLIC_URL + "/category"}
                         >
-                          Continue Shopping
+                          Tiếp tục mua sắm
                         </Link>
                       </div>
                       <div className="cart-clear">
                         <button onClick={() => deleteAllFromWishlist(addToast)}>
-                          Clear Wishlist
+                          Làm trống sản phẩm yêu thích
                         </button>
                       </div>
                     </div>
@@ -227,9 +219,9 @@ const Wishlist = ({
                       <i className="pe-7s-like"></i>
                     </div>
                     <div className="item-empty-area__text">
-                      No items found in wishlist <br />{" "}
-                      <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                        Add Items
+                      Không có sản phẩm trong danh sách yêu thích <br />{" "}
+                      <Link to={process.env.PUBLIC_URL + "/category"}>
+                        Thêm sản phẩm
                       </Link>
                     </div>
                   </div>

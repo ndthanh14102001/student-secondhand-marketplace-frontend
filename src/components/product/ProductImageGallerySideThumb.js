@@ -6,7 +6,6 @@ import Swiper from "react-id-swiper";
 const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
   const [gallerySwiper, getGallerySwiper] = useState(null);
   const [thumbnailSwiper, getThumbnailSwiper] = useState(null);
-
   // effect for swiper slider synchronize
   useEffect(() => {
     if (
@@ -66,14 +65,13 @@ const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
     <Fragment>
       <div className="row row-5">
         <div
-          className={` ${
-            thumbPosition && thumbPosition === "left"
-              ? "col-xl-10 order-1 order-xl-2"
-              : "col-xl-10"
-          }`}
+          className={` ${thumbPosition && thumbPosition === "left"
+            ? "col-xl-10 order-1 order-xl-2"
+            : "col-xl-10"
+            }`}
         >
           <div className="product-large-image-wrapper">
-            {product.discount || product.new ? (
+            {/* {product.discount || product.new ? (
               <div className="product-img-badges">
                 {product.discount ? (
                   <span className="pink">-{product.discount}%</span>
@@ -84,7 +82,7 @@ const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
               </div>
             ) : (
               ""
-            )}
+            )} */}
             <LightgalleryProvider>
               <Swiper {...gallerySwiperParams}>
                 {product.image &&
@@ -114,11 +112,10 @@ const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
           </div>
         </div>
         <div
-          className={` ${
-            thumbPosition && thumbPosition === "left"
-              ? "col-xl-2 order-2 order-xl-1"
-              : "col-xl-2"
-          }`}
+          className={` ${thumbPosition && thumbPosition === "left"
+            ? "col-xl-2 order-2 order-xl-1"
+            : "col-xl-2"
+            }`}
         >
           <div className="product-small-image-wrapper product-small-image-wrapper--side-thumb">
             <Swiper {...thumbnailSwiperParams}>

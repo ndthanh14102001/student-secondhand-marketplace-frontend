@@ -1,10 +1,12 @@
-import { Tooltip } from "@mui/material";
+import { Box, Tooltip, Typography } from "@mui/material";
 import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
+import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
+import { ddmmyyhhmm } from "../../utils/DateFormat";
 
 const ProductGridSingleTwo = ({
   product,
@@ -20,14 +22,15 @@ const ProductGridSingleTwo = ({
   colorClass,
   titlePriceClass
 }) => {
+  const productAttributes = product?.attributes;
+  const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
 
   const discountedPrice = getDiscountPrice(product.price, product.discount);
-  const finalProductPrice = +(product.price * currency.currencyRate).toFixed(2);
-  const finalDiscountedPrice = +(
-    discountedPrice * currency.currencyRate
-  ).toFixed(2);
+
+  const finalProductPrice = getVietNamMoneyFormat(productAttributes?.price || 0);
+  const images = getProductImages(productAttributes);
 
   return (
     <Fragment>
@@ -43,13 +46,13 @@ const ProductGridSingleTwo = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && images[0]?.attributes?.url}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+              {images && images?.length && images.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && images[1]?.attributes?.url}`}
                   alt=""
                 />
               ) : (
@@ -62,6 +65,9 @@ const ProductGridSingleTwo = ({
               <button onClick={() => setModalShow(true)} title="Quick View">
                 <i className="fa fa-eye"></i>
               </button>
+              <button onClick={() => history.push(process.env.PUBLIC_URL + "/product-update/" + product.id)} title="Chỉnh sửa">
+                <i className="fa fa-edit"></i>
+              </button>
 
             </div>
           </div>
@@ -73,25 +79,20 @@ const ProductGridSingleTwo = ({
               <Tooltip title={product.name}>
                 <h3 className="product-name">
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {product.name}
+                    {productAttributes?.name}
                   </Link>
                 </h3>
               </Tooltip>
               <div className="price-2">
-                {discountedPrice !== null ? (
-                  <Fragment>
-                    <span>
-                      {currency.currencySymbol + finalDiscountedPrice}
-                    </span>{" "}
-                    <span className="old">
-                      {currency.currencySymbol + finalProductPrice}
-                    </span>
-                  </Fragment>
-                ) : (
-                  <span>{currency.currencySymbol + finalProductPrice} </span>
-                )}
+                <span>{finalProductPrice} </span>
               </div>
             </div>
+            <Box >
+              <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{"Ngày đăng bán: " + ddmmyyhhmm(new Date(productAttributes?.createdAt))} </Typography>
+            </Box>
+            <Box>
+              <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{"Ngày cập nhật: " + ddmmyyhhmm(new Date(productAttributes?.updatedAt))} </Typography>
+            </Box>
             {/* <div className="pro-wishlist-2">
               <button
                 className={wishlistItem !== undefined ? "active" : ""}
@@ -117,7 +118,7 @@ const ProductGridSingleTwo = ({
         currency={currency}
         discountedprice={discountedPrice}
         finalproductprice={finalProductPrice}
-        finaldiscountedprice={finalDiscountedPrice}
+        // finaldiscountedprice={finalDiscountedPrice}
         cartitem={cartItem}
         wishlistitem={wishlistItem}
         compareitem={compareItem}

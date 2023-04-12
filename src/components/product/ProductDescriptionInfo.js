@@ -15,6 +15,7 @@ import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ChatsFrame from "../../components/chat"
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 
 const ProductDescriptionInfo = ({
   product,
@@ -30,6 +31,9 @@ const ProductDescriptionInfo = ({
   addToWishlist,
   addToCompare
 }) => {
+  const attributes = product?.attributes;
+  const user = attributes?.userId?.data;
+
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
   );
@@ -37,7 +41,7 @@ const ProductDescriptionInfo = ({
     product.variation ? product.variation[0].size[0].name : ""
   );
   const [productStock, setProductStock] = useState(
-    product.variation ? product.variation[0].size[0].stock : product.stock
+    attributes?.status
   );
   const [quantityCount, setQuantityCount] = useState(1);
 
@@ -50,19 +54,14 @@ const ProductDescriptionInfo = ({
 
   return (
     <div className="product-details-content ml-70">
-      <h2>{product.name}</h2>
+
+      <h2>{attributes?.name}</h2>
+      {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
+        <span>Đã bán</span>
+      </div>}
 
       <div className="product-details-price">
-        {discountedPrice !== null ? (
-          <Fragment>
-            <span>{currency.currencySymbol + finalDiscountedPrice}</span>{" "}
-            <span className="old">
-              {currency.currencySymbol + finalProductPrice}
-            </span>
-          </Fragment>
-        ) : (
-          <span>{currency.currencySymbol + finalProductPrice} </span>
-        )}
+        <span>{finalProductPrice} </span>
       </div>
       {/* {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
@@ -145,24 +144,20 @@ const ProductDescriptionInfo = ({
       )} */}
       <div className="pro-details-quality">
         <div className="pro-details-cart btn-hover">
-          {productStock && productStock > 0 ? (
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText("0123456789");
-                addToast("Đã copy số điện thoại", {
-                  appearance: "success",
-                  autoDismiss: true
-                });
-              }}
-              disabled={productCartQty >= productStock}
-            >
-              <PhoneInTalkIcon />
-              {" "}
-              0123456789
-            </button>
-          ) : (
-            <button disabled>Out of Stock</button>
-          )}
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText("0123456789");
+              addToast("Đã copy số điện thoại", {
+                appearance: "success",
+                autoDismiss: true
+              });
+            }}
+            disabled={productCartQty >= productStock}
+          >
+            <PhoneInTalkIcon />
+            {" "}
+            {user?.attributes?.phone}
+          </button>
         </div>
         <div className="pro-details-cart btn-hover">
           <button
@@ -263,7 +258,7 @@ const ProductDescriptionInfo = ({
         </ul>
       </div> */}
       <div>
-        <ProductOwnerInfo />
+        <ProductOwnerInfo user={user} />
       </div>
     </div >
   );
