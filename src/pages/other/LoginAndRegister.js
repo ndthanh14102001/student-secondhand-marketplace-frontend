@@ -342,7 +342,7 @@ const LoginRegister = ({ location }) => {
                                       onChange={e => setIsCheckedRememberLogin(e.target.checked)}
                                     />}
                                     label="Ghi nhớ đăng nhập" />
-                                  <Link to={process.env.PUBLIC_URL + "/"}>
+                                  <Link to={process.env.PUBLIC_URL + "/forgot-password"}>
                                     Quên mật khẩu ?
                                   </Link>
                                 </Box>

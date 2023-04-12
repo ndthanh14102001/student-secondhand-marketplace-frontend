@@ -13,6 +13,7 @@ import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 
 
+
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -40,6 +41,7 @@ const ProductUpdate = lazy(() => import("./pages/product-update"));
 const UserInfo = lazy(() => import("./pages/user-info"));
 
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
+const ForgotPassword = lazy(() => import("./pages/other/forgot-password"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
@@ -189,7 +191,10 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/login-register"}
                     component={LoginAndRegister}
                   />
-
+                  <Route
+                    path={process.env.PUBLIC_URL + "/forgot-password"}
+                    component={ForgotPassword}
+                  />
                   <Route
                     path={process.env.PUBLIC_URL + "/cart"}
                     component={Cart}
