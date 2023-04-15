@@ -12,6 +12,7 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import { updateUser } from "../../utils/userLoginStorage";
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
+import { UNIVERSITY_LIST } from '../../constants'
 
 const MyAccount = ({ location }) => {
   const { pathname } = location;
@@ -25,6 +26,12 @@ const MyAccount = ({ location }) => {
     currentPassword: "",
     password: "",
     passwordConfirm: "",
+    username: "",
+    fullName: "",
+    email: "",
+    address: "",
+    phone: "",
+    university: ""
   });
 
   const [inputValue, setInputValue] = useState({
@@ -35,6 +42,8 @@ const MyAccount = ({ location }) => {
     phone: user.user.phone,
     university: user.user.university
   });
+
+
 
   const [inputPassword, setInputPassword] = useState({
     currentPassword: "",
@@ -73,6 +82,8 @@ const MyAccount = ({ location }) => {
     setInputPassword((prevData) => ({ ...prevData, [name]: value }))
   }, []);
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleChangeProfile = async () => {
     if (statusProfile === 0) {
       setReadonly(false);
@@ -80,26 +91,92 @@ const MyAccount = ({ location }) => {
       setStatusProfile(1);
     }
     else if (statusProfile === 1) {
+      let count = 0;
       let toast = 0;
-      if (isChangeInput) {
-        const response = await callApi({
-          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
-          method: "put",
-          data: {
-            username: inputValue.username,
-            fullName: inputValue.fullName,
-            email: inputValue.email,
-            address: inputValue.address,
-            phone: inputValue.phone,
-            university: inputValue.university
-          },
-          // headers: {
-          //   Authorization: user.token,
-          // }
-        })
-        if (response.type === RESPONSE_TYPE) {
-          toast++;
-          updateUser(response.data);
+      if(inputValue.username === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          username: "bạn chưa nhập tên tài khoản"
+        }))
+        count++;
+      }
+      else if(inputValue.username.trim().length < 6){
+        setMessageError((prev) => ({
+          ...prev,
+          username: "bạn phải nhập tên tài khoản ít nhất 6 kí tự"
+        }))
+        count++;
+      }
+      if(inputValue.fullName === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          fullName: "bạn chưa nhập họ và tên"
+        }))
+        count++;
+      }
+      if(inputValue.email === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          email: "bạn chưa nhập email"
+        }))
+        count++;
+      }
+      else if(!emailRegex.test(inputValue.email.trim())){
+        setMessageError((prev) => ({
+          ...prev,
+          email: "email của bạn chưa đúng định dạng"
+        }))
+        count++;
+      }
+      if(inputValue.address === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          address: "bạn chưa nhập địa chỉ của bạn"
+        }))
+        count++;
+      }
+      if(inputValue.phone === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          phone: "bạn chưa nhập số điện thoại"
+        }))
+        count++;
+      }
+      else if(inputValue.phone.trim().length > 11 || inputValue.phone.trim().length < 10){
+        setMessageError((prev) => ({
+          ...prev,
+          phone: "bạn nhập sai số điện thoại"
+        }))
+        count++;
+      }
+      if(inputValue.university === ""){
+        setMessageError((prev) => ({
+          ...prev,
+          university: "bạn chọn trường đại học"
+        }))
+        count++;
+      }
+      if(count === 0){
+        if (isChangeInput) {
+          const response = await callApi({
+            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+            method: "put",
+            data: {
+              username: inputValue.username,
+              fullName: inputValue.fullName,
+              email: inputValue.email,
+              address: inputValue.address,
+              phone: inputValue.phone,
+              university: inputValue.university
+            },
+            // headers: {
+            //   Authorization: user.token,
+            // }
+          })
+          if (response.type === RESPONSE_TYPE) {
+            toast++;
+            updateUser(response.data);
+          }
         }
       }
       if (isChangeAvatar) {
@@ -196,6 +273,7 @@ const MyAccount = ({ location }) => {
         }))
       }
       else{
+        setMessageError("");
         const response = await callApi({
           url: process.env.REACT_APP_API_ENDPOINT + "/auth/change-password/",
           method: "post",
@@ -249,7 +327,7 @@ const MyAccount = ({ location }) => {
                       <Card.Header className="panel-heading">
                         <Accordion.Toggle variant="link" eventKey="0">
                           <h3 className="panel-title">
-                            <span>1 .</span> Edit your account information{" "}
+                            <span>1 .</span> Thông tin cá nhân{" "}
                           </h3>
                         </Accordion.Toggle>
                       </Card.Header>
@@ -257,8 +335,7 @@ const MyAccount = ({ location }) => {
                         <Card.Body>
                           <div className="myaccount-info-wrapper">
                             <div className="account-info-wrapper">
-                              <h4>My Account Information</h4>
-                              <h5>Your Personal Details</h5>
+                              <h4>Thông tin tài khoản của tôi</h4>
                             </div>
                             <div className="row">
                               <div className="col-lg-12 col-md-12">
@@ -277,44 +354,56 @@ const MyAccount = ({ location }) => {
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>User Name</label>
+                                  <label>Tên tài khoản</label>
                                   <input type="text" name="username" value={inputValue.username} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.username}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>Full Name</label>
+                                  <label>Họ tên</label>
                                   <input type="text" name="fullName" value={inputValue.fullName} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.fullName}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Email </label>
                                   <input id="email" name="email" type="email" value={inputValue.email} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.email}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>Address</label>
+                                  <label>Địa chỉ</label>
                                   <input id="address" name="address" type="email" value={inputValue.address} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.address}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>Telephone</label>
-                                  <input id="phone" name="phone" type="text" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <label>Số điện thoại</label>
+                                  <input id="phone" name="phone" type="number" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.phone}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
-                                  <label>university</label>
-                                  <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <label>Trường đại học</label>
+                                  <select id="university" name="university"  value={inputValue.university} disabled={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"}>
+                                    <option value="">--Chọn trường đại học của bạn--</option>
+                                    {UNIVERSITY_LIST.map((list)=>(
+                                      <option value={list}>{list}</option>
+                                    ))}
+                                  </select>
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.university}</Typography>
+                                  {/* <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} /> */}
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="button" onClick={handleChangeProfile}>Change</button>
+                                <button type="button" onClick={handleChangeProfile}>Thay đổi</button>
                               </div>
                             </div>
                           </div>
@@ -325,35 +414,35 @@ const MyAccount = ({ location }) => {
                       <Card.Header className="panel-heading">
                         <Accordion.Toggle variant="link" eventKey="1">
                           <h3 className="panel-title">
-                            <span>2 .</span> Change your password
+                            <span>2 .</span> Thay đổi mật khẩu
                           </h3>
                         </Accordion.Toggle>
                       </Card.Header>
                       <Accordion.Collapse eventKey="1">
                         <Card.Body>
                           <div className="myaccount-info-wrapper">
-                            <div className="account-info-wrapper">
+                            {/* <div className="account-info-wrapper">
                               <h4>Change Password</h4>
                               <h5>Your Password</h5>
-                            </div>
+                            </div> */}
                             <div className="row">
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>Current Password </label>
+                                  <label>Mật khẩu hiện tại </label>
                                   <input type="password" name="currentPassword" onChange={handleChangePassword} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.currentPassword}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>New Password</label>
+                                  <label>Mật khẩu mới</label>
                                   <input type="password" name="password" onChange={handleChangePassword} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.password}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <label>Password Confirm</label>
+                                  <label>Nhập lại mật khẩu</label>
                                   <input type="password" name="passwordConfirm" onChange={handleChangePassword} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.passwordConfirm}</Typography>
                                 </div>
@@ -361,14 +450,14 @@ const MyAccount = ({ location }) => {
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="button" onClick={handlePasswordChange}>Change</button>
+                                <button type="button" onClick={handlePasswordChange}>Thay đổi</button>
                               </div>
                             </div>
                           </div>
                         </Card.Body>
                       </Accordion.Collapse>
                     </Card>
-                    <Card className="single-my-account mb-20">
+                    {/* <Card className="single-my-account mb-20">
                       <Card.Header className="panel-heading">
                         <Accordion.Toggle variant="link" eventKey="2">
                           <h3 className="panel-title">
@@ -410,7 +499,7 @@ const MyAccount = ({ location }) => {
                           </div>
                         </Card.Body>
                       </Accordion.Collapse>
-                    </Card>
+                    </Card> */}
                   </Accordion>
                 </div>
               </div>
