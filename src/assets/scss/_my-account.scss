@@ -90,6 +90,13 @@
         height: 40px;
         padding: 0 15px;
       }
+      select {
+        background: transparent none repeat scroll 0 0;
+        border: 1px solid #ebebeb;
+        color: #000;
+        height: 40px;
+        padding: 0 15px;
+      }
       .input-style-active{
         border: 2px solid lightblue;
         $shadow-color: rgb(24, 144, 255);
