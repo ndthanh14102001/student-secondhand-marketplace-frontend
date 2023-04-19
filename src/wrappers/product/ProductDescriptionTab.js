@@ -5,14 +5,40 @@ import Nav from "react-bootstrap/Nav";
 import { useState } from "react";
 import { useEffect } from "react";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import callApi, { RESPONSE_TYPE,STATUS_BAD_REQUEST } from "../../utils/callApi";
-import Avatar from '@mui/material/Avatar';
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import SendIcon from '@mui/icons-material/Send';
+import { Box,Paper,InputBase,Avatar } from "@mui/material";
+import { useToasts } from "react-toast-notifications";
+import { useDispatch } from 'react-redux';
+import { onShowPopup } from '../../redux/actions/popupActions';
+import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
+import { onClosePopup } from '../../redux/actions/popupActions';
 
 const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
   const user = getUserLogin();
 
+  const [urlAvatar, setUrlAvatar] = useState();
   const [listComments, setListComments] = useState([]);
+  const [comment, setComment] = useState();
+
+  const { addToast } = useToasts();
+  const dispatch = useDispatch();
+
+  async function getUrlAvatar() {
+    if(user !== null){
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id + '?populate=*',
+        method: "get",
+      })
+      if (response.type === RESPONSE_TYPE) {
+        setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
+      }
+    }
+    else
+      setUrlAvatar("abc");
+  }
+
   async function fetchData() {
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/comments",
@@ -36,14 +62,54 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
   useEffect(() => {
     fetchData();
+    getUrlAvatar();
   }, []);
 
   const formatDate = (date) => {
     const inputDate = new Date(date);
-    const minutes = inputDate.getMinutes() < 10 ? `0${inputDate.getMinutes()}` : inputDate.getMinutes();
+    const minutes = inputDate.getMinutes() < 10 ? `0${inputDate.getMinutes()}`: inputDate.getMinutes();
     
     return `${inputDate.getDate().toString().padStart(2, '0')}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getFullYear()} ${inputDate.getHours()}:`+minutes;
   }
+
+  const handleInputChange = (event) => {
+    setComment(event.target.value);
+  }
+
+  const handleSendCmt = async () => {
+    if(user !== null){
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/comments",
+      method: "post",
+      data: {
+        data:{
+          description: comment,
+          product: id,
+          user: user?.user.id,
+        }
+      }
+      });
+      if(response.type === RESPONSE_TYPE){
+        fetchData();
+        setComment("");
+        addToast("thay đổi thông tin cá nhân thành công", {
+          appearance: "success",
+          autoDismiss: true
+        });
+      }
+    }
+    else{
+      dispatch(onShowPopup({
+        type: POPUP_TYPE_ERROR,
+        title: "Đăng nhập",
+        content: "Hãy quay lại đăng nhập để bình luận",
+        showButtonCancel: false,
+        closeAction: () => dispatch(onClosePopup()),
+        clickOkeAction: () => dispatch(onClosePopup()),
+      }))
+    }
+  }
+
   return (
     <div className={`description-review-area ${spaceBottomClass}`}>
       <div className="container">
@@ -86,7 +152,9 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 {productFullDesc}
               </Tab.Pane>
               <Tab.Pane eventKey="productReviews">
-                {listComments.slice(0, 5).map((row) => (
+                <div className="review">
+                {listComments.slice(0, 5).map((row, index) => (
+                  <div key={index}>
                    <div className="row">
                    <div className="col-lg-7">
                      <div className="review-wrapper">
@@ -105,7 +173,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                            <div className="review-top-wrap">
                              <div className="review-left">
                                <div className="review-name">
-                                 <h4>{row.attributes.user.data.attributes.username}</h4>
+                                 <h4>{row.attributes.user.data?.attributes?.username}</h4>
                                </div>
                                {/* <div className="review-rating">
                                  <i className="fa fa-star" />
@@ -165,51 +233,31 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                        </div> */}
                      </div>
                    </div>
-                   
+                 </div>
+                 <div className="dash"></div>
                  </div>
                 ))}
-                <div className="col-lg-5">
-                     <div className="ratting-form-wrapper pl-50">
-                       <h3>Add a Review</h3>
-                       <div className="ratting-form">
-                         <form action="#">
-                           <div className="star-box">
-                             <span>Your rating:</span>
-                             <div className="ratting-star">
-                               <i className="fa fa-star" />
-                               <i className="fa fa-star" />
-                               <i className="fa fa-star" />
-                               <i className="fa fa-star" />
-                               <i className="fa fa-star" />
-                             </div>
-                           </div>
-                           <div className="row">
-                             <div className="col-md-6">
-                               <div className="rating-form-style mb-10">
-                                 <input placeholder="Name" type="text" />
-                               </div>
-                             </div>
-                             <div className="col-md-6">
-                               <div className="rating-form-style mb-10">
-                                 <input placeholder="Email" type="email" />
-                               </div>
-                             </div>
-                             <div className="col-md-12">
-                               <div className="rating-form-style form-submit">
-                                 <textarea
-                                   name="Your Review"
-                                   placeholder="Message"
-                                   defaultValue={""}
-                                 />
-                                 <input type="submit" defaultValue="Submit" />
-                               </div>
-                             </div>
-                           </div>
-                         </form>
-                       </div>
-                     </div>
-                   </div>
-               
+                <div>
+                  Bình Luận
+                </div>
+                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: "wrap", mt: 1}}>
+                  <Avatar 
+                    src= { urlAvatar }
+                    alt=""
+                    sx={{  mr: 1 }}
+                  />
+                  <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "950px"}}>
+                    <InputBase
+                        sx={{ ml: 1, flex: 1 }}
+                        placeholder="Hãy để lại một chút ý kiến của bạn khi mua sản phẩm này..."
+                        inputProps={{ 'aria-label': 'search customer' }}
+                        value={comment}
+                        onChange={handleInputChange}
+                    />
+                    <SendIcon color="action" onClick={handleSendCmt} />
+                  </Paper>
+                </Box>
+                </div>
               </Tab.Pane>
             </Tab.Content>
           </Tab.Container>
