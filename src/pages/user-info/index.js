@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled } from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, Link } from '@mui/material';
 import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -24,6 +24,8 @@ import { ddmmyy } from '../../utils/DateFormat';
 import ShopProducts from '../../wrappers/product/ShopProducts';
 import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../other/my-products/constants';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
+import { getUserLogin } from "../../utils/userLoginStorage";
+import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function a11yProps(index) {
   return {
     id: `products-tab-${index}`,
@@ -36,6 +38,7 @@ const BoxUserInfo = styled(Box)(() => ({
   alignItems: "center",
   width: "100%"
 }));
+
 const UserInfo = ({ match }) => {
   const dispatch = useDispatch();
   const userId = match.params.id
@@ -105,13 +108,20 @@ const UserInfo = ({ match }) => {
     //Function Report
     const { addToast } = useToasts();
     const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+    const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
+    const userLoginData = getUserLogin()?.user;
 
     const handleClickOpenConfirmReport = () => {
-      setOpenConfirmReport(true);
+      if(userLoginData === undefined) {
+        setOpenNeedLoginDialog(true);
+      } else {
+        setOpenConfirmReport(true);
+      }
     };
   
     const handleCloseConfirmReport = () => {
       setOpenConfirmReport(false);
+      setOpenNeedLoginDialog(false);
     };
   
     const handleReport = () => {
@@ -121,8 +131,8 @@ const UserInfo = ({ match }) => {
           data: {
             type: 'user',
             product: null,
-            reporter: null,
-            accused: userInfo?.userId
+            reporter: userLoginData.id,
+            accused: userId,
           }
         })
       .then((response) => {
@@ -143,17 +153,6 @@ const UserInfo = ({ match }) => {
       })
     }
 
-    // Snackbar controls
-    const [openReportSuccessSnackbar, setOpenReportSuccessSnackbar] = React.useState(false)
-    const [openReportErrorSnackbar, setOpenReportErrorSnackbar] = React.useState(false)
-    const handleCloseReportSnackbar = (event, reason) => {
-      if (reason === 'clickaway') {
-        return
-      }
-  
-      setOpenReportSuccessSnackbar(false)
-      setOpenReportErrorSnackbar(false)
-    }
     // End function report
   return (
     <Fragment>
@@ -188,7 +187,7 @@ const UserInfo = ({ match }) => {
                     variant='text' 
                     startIcon={<ReportProblemOutlinedIcon />}
                     onClick={handleClickOpenConfirmReport}>
-                    Báo cáo
+                    Tố cáo
                   </Button>
                   <Dialog
                     open={openConfirmReport}
@@ -209,6 +208,29 @@ const UserInfo = ({ match }) => {
                       <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
                         Xác nhận
                       </Button>
+                    </DialogActions>
+                  </Dialog>
+                  <Dialog
+                    open={openNeedLoginDialog}
+                    onClose={handleCloseConfirmReport}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      Hello bạn ơi
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Bạn cần phải đăng nhập để có thể tố cáo
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+                      <a href={process.env.PUBLIC_URL + "/login-register"}>
+                        <Button sx={{ textTransform: 'none' }}>
+                          Đăng nhập
+                        </Button>
+                      </a>
                     </DialogActions>
                   </Dialog>
                  </Box>

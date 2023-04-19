@@ -21,6 +21,7 @@ import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined
 // import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import axios from "axios";
+import { getUserLogin } from "../../utils/userLoginStorage";
 
 const ProductDescriptionInfo = ({
   product,
@@ -39,6 +40,7 @@ const ProductDescriptionInfo = ({
 }) => {
   const attributes = product?.attributes;
   const user = attributes?.userId?.data;
+  const userLoginData = getUserLogin()?.user;
 
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
@@ -60,13 +62,19 @@ const ProductDescriptionInfo = ({
 
   //Function Report
   const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+  const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
 
   const handleClickOpenConfirmReport = () => {
-    setOpenConfirmReport(true);
+      if(userLoginData === undefined) {
+        setOpenNeedLoginDialog(true);
+      } else {
+        setOpenConfirmReport(true);
+      }
   };
 
   const handleCloseConfirmReport = () => {
     setOpenConfirmReport(false);
+    setOpenNeedLoginDialog(false);
   };
 
   const handleReport = () => {
@@ -76,7 +84,7 @@ const ProductDescriptionInfo = ({
         data: {
           type: 'product',
           product: product?.id,
-          reporter: null,
+          reporter: userLoginData.id,
           accused: attributes?.userId
         }
       })
@@ -247,6 +255,8 @@ const ProductDescriptionInfo = ({
         onClick={handleClickOpenConfirmReport}
       >Báo cáo
       </Button>
+
+      {/* Dialog confirm report product */}
       <Dialog
         open={openConfirmReport}
         onClose={handleCloseConfirmReport}
@@ -266,6 +276,31 @@ const ProductDescriptionInfo = ({
           <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
             Xác nhận
           </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog if user haven't log in yet ! */}
+      <Dialog
+        open={openNeedLoginDialog}
+        onClose={handleCloseConfirmReport}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Hello bạn ơi
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn cần phải đăng nhập để có thể tố cáo
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+          <a href={process.env.PUBLIC_URL + "/login-register"}>
+            <Button sx={{ textTransform: 'none' }}>
+              Đăng nhập
+            </Button>
+          </a>
         </DialogActions>
       </Dialog>
       {

@@ -40,7 +40,9 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
   const formatDate = (date) => {
     const inputDate = new Date(date);
-    return `${inputDate.getDate().toString().padStart(2, '0')}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getFullYear()}`;
+    const minutes = inputDate.getMinutes() < 10 ? `0${inputDate.getMinutes()}` : inputDate.getMinutes();
+    
+    return `${inputDate.getDate().toString().padStart(2, '0')}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getFullYear()} ${inputDate.getHours()}:`+minutes;
   }
   return (
     <div className={`description-review-area ${spaceBottomClass}`}>
