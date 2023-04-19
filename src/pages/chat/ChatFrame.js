@@ -17,27 +17,27 @@ function ChatFrame() {
   const [chats, setChats] = useState([])
   const [avatar, setAvatar] = useState({ admin: '', partner: '' })
 
-  useEffect(() => {
-    const requestUrl =
-      process.env.REACT_APP_API_ENDPOINT +
-      `/chats?filters[$and][0][sender][id][$eq]=${currentAdmin}&filters[$and][1][receiver][id][$eq]=${partner}&populate=*`
-    fetch(requestUrl)
-      .then((res) => res.json())
-      .then((posts) => {
-        setChats((prev) => [...prev, posts.data])
-      })
-  }, [currentAdmin, partner])
+  // useEffect(() => {
+  //   const requestUrl =
+  //     process.env.REACT_APP_API_ENDPOINT +
+  //     `/chats?filters[$and][0][sender][id][$eq]=${currentAdmin}&filters[$and][1][receiver][id][$eq]=${partner}&populate=*`
+  //   fetch(requestUrl)
+  //     .then((res) => res.json())
+  //     .then((posts) => {
+  //       setChats((prev) => [...prev, posts.data])
+  //     })
+  // }, [currentAdmin, partner])
 
-  useEffect(() => {
-    const requestUrl =
-      process.env.REACT_APP_API_ENDPOINT +
-      `/chats?filters[$and][0][sender][id][$eq]=${partner}&filters[$and][1][receiver][id][$eq]=${currentAdmin}&populate=*`
-    fetch(requestUrl)
-      .then((res) => res.json())
-      .then((posts) => {
-        setChats((prev) => [...prev, posts.data])
-      })
-  }, [currentAdmin, partner])
+  // useEffect(() => {
+  //   const requestUrl =
+  //     process.env.REACT_APP_API_ENDPOINT +
+  //     `/chats?filters[$and][0][sender][id][$eq]=${partner}&filters[$and][1][receiver][id][$eq]=${currentAdmin}&populate=*`
+  //   fetch(requestUrl)
+  //     .then((res) => res.json())
+  //     .then((posts) => {
+  //       setChats((prev) => [...prev, posts.data])
+  //     })
+  // }, [currentAdmin, partner])
 
   useEffect(() => {
     const requestUrl =

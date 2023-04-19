@@ -14,7 +14,11 @@ import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ChatsFrame from "../../components/chat"
+
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+
+// import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 
 const ProductDescriptionInfo = ({
@@ -29,6 +33,7 @@ const ProductDescriptionInfo = ({
   addToast,
   addToCart,
   addToWishlist,
+  sendReport,
   addToCompare
 }) => {
   const attributes = product?.attributes;
@@ -188,6 +193,18 @@ const ProductDescriptionInfo = ({
         }
         disabled={wishlistItem !== undefined}
       >Yêu thích
+      </Button>
+      <Button
+        startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
+        // onClick={() => addToWishlist(product, addToast)}
+        title={
+          sendReport !== undefined
+            ? "sent report"
+            : "sent report"
+        }
+        disabled={sendReport !== undefined}
+        sx={{ color: 'red' }}
+      >Báo cáo
       </Button>
       {
         product.category ? (

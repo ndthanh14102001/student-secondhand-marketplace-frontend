@@ -10,6 +10,7 @@ import SchoolIcon from '@mui/icons-material/School';
 import AddIcon from '@mui/icons-material/Add';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
@@ -117,6 +118,12 @@ const UserInfo = ({ match }) => {
           <div className="container">
             <div className="row">
               <Paper sx={{ padding: "1rem", width: "100%" }}>
+                <Box sx={{
+                  float: 'right',
+                  display: 'flex',
+                 }}>
+                  <Button sx={{ textTransform: "capitalize", ml: '8px', fontSize: '10px' }} color="error" variant='text' startIcon={<ReportProblemOutlinedIcon />}>Báo cáo</Button>
+                 </Box>
                 <Grid container>
                   <Grid item xs={6}
                     sx={{
@@ -128,7 +135,7 @@ const UserInfo = ({ match }) => {
                       src={`${process.env.REACT_APP_SERVER_ENDPOINT}${avatar}`}
                       sx={{ width: "100px", height: "100px", border: "1px solid #ccc" }}>
                     </Avatar>
-                    <Box marginLeft={"1rem"}>
+                    <Box marginLeft={"1rem"} sx={{ display: 'flex', flexDirection: 'column' }}>
                       <Typography fontWeight={"bold"} marginBottom={"1rem"}>{userInfo?.fullName}</Typography>
                       <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />}>Theo dõi</Button>
                     </Box>
