@@ -9,7 +9,7 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -20,6 +20,7 @@ import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined
 
 // import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import axios from "axios";
 
 const ProductDescriptionInfo = ({
   product,
@@ -56,6 +57,45 @@ const ProductDescriptionInfo = ({
     selectedProductColor,
     selectedProductSize
   );
+
+  //Function Report
+  const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+
+  const handleClickOpenConfirmReport = () => {
+    setOpenConfirmReport(true);
+  };
+
+  const handleCloseConfirmReport = () => {
+    setOpenConfirmReport(false);
+  };
+
+  const handleReport = () => {
+    axios
+    .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+      {
+        data: {
+          type: 'product',
+          product: product?.id,
+          reporter: null,
+          accused: attributes?.userId
+        }
+      })
+    .then((response) => {
+      console.log(response)
+      addToast("Đã report thành công", {
+        appearance: "success",
+        autoDismiss: true
+      });
+      handleCloseConfirmReport();
+    })
+    .catch((error) => {
+      addToast(" Đã có lỗi !, report thất bại", {
+        appearance: "error",
+        autoDismiss: true
+      });
+      handleCloseConfirmReport();
+    })
+  }
 
   return (
     <div className="product-details-content ml-70">
@@ -204,8 +244,30 @@ const ProductDescriptionInfo = ({
         }
         disabled={sendReport !== undefined}
         sx={{ color: 'red' }}
+        onClick={handleClickOpenConfirmReport}
       >Báo cáo
       </Button>
+      <Dialog
+        open={openConfirmReport}
+        onClose={handleCloseConfirmReport}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Xác nhận report sản phẩm
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn có muốn report sản phẩm "{attributes?.name}" không ?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+          <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
       {
         product.category ? (
           <div className="pro-details-meta">

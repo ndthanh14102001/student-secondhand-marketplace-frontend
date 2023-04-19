@@ -1,9 +1,12 @@
-import { useDispatch } from 'react-redux';
+import PropTypes from "prop-types";
+import { connect, useDispatch } from 'react-redux';
 import React, { useEffect, useMemo, useState, Fragment } from 'react'
+import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, styled } from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled } from '@mui/material';
+import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SchoolIcon from '@mui/icons-material/School';
@@ -99,6 +102,59 @@ const UserInfo = ({ match }) => {
     getUserInfo();
   }, [userId, dispatch]);
 
+    //Function Report
+    const { addToast } = useToasts();
+    const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+
+    const handleClickOpenConfirmReport = () => {
+      setOpenConfirmReport(true);
+    };
+  
+    const handleCloseConfirmReport = () => {
+      setOpenConfirmReport(false);
+    };
+  
+    const handleReport = () => {
+      axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+        {
+          data: {
+            type: 'user',
+            product: null,
+            reporter: null,
+            accused: userInfo?.userId
+          }
+        })
+      .then((response) => {
+        console.log(response)
+        addToast(`Báo cáo người dùng "${userInfo?.fullName}" thành công.`, {
+          appearance: "success",
+          autoDismiss: true
+        });
+        // setOpenReportSuccessSnackbar(true)
+        handleCloseConfirmReport();
+      })
+      .catch((error) => {
+        addToast(`Có lỗi xảy ra, báo cáo thất bại !`, {
+          appearance: "error",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
+      })
+    }
+
+    // Snackbar controls
+    const [openReportSuccessSnackbar, setOpenReportSuccessSnackbar] = React.useState(false)
+    const [openReportErrorSnackbar, setOpenReportErrorSnackbar] = React.useState(false)
+    const handleCloseReportSnackbar = (event, reason) => {
+      if (reason === 'clickaway') {
+        return
+      }
+  
+      setOpenReportSuccessSnackbar(false)
+      setOpenReportErrorSnackbar(false)
+    }
+    // End function report
   return (
     <Fragment>
       <MetaTags>
@@ -122,7 +178,39 @@ const UserInfo = ({ match }) => {
                   float: 'right',
                   display: 'flex',
                  }}>
-                  <Button sx={{ textTransform: "capitalize", ml: '8px', fontSize: '10px' }} color="error" variant='text' startIcon={<ReportProblemOutlinedIcon />}>Báo cáo</Button>
+                  <Button 
+                    sx={{ 
+                      textTransform: "capitalize", 
+                      ml: '8px', 
+                      fontSize: '10px' 
+                    }} 
+                    color="error" 
+                    variant='text' 
+                    startIcon={<ReportProblemOutlinedIcon />}
+                    onClick={handleClickOpenConfirmReport}>
+                    Báo cáo
+                  </Button>
+                  <Dialog
+                    open={openConfirmReport}
+                    onClose={handleCloseConfirmReport}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      Xác nhận report người dùng
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Bạn có chắc muốn báo cáo người dùng "{userInfo?.fullName}" không ?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+                      <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+                        Xác nhận
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
                  </Box>
                 <Grid container>
                   <Grid item xs={6}
