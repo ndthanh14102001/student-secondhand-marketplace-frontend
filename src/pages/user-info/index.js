@@ -1,15 +1,19 @@
-import { useDispatch } from 'react-redux';
+import PropTypes from "prop-types";
+import { connect, useDispatch } from 'react-redux';
 import React, { useEffect, useMemo, useState, Fragment } from 'react'
+import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, styled } from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, Link } from '@mui/material';
+import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SchoolIcon from '@mui/icons-material/School';
 import AddIcon from '@mui/icons-material/Add';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
@@ -20,6 +24,8 @@ import { ddmmyy } from '../../utils/DateFormat';
 import ShopProducts from '../../wrappers/product/ShopProducts';
 import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../other/my-products/constants';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
+import { getUserLogin } from "../../utils/userLoginStorage";
+import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function a11yProps(index) {
   return {
     id: `products-tab-${index}`,
@@ -32,6 +38,7 @@ const BoxUserInfo = styled(Box)(() => ({
   alignItems: "center",
   width: "100%"
 }));
+
 const UserInfo = ({ match }) => {
   const dispatch = useDispatch();
   const userId = match.params.id
@@ -98,6 +105,55 @@ const UserInfo = ({ match }) => {
     getUserInfo();
   }, [userId, dispatch]);
 
+    //Function Report
+    const { addToast } = useToasts();
+    const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+    const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
+    const userLoginData = getUserLogin()?.user;
+
+    const handleClickOpenConfirmReport = () => {
+      if(userLoginData === undefined) {
+        setOpenNeedLoginDialog(true);
+      } else {
+        setOpenConfirmReport(true);
+      }
+    };
+  
+    const handleCloseConfirmReport = () => {
+      setOpenConfirmReport(false);
+      setOpenNeedLoginDialog(false);
+    };
+  
+    const handleReport = () => {
+      axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+        {
+          data: {
+            type: 'user',
+            product: null,
+            reporter: userLoginData.id,
+            accused: userId,
+          }
+        })
+      .then((response) => {
+        console.log(response)
+        addToast(`Báo cáo người dùng "${userInfo?.fullName}" thành công.`, {
+          appearance: "success",
+          autoDismiss: true
+        });
+        // setOpenReportSuccessSnackbar(true)
+        handleCloseConfirmReport();
+      })
+      .catch((error) => {
+        addToast(`Có lỗi xảy ra, báo cáo thất bại !`, {
+          appearance: "error",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
+      })
+    }
+
+    // End function report
   return (
     <Fragment>
       <MetaTags>
@@ -117,6 +173,67 @@ const UserInfo = ({ match }) => {
           <div className="container">
             <div className="row">
               <Paper sx={{ padding: "1rem", width: "100%" }}>
+                <Box sx={{
+                  float: 'right',
+                  display: 'flex',
+                 }}>
+                  <Button 
+                    sx={{ 
+                      textTransform: "capitalize", 
+                      ml: '8px', 
+                      fontSize: '10px' 
+                    }} 
+                    color="error" 
+                    variant='text' 
+                    startIcon={<ReportProblemOutlinedIcon />}
+                    onClick={handleClickOpenConfirmReport}>
+                    Tố cáo
+                  </Button>
+                  <Dialog
+                    open={openConfirmReport}
+                    onClose={handleCloseConfirmReport}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      Xác nhận report người dùng
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Bạn có chắc muốn báo cáo người dùng "{userInfo?.fullName}" không ?
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+                      <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+                        Xác nhận
+                      </Button>
+                    </DialogActions>
+                  </Dialog>
+                  <Dialog
+                    open={openNeedLoginDialog}
+                    onClose={handleCloseConfirmReport}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">
+                      Hello bạn ơi
+                    </DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                        Bạn cần phải đăng nhập để có thể tố cáo
+                      </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+                      <a href={process.env.PUBLIC_URL + "/login-register"}>
+                        <Button sx={{ textTransform: 'none' }}>
+                          Đăng nhập
+                        </Button>
+                      </a>
+                    </DialogActions>
+                  </Dialog>
+                 </Box>
                 <Grid container>
                   <Grid item xs={6}
                     sx={{
@@ -128,7 +245,7 @@ const UserInfo = ({ match }) => {
                       src={`${process.env.REACT_APP_SERVER_ENDPOINT}${avatar}`}
                       sx={{ width: "100px", height: "100px", border: "1px solid #ccc" }}>
                     </Avatar>
-                    <Box marginLeft={"1rem"}>
+                    <Box marginLeft={"1rem"} sx={{ display: 'flex', flexDirection: 'column' }}>
                       <Typography fontWeight={"bold"} marginBottom={"1rem"}>{userInfo?.fullName}</Typography>
                       <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />}>Theo dõi</Button>
                     </Box>

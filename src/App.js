@@ -23,6 +23,9 @@ const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
 // product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
 
+// chat pages
+const Chat = lazy(() => import("./pages/chat/index.js"));
+
 // blog pages
 const BlogStandard = lazy(() => import("./pages/blog/BlogStandard"));
 const BlogNoSidebar = lazy(() => import("./pages/blog/BlogNoSidebar"));
@@ -127,6 +130,14 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/category"}
                     component={ShopGridStandard}
                   />
+
+
+                  {/* Chat pages */}
+                  <Route
+                    path={process.env.PUBLIC_URL + "/chat"}
+                    component={Chat}
+                  />
+
 
                   {/* Shop product pages */}
                   <Route
