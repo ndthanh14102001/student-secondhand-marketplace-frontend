@@ -13,6 +13,7 @@ import { updateUser } from "../../utils/userLoginStorage";
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { UNIVERSITY_LIST } from '../../constants'
+import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
 const MyAccount = ({ location }) => {
   const { pathname } = location;
@@ -43,8 +44,6 @@ const MyAccount = ({ location }) => {
     university: user.user.university
   });
 
-
-
   const [inputPassword, setInputPassword] = useState({
     currentPassword: "",
     password: "",
@@ -58,20 +57,36 @@ const MyAccount = ({ location }) => {
   const [isChangeAvatar, setIsChangeAvatar] = useState(false);
   const [urlAvatar, setUrlAvatar] = useState();
   const [fileAvatarInput, setFileAvatarInput] = useState(null);
+  const [follower, setFollower] = useState([])
+  const [listId, setListId] = useState([])
+  const [isChangeList, setIsChangeList] = useState(false)
 
   async function fetchData() {
     const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id + '?populate=*',
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id ,
       method: "get",
+      params: {
+        populate: {
+          avatar: true,
+          followers: {
+            populate: "*"
+          }
+        },
+      }
     })
     if (response.type === RESPONSE_TYPE) {
       setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
+      setFollower(response.data?.followers);
+      const arr = response.data?.followers;
+      arr.map((userFollow) => {
+        setListId(prevList => prevList.concat(userFollow.id))
+      })
     }
   }
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [isChangeList]);
 
   const handleInputChange = useCallback(({ target: { name, value } }) => {
     setInputValue((prevData) => ({ ...prevData, [name]: value }));
@@ -301,6 +316,12 @@ const MyAccount = ({ location }) => {
     }
   }
 
+  const handleChangeList = (isOpen) => {
+    if (isOpen) {
+      setIsChangeList(prev => !prev);
+    } 
+  }
+
   return (
     <Fragment>
       <MetaTags>
@@ -320,7 +341,7 @@ const MyAccount = ({ location }) => {
         <div className="myaccount-area pb-80 pt-100">
           <div className="container">
             <div className="row">
-              <div className="ml-auto mr-auto col-lg-9">
+              <div className="ml-auto mr-auto col-wrapper">
                 <div className="myaccount-wrapper">
                   <Accordion defaultActiveKey="0">
                     <Card className="single-my-account mb-20">
@@ -334,9 +355,9 @@ const MyAccount = ({ location }) => {
                       <Accordion.Collapse eventKey="0">
                         <Card.Body>
                           <div className="myaccount-info-wrapper">
-                            <div className="account-info-wrapper">
+                            {/* <div className="account-info-wrapper">
                               <h4>Thông tin tài khoản của tôi</h4>
-                            </div>
+                            </div> */}
                             <div className="row">
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
@@ -454,6 +475,26 @@ const MyAccount = ({ location }) => {
                               </div>
                             </div>
                           </div>
+                        </Card.Body>
+                      </Accordion.Collapse>
+                    </Card>
+                    <Card className="single-my-account mb-20 product-details-content">
+                      <Card.Header className="panel-heading">
+                        <Accordion.Toggle variant="link" eventKey="2">
+                          <h3 className="panel-title">
+                            <span>3 .</span> Danh sách người theo dõi{" "}
+                          </h3>
+                        </Accordion.Toggle>
+                      </Card.Header>
+                      <Accordion.Collapse eventKey="2">
+                        <Card.Body>
+                          {
+                            follower.length === 0 ? 
+                            <Typography> abc</Typography> :
+                            follower.map((fl) => (
+                              <ProductOwnerInfo user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
+                            ))
+                          }
                         </Card.Body>
                       </Accordion.Collapse>
                     </Card>

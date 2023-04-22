@@ -5,12 +5,13 @@ import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, Link } from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled} from '@mui/material';
 import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import SchoolIcon from '@mui/icons-material/School';
 import AddIcon from '@mui/icons-material/Add';
+import CheckIcon from '@mui/icons-material/Check';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
@@ -24,7 +25,9 @@ import { ddmmyy } from '../../utils/DateFormat';
 import ShopProducts from '../../wrappers/product/ShopProducts';
 import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../other/my-products/constants';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
+
 import { getUserLogin } from "../../utils/userLoginStorage";
+
 import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function a11yProps(index) {
   return {
@@ -39,11 +42,18 @@ const BoxUserInfo = styled(Box)(() => ({
   width: "100%"
 }));
 
+const user = getUserLogin()?.user;
+
+
 const UserInfo = ({ match }) => {
+  const { addToast } = useToasts();
   const dispatch = useDispatch();
   const userId = match.params.id
   const { pathname } = useLocation();
   const [userInfo, setUserInfo] = useState(null);
+  const [isFollow, setIsFollow] = useState(false);
+  const [openUnFollow, setOpenUnFollow] = useState(false);
+  const [listIdFollow, setListIdFollow] = useState([]);
 
   const avatar = useMemo(() => {
     return userInfo?.avatar?.url;
@@ -90,6 +100,9 @@ const UserInfo = ({ match }) => {
             },
             avatar: {
               populate: "*"
+            },
+            user_followed:{
+              populate: "*"
             }
           }
         }
@@ -97,6 +110,14 @@ const UserInfo = ({ match }) => {
       if (response.type === RESPONSE_TYPE) {
         const responseData = response.data;
         setUserInfo(responseData);
+        if(user){
+          responseData.user_followed.map((follower) => {
+            setListIdFollow(prevList => prevList.concat(follower.id));
+            if(follower.id === user?.id){
+              setIsFollow(true);
+            }
+          })
+        }
       } else {
         dispatch(onShowPopupErrorBase(response))
       }
@@ -105,8 +126,56 @@ const UserInfo = ({ match }) => {
     getUserInfo();
   }, [userId, dispatch]);
 
+  const handleCloseUnFollow = () => {
+    setOpenUnFollow(false);
+  }
+
+  const handleUnFollow = async () => {
+    let list = listIdFollow.filter((item)=> item !== user.id);
+    setListIdFollow(listIdFollow.filter((item)=> item !== user.id));
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
+      method: "put",
+      data: {
+        "user_followed": list,
+      },
+    })
+    if (response.type === RESPONSE_TYPE) {
+      addToast("Hủy theo dõi thành công", {
+        appearance: "success",
+        autoDismiss: true
+      });
+      setIsFollow(false);
+      setOpenUnFollow(false);
+    }
+    
+  }
+
+  const handleFollow = async () => {
+    if(isFollow){
+      setOpenUnFollow(true)
+    }
+    else{
+      let list = listIdFollow.concat(user.id);
+      setListIdFollow(listIdFollow.concat(user.id));
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
+        method: "put",
+        data: {
+          "user_followed": list,
+        },
+      })
+      if (response.type === RESPONSE_TYPE) {
+        addToast("Theo dõi thành công", {
+          appearance: "success",
+          autoDismiss: true
+        });
+        setIsFollow(true);
+      }
+    }
+  }
+
     //Function Report
-    const { addToast } = useToasts();
     const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
     const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
     const userLoginData = getUserLogin()?.user;
@@ -247,7 +316,11 @@ const UserInfo = ({ match }) => {
                     </Avatar>
                     <Box marginLeft={"1rem"} sx={{ display: 'flex', flexDirection: 'column' }}>
                       <Typography fontWeight={"bold"} marginBottom={"1rem"}>{userInfo?.fullName}</Typography>
-                      <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />}>Theo dõi</Button>
+                      {
+                        isFollow ? 
+                      <Button sx={{ textTransform: "capitalize" }} variant='outlined' startIcon={<CheckIcon />} onClick={handleFollow}>Đang theo dõi</Button> :
+                      <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />} onClick={handleFollow}>Theo dõi</Button>
+                      }
                     </Box>
                   </Grid>
                   <Grid item xs={6}>
@@ -288,6 +361,17 @@ const UserInfo = ({ match }) => {
             </div>
           </div>
         </div>
+        <Dialog open={openUnFollow} onClose={handleCloseUnFollow}>
+          <DialogTitle>{'Bạn có muốn hủy theo dõi người dùng này không?'}</DialogTitle>
+          <DialogActions sx={{ justifyContent: 'center' }}>
+              <Button onClick={handleCloseUnFollow} variant="contained" color="error">
+                không
+              </Button>
+              <Button onClick={handleUnFollow} variant="contained">
+                có
+              </Button>
+          </DialogActions>
+        </Dialog>
       </LayoutOne>
     </Fragment >
   )
