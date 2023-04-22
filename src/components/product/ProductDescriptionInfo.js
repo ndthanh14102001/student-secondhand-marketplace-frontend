@@ -212,24 +212,26 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        <div className="pro-details-cart btn-hover">
-          <button
-            onClick={() => { }
-              // addToCart(
-              //   product,
-              //   addToast,
-              //   quantityCount,
-              //   selectedProductColor,
-              //   selectedProductSize
-              // )
-            }
-            disabled={productCartQty >= productStock}
-          >
-            <ChatIcon />
-            {" "}
-            Chat với người bán
-          </button>
-        </div>
+        <Link to={userLoginData !== undefined && "/chat"} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+          <div className="pro-details-cart btn-hover">
+            <button
+              onClick={() => { }
+                // addToCart(
+                //   product,
+                //   addToast,
+                //   quantityCount,
+                //   selectedProductColor,
+                //   selectedProductSize
+                // )
+              }
+              disabled={productCartQty >= productStock}
+            >
+              <ChatIcon />
+              {" "}
+              Chat với người bán
+            </button>
+          </div>
+        </Link>
       </div>
       <Button
         startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
@@ -291,7 +293,7 @@ const ProductDescriptionInfo = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bạn cần phải đăng nhập để có thể tố cáo
+            Bạn cần phải đăng nhập để thực hiện hành động này
           </DialogContentText>
         </DialogContent>
         <DialogActions>
