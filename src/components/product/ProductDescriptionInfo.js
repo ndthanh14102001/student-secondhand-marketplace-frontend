@@ -85,7 +85,7 @@ const ProductDescriptionInfo = ({
           type: 'product',
           product: product?.id,
           reporter: userLoginData.id,
-          accused: attributes?.userId
+          accused: null,
         }
       })
     .then((response) => {
@@ -212,7 +212,8 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        <Link to={userLoginData !== undefined && "/chat"} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+        {console.log(attributes?.userId)}
+        <Link to={(userLoginData !== undefined && user.id) && "/chat/" + user.id} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
           <div className="pro-details-cart btn-hover">
             <button
               onClick={() => { }

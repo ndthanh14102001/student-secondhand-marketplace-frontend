@@ -134,8 +134,10 @@ const App = (props) => {
 
                   {/* Chat pages */}
                   <Route
-                    path={process.env.PUBLIC_URL + "/chat"}
-                    component={Chat}
+                    path={process.env.PUBLIC_URL + "/chat/:id"}
+                    render={(routeProps) => (
+                      <Chat {...routeProps} key={routeProps.match.params.id} />
+                    )}
                   />
 
 

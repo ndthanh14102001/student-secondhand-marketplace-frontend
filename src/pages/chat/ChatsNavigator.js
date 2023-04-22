@@ -61,8 +61,9 @@ function ChatsNavigator() {
         sx={{ overflowY: 'scroll', overflowX: 'hidden' }}
       >
         <Box>
-          {[...new Array(12)].map(() => (
+          {[...new Array(12)].map((item, index) => (
             <Box
+              key={index}
               sx={{
                 display: 'flex',
                 flexDirection: 'row',

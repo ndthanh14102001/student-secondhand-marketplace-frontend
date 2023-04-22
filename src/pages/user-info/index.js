@@ -28,7 +28,6 @@ import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
 
 import { getUserLogin } from "../../utils/userLoginStorage";
 
-import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function a11yProps(index) {
   return {
     id: `products-tab-${index}`,
