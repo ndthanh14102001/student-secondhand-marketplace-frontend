@@ -16,8 +16,8 @@ function ChatFrame(props) {
 
   const { addToast } = useToasts();
   const chatTextBoxHeight = 60
-  const [partner, setPartner] = useState(3)
-  const [currentUser, setcurrentUser] = useState(1)
+  const [partner, setPartner] = useState(props.sellerData.id)
+  const [currentUser, setcurrentUser] = useState(props.userLoginData.id)
   const [chats, setChats] = useState([])
   const [avatar, setAvatar] = useState({ admin: '', partner: '' })
 
@@ -98,7 +98,7 @@ function ChatFrame(props) {
       })
     }
     getChats();
-  },[])
+  },[props.sellerData, props.userLoginData])
 
   // Update chat to database
   const sendMessage = (mess) => {
