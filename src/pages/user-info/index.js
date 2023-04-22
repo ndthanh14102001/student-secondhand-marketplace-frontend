@@ -26,6 +26,10 @@ import ShopProducts from '../../wrappers/product/ShopProducts';
 import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../other/my-products/constants';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
 
+import { onShowPopup } from '../../redux/actions/popupActions';
+import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
+import { onClosePopup } from '../../redux/actions/popupActions';
+
 import { getUserLogin } from "../../utils/userLoginStorage";
 
 import { NavLink } from "react-router-dom/cjs/react-router-dom";
@@ -156,21 +160,33 @@ const UserInfo = ({ match }) => {
       setOpenUnFollow(true)
     }
     else{
-      let list = listIdFollow.concat(user.id);
-      setListIdFollow(listIdFollow.concat(user.id));
-      const response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
-        method: "put",
-        data: {
-          "user_followed": list,
-        },
-      })
-      if (response.type === RESPONSE_TYPE) {
-        addToast("Theo dõi thành công", {
-          appearance: "success",
-          autoDismiss: true
-        });
-        setIsFollow(true);
+      if(user){
+        let list = listIdFollow.concat(user.id);
+        setListIdFollow(listIdFollow.concat(user.id));
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
+          method: "put",
+          data: {
+            "user_followed": list,
+          },
+        })
+        if (response.type === RESPONSE_TYPE) {
+          addToast("Theo dõi thành công", {
+            appearance: "success",
+            autoDismiss: true
+          });
+          setIsFollow(true);
+        }
+      }
+      else{
+        dispatch(onShowPopup({
+          type: POPUP_TYPE_ERROR,
+          title: "Đăng nhập",
+          content: "Hãy quay lại đăng nhập để bình luận",
+          showButtonCancel: false,
+          closeAction: () => dispatch(onClosePopup()),
+          clickOkeAction: () => dispatch(onClosePopup()),
+        }))
       }
     }
   }

@@ -9,11 +9,16 @@ import { useState } from 'react'
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { useToasts } from "react-toast-notifications";
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
+import { useDispatch } from 'react-redux';
+import { onShowPopup } from '../../redux/actions/popupActions';
+import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
+import { onClosePopup } from '../../redux/actions/popupActions';
 
 const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) => {
   const userAttributes = user?.attributes
   const account = getUserLogin()?.user;
   const { addToast } = useToasts();
+  const dispatch = useDispatch();
 
   const [listIdFollow, setListIdFollow] = useState([])
   const [isFollow, setIsFollow] = useState(false)
@@ -21,7 +26,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
   
   useEffect(()=>{
     if(check === 1){
-      let list = userAttributes?.followers?.data
+      let list = userAttributes?.user_followed?.data
       list.map((follower) =>{
         setListIdFollow(listIdFollow.concat(follower.id))
         if(account?.id === follower.id)
@@ -88,21 +93,33 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
       setOpenUnFollow(true)
     }
     else{
-      let list = listIdFollow.concat(account.id);
-      setListIdFollow(listIdFollow.concat(account.id));
-      const response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id ,
-        method: "put",
-        data: {
-          "user_followed": list,
-        },
-      })
-      if (response.type === RESPONSE_TYPE) {
-        addToast("Theo dõi thành công", {
-          appearance: "success",
-          autoDismiss: true
-        });
-        setIsFollow(true);
+      if(account){
+        let list = listIdFollow.concat(account.id);
+        setListIdFollow(listIdFollow.concat(account.id));
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id ,
+          method: "put",
+          data: {
+            "user_followed": list,
+          },
+        })
+        if (response.type === RESPONSE_TYPE) {
+          addToast("Theo dõi thành công", {
+            appearance: "success",
+            autoDismiss: true
+          });
+          setIsFollow(true);
+        }
+      }
+      else{
+        dispatch(onShowPopup({
+          type: POPUP_TYPE_ERROR,
+          title: "Đăng nhập",
+          content: "Hãy quay lại đăng nhập để bình luận",
+          showButtonCancel: false,
+          closeAction: () => dispatch(onClosePopup()),
+          clickOkeAction: () => dispatch(onClosePopup()),
+        }))
       }
     }
   }
