@@ -188,7 +188,7 @@ function ProductModal(props) {
                   </div>
                 </div>
                 <div>
-                  <ProductOwnerInfo user={user} onHideModal={onHide} />
+                  <ProductOwnerInfo user={user} check={1} onHideModal={onHide} />
                 </div>
               </div>
             </div>
