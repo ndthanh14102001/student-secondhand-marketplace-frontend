@@ -257,7 +257,7 @@ const ProductDescriptionInfo = ({
         </ul>
       </div> */}
       <div>
-        <ProductOwnerInfo user={user} />
+        <ProductOwnerInfo user={user} check={1} />
       </div>
     </div >
   );
