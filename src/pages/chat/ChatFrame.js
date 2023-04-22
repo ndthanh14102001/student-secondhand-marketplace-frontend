@@ -39,25 +39,25 @@ function ChatFrame() {
   //     })
   // }, [currentAdmin, partner])
 
-  useEffect(() => {
-    const requestUrl =
-      process.env.REACT_APP_API_ENDPOINT +
-      `/users?filters[$or][0][id][$eq]=${currentAdmin}&filters[$or][1][id][$eq]=${partner}&populate=avatar`
-    fetch(requestUrl)
-      .then((res) => res.json())
-      .then((posts) => {
-        setAvatar({
-          admin:
-            posts[0].id === currentAdmin
-              ? posts[0].avatar?.data?.attributes?.url
-              : posts[1].avatar?.data?.attributes?.url,
-          partner:
-            posts[1].id === currentAdmin
-              ? posts[0].avatar?.data?.attributes?.url
-              : posts[1].avatar?.data?.attributes?.url,
-        })
-      })
-  }, [currentAdmin, partner])
+  // useEffect(() => {
+  //   const requestUrl =
+  //     process.env.REACT_APP_API_ENDPOINT +
+  //     `/users?filters[$or][0][id][$eq]=${currentAdmin}&filters[$or][1][id][$eq]=${partner}&populate=avatar`
+  //   fetch(requestUrl)
+  //     .then((res) => res.json())
+  //     .then((posts) => {
+  //       setAvatar({
+  //         admin:
+  //           posts[0].id === currentAdmin
+  //             ? posts[0].avatar?.data?.attributes?.url
+  //             : posts[1].avatar?.data?.attributes?.url,
+  //         partner:
+  //           posts[1].id === currentAdmin
+  //             ? posts[0].avatar?.data?.attributes?.url
+  //             : posts[1].avatar?.data?.attributes?.url,
+  //       })
+  //     })
+  // }, [currentAdmin, partner])
 
   return (
     <div
