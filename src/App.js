@@ -11,8 +11,11 @@ import ThemeProvider from "./theme";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
+import { getUserLogin } from "./utils/userLoginStorage";
 
 
+// Get user data
+const user = getUserLogin();
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -133,12 +136,18 @@ const App = (props) => {
 
 
                   {/* Chat pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/chat/:id"}
-                    render={(routeProps) => (
-                      <Chat {...routeProps} key={routeProps.match.params.id} />
-                    )}
-                  />
+                  { user !== undefined ? 
+                    <Route
+                      path={process.env.PUBLIC_URL + "/chat/:id"}
+                      render={(routeProps) => (
+                        <Chat {...routeProps} key={routeProps.match.params.id} />
+                      )}
+                    /> : 
+                    <Route
+                    path={process.env.PUBLIC_URL + "/chat"}
+                    component={LoginAndRegister}
+                    />}
+                  
 
 
                   {/* Shop product pages */}

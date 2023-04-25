@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom'
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb'
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
+import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
 
 function ChatsFrame({ match }) {
@@ -42,12 +43,10 @@ function ChatsFrame({ match }) {
     
   // })
 
-
-
   return (
     <Fragment>
       <MetaTags>
-        <title>Student Market | Thông tin người bán</title>
+        <title>Student Market | Trò chuyện</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."
@@ -58,7 +57,7 @@ function ChatsFrame({ match }) {
         Chat với người bán
       </BreadcrumbsItem>
       <LayoutOne 
-       headerTop="visible"
+      headerTop="visible"
       >
         <Breadcrumb />
         <div className="product-area pt-60 pb-60">
