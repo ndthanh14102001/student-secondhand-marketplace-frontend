@@ -68,7 +68,7 @@ const MyAccount = ({ location }) => {
       params: {
         populate: {
           avatar: true,
-          followers: {
+          user_followed: {
             populate: "*"
           }
         },
@@ -76,8 +76,8 @@ const MyAccount = ({ location }) => {
     })
     if (response.type === RESPONSE_TYPE) {
       setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
-      setFollower(response.data?.followers);
-      const arr = response.data?.followers;
+      const arr = response.data?.user_followed;
+      setFollower(arr);
       arr.map((userFollow) => {
         setListId(prevList => prevList.concat(userFollow.id))
       })
