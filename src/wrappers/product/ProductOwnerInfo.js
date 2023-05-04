@@ -26,7 +26,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
   
   useEffect(()=>{
     if(check === 1){
-      let list = userAttributes?.user_followed?.data
+      let list = userAttributes?.followers?.data
       list.map((follower) =>{
         setListIdFollow(listIdFollow.concat(follower.id))
         if(account?.id === follower.id)
@@ -52,7 +52,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
         method: "put",
         data: {
-          "followers": list,
+          "user_followed": list,
         },
       })
       if (response.type === RESPONSE_TYPE) {
@@ -68,7 +68,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + account.id,
         method: "put",
         data: {
-          "followers": list,
+          "user_followed": list,
         },
       })
       if (response.type === RESPONSE_TYPE) {
@@ -100,7 +100,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
           url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id ,
           method: "put",
           data: {
-            "user_followed": list,
+            "followers": list,
           },
         })
         if (response.type === RESPONSE_TYPE) {

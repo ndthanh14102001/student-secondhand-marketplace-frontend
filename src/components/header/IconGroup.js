@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
@@ -8,6 +8,10 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
 import { logout } from "../../redux/actions/userStorageActions";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import Avatar from '@mui/material/Avatar';
+import { useEffect } from "react";
 const IconGroup = ({
   currency,
   cartData,
@@ -20,7 +24,12 @@ const IconGroup = ({
   const isLogin = useSelector(state => state.userStorage.isLogin);
   const accountDropRef = useRef();
   const searchRef = useRef();
+  const notificationRef = useRef();
   const history = useHistory();
+  const user = getUserLogin()?.user;
+
+  const [noti, setNoti] = useState([]);
+  const [read, setRead] = useState([]);
 
   const { addToast } = useToasts();
   const handleClick = e => {
@@ -32,6 +41,9 @@ const IconGroup = ({
   const handleCloseSearch = e => {
     searchRef.current.classList.remove("active");
   };
+  const handleCloseBell = () =>{
+    notificationRef.current.classList.remove("active");
+  }
   // const triggerMobileMenu = () => {
   //   const offcanvasMobileMenu = document.querySelector(
   //     "#offcanvas-mobile-menu"
@@ -48,6 +60,80 @@ const IconGroup = ({
     dispatch(logout());
     handleCloseAvatarDrop();
   }
+
+  // const handleFetchData = async() => {
+  async function handleFetchData() {
+    let list = [];
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+      method: "get",
+      params: {
+        populate: {
+          followers: true,
+          notification_reads: true
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let fl = response.data?.followers;
+      fl.map((follower) =>{
+        list = list.concat(follower.id)
+      })
+      let reads = response.data?.notification_reads;
+      reads.map((read) =>{
+        setRead(prev => prev.concat(read.id))
+      })
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/notifications",
+        method: "get",
+        params: {
+          populate: {
+            from: {
+              populate:{
+                avatar: true
+              }
+            },
+            reads: true
+          },
+          sort:{
+            createdAt: "desc",
+          },
+          pagination:{
+            limit: "10"
+          }
+        },
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        let listNoti = response1.data.data;
+        setNoti(listNoti.filter((noti) => list.includes(noti.attributes.from.data.id)))
+      }
+    }
+  }
+
+  useEffect(() => {
+    handleFetchData();
+  }, []);
+
+  const handleDate = (date) => {
+    const inputDate = new Date(date);
+    const now = new Date();
+    const oneDayInMs = 1000 * 60 * 60 * 24; 
+    const oneHourInMs = 1000 * 60 * 60;
+    const oneMinuteInMs = 1000 * 60
+    const diffInDays = Math.floor((now.getTime() - inputDate.getTime()) / oneDayInMs);
+    const diffInHours =  Math.floor((now.getTime() - inputDate.getTime()) / oneHourInMs);
+    const diffInMinutes =  Math.floor((now.getTime() - inputDate.getTime()) / oneMinuteInMs);
+    if(diffInDays > 0)
+      return `${diffInDays} ngày trước`;
+    if(diffInHours > 0)
+      return `${diffInHours} giờ trước`;
+    if(diffInMinutes > 0)
+      return `${diffInMinutes} phút trước`;
+    return 'ngay bây giờ';
+  }
+
+  const isIdRead = (id) => read.includes(id);
+  const unRead = noti.filter((item) => !read.includes(item.id));
 
   return (
     <div
@@ -113,6 +199,52 @@ const IconGroup = ({
           </span>
         </Link>
       </div> */}
+      {isLogin && 
+        <ClickAwayListener onClickAway={handleCloseBell}>
+          <div className="same-style account-setting d-none d-lg-block" >
+            <button
+              className="account-setting-active"
+              onClick={handleClick}
+            >
+              {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
+              <i className="pe-7s-bell"/>
+              <span className="count-styles">
+                {unRead && unRead.length ? unRead.length : 0}
+              </span>
+            </button>
+            <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
+              <div className="notify_header">
+                <div>Thông báo</div>
+              </div>
+              <ul>
+                {
+                  noti.map((item, index) => (
+                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""}>
+                      <div className="notify_avatar">
+                        <Avatar 
+                          alt="avatar" 
+                          src={item?.attributes?.from?.data?.attributes?.avatar.data.attributes.url ? 
+                            (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar.data.attributes.url) 
+                            : "abc"
+                          } 
+                        />  
+                      </div>
+                      <div className="notify_data">
+                        <div className="data">
+                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng {item?.attributes?.content}  
+                        </div>
+                        <div className="date">
+                          {handleDate(item?.attributes?.updatedAt)}
+                        </div>
+                      </div>
+                    </li>
+                  ))
+                }
+              </ul>
+            </div>
+          </div>
+        </ClickAwayListener>
+      }
       <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />

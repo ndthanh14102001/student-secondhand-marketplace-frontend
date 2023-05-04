@@ -488,6 +488,48 @@
     &:hover > button {
       color: $theme-color;
     }
+    .Dropdown-underLine{
+      ul li {
+        border-bottom: 1px solid lightgrey;
+      }
+      ul li:last-child{
+        border-bottom: none
+      }
+    }
+    
+    .notification_dd{
+      .notify_header{
+        font-weight: 600;
+        font-size: 25px;
+      }
+      .notify_read{
+        color: #65676B;
+        .notify_data{
+          .date{
+            color: #65676B;
+            font-size: .8125rem;
+            font-weight: 400;
+          }
+        }
+      }
+      ul li{
+        border-bottom: 1px solid #f1f2f4;
+        padding: 5px 0px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        .notify_data{
+          margin-left: 5px;
+          .date{
+            color: hsl(214, 89%, 52%);
+            font-size: .8125rem;
+            font-weight: 600;
+          }
+        }
+      }
+
+    }
+
     .account-dropdown {
       position: absolute;
       z-index: 220;
@@ -754,6 +796,28 @@
           padding: 16px 40px 17px;
         }
       }
+    }
+  }
+  .count-styles {
+    font-size: 12px;
+    line-height: 21px;
+
+    position: absolute;
+    top: -9px;
+    right: -5px;
+
+    display: inline-block;
+
+    width: 21px;
+    height: 21px;
+
+    text-align: center;
+
+    color: #fff;
+    border-radius: 100%;
+    background-color: #000;
+    @media #{$xl-layout} {
+      right: -5px;
     }
   }
   &.header-right-wrap-white {

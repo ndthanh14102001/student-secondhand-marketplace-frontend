@@ -105,7 +105,7 @@ const UserInfo = ({ match }) => {
             avatar: {
               populate: "*"
             },
-            user_followed:{
+            followers:{
               populate: "*"
             }
           }
@@ -115,7 +115,7 @@ const UserInfo = ({ match }) => {
         const responseData = response.data;
         setUserInfo(responseData);
         if(user){
-          responseData.user_followed.map((follower) => {
+          responseData.followers.map((follower) => {
             setListIdFollow(prevList => prevList.concat(follower.id));
             if(follower.id === user?.id){
               setIsFollow(true);
@@ -141,7 +141,7 @@ const UserInfo = ({ match }) => {
       url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
       method: "put",
       data: {
-        "user_followed": list,
+        "followers": list,
       },
     })
     if (response.type === RESPONSE_TYPE) {
@@ -167,7 +167,7 @@ const UserInfo = ({ match }) => {
           url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
           method: "put",
           data: {
-            "user_followed": list,
+            "followers": list,
           },
         })
         if (response.type === RESPONSE_TYPE) {
