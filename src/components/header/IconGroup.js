@@ -12,6 +12,7 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from '@mui/material/Avatar';
 import { useEffect } from "react";
+import Brightness1Icon from '@mui/icons-material/Brightness1';
 const IconGroup = ({
   currency,
   cartData,
@@ -30,6 +31,7 @@ const IconGroup = ({
 
   const [noti, setNoti] = useState([]);
   const [read, setRead] = useState([]);
+  // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
   const handleClick = e => {
@@ -105,7 +107,7 @@ const IconGroup = ({
       })
       if (response1.type === RESPONSE_TYPE) {
         let listNoti = response1.data.data;
-        setNoti(listNoti.filter((noti) => list.includes(noti.attributes.from.data.id)))
+        setNoti(listNoti.filter((noti) => list.includes(noti.attributes?.from?.data?.id)))
       }
     }
   }
@@ -132,8 +134,68 @@ const IconGroup = ({
     return 'ngay bây giờ';
   }
 
+  const handleReadNotification = async(id) => {
+    
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+      method: "get",
+      params: {
+        populate: {
+          reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let list = []
+      let listIdRead = []
+      list = response?.data?.data?.attributes?.reads?.data;
+      list.map((item) => {
+        listIdRead.push(item.id)
+      })
+      listIdRead.push(user?.id)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+        method: "put",
+        data: {
+          data: {
+            reads: listIdRead,
+          }
+        },
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        console.log(response1)
+      }
+    }
+  }
+
   const isIdRead = (id) => read.includes(id);
   const unRead = noti.filter((item) => !read.includes(item.id));
+
+  const handleReadAll = async() => {
+    let list = []
+    noti.map((item) => {
+      list.push(item?.id)
+    })
+    console.log("lisss" + list)
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + user?.id,
+      method: "get",
+      params: {
+        populate: {
+          notification_reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let read = [];
+      read = response.data?.notification_reads
+      read.map((item) => {
+        read.push(item.id)
+      })
+      list.concat(read)
+      console.log(list)
+    }
+  }
 
   return (
     <div
@@ -214,12 +276,14 @@ const IconGroup = ({
             </button>
             <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
               <div className="notify_header">
-                <div>Thông báo</div>
+                <div className="title">Thông báo</div>
+                <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>
               </div>
               <ul>
                 {
+                  noti.length === 0 ? "<div className='notify_empty'>Bạn không có thông báo nào </div>":
                   noti.map((item, index) => (
-                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""}>
+                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id)}>
                       <div className="notify_avatar">
                         <Avatar 
                           alt="avatar" 
@@ -231,12 +295,19 @@ const IconGroup = ({
                       </div>
                       <div className="notify_data">
                         <div className="data">
-                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng {item?.attributes?.content}  
+                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{item?.attributes?.content}</b> 
                         </div>
                         <div className="date">
                           {handleDate(item?.attributes?.updatedAt)}
                         </div>
                       </div>
+                      { 
+                        isIdRead(item?.id) ? 
+                        "" : 
+                        <div className="notify_icon-read">
+                          <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
+                        </div>
+                      }
                     </li>
                   ))
                 }

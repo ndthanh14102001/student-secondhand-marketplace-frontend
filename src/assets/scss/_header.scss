@@ -499,8 +499,27 @@
     
     .notification_dd{
       .notify_header{
-        font-weight: 600;
-        font-size: 25px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 20px;
+        .notify_empty{
+          
+        }
+        .title{
+          font-weight: 600;
+          font-size: 25px;
+        }
+        .event_read{
+          color: hsl(214, 89%, 52%);
+          font-size: 12px;
+          align-self: center;
+          cursor: pointer;
+          border-radius: 5px;
+          &:hover{
+            background-color: #F2F3F5;
+          }
+        }
       }
       .notify_read{
         color: #65676B;
@@ -514,17 +533,28 @@
       }
       ul li{
         border-bottom: 1px solid #f1f2f4;
-        padding: 5px 0px;
+        border-radius: 5px;
+        padding: 5px 5px;
         display: flex;
         align-items: center;
         cursor: pointer;
+        .notify_avatar{
+          align-self: flex-start;
+        }
         .notify_data{
           margin-left: 5px;
+          width: 80%;
           .date{
             color: hsl(214, 89%, 52%);
             font-size: .8125rem;
             font-weight: 600;
           }
+        }
+        .notify_icon-read{
+
+        }
+        &:hover{
+          background-color: #F2F3F5;
         }
       }
 

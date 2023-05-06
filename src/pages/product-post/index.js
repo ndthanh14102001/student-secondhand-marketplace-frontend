@@ -108,7 +108,7 @@ const ProductPost = () => {
       formData.append("ref", "api::product.product")
       formData.append("refId", productResponse?.id)
       formData.append("field", "images")
-
+      
       response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/upload",
         method: "post",
@@ -121,6 +121,16 @@ const ProductPost = () => {
           appearance: "success",
           autoDismiss: true
         });
+        // response = await callApi({
+        //   url: process.env.REACT_APP_API_ENDPOINT + "/notifications",
+        //   method: "post",
+        //   data: {
+        //     data: {
+        //       from: user?.id,
+        //       content: "bán" + productInfo.name,
+        //     }
+        //   },
+        // })
       } else {
         dispatch(onShowPopupErrorBase(response));
       }
