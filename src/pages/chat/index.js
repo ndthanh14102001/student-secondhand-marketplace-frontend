@@ -20,6 +20,9 @@ function ChatsFrame({ match }) {
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
 
+  const handleChangeSeller = (info) => {  
+    setUser(info)
+  }
 
   // Lấy thông tin người bán hiện tại
   useEffect(() => {
@@ -70,10 +73,16 @@ function ChatsFrame({ match }) {
                 }}
               >
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  <ChatsNavigator />
+                  <ChatsNavigator 
+                    handleChangeSeller={handleChangeSeller} 
+                    userLoginData={userLoginData}
+                  />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  <ChatFrame sellerData={user !== undefined && user} userLoginData={userLoginData}/>
+                  <ChatFrame 
+                    sellerData={user !== undefined && user} 
+                    userLoginData={userLoginData}
+                  />
                 </div>
               </div>
           </div>
