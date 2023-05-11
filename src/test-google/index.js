@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
-
+let array = [];
 const DistanceCalculator = () => {
   const [origin, setOrigin] = useState('');
   const [destination, setDestination] = useState('');
   const [distance, setDistance] = useState('');
+  console.log("array", array);
 
-  const calculateDistance = (origin, destination) => {
+  const calculateDistance = (origin, destination, getValue) => {
     const geocoder = new window.google.maps.Geocoder();
-    let result = 0;
+    const result = 0;
     geocoder.geocode({ address: origin }, (results, status) => {
       if (status === window.google.maps.GeocoderStatus.OK) {
         const originLatLng = results[0].geometry.location;
@@ -20,8 +21,8 @@ const DistanceCalculator = () => {
               destinationLatLng
             );
             const distanceInKilometers = distanceInMeters / 1000;
-            console.log("distanceInKilometers", distanceInKilometers)
-            result = distanceInKilometers.toFixed(2);
+
+            forceUpdate(distanceInKilometers);
           } else {
             alert('Destination geocode was not successful for the following reason: ' + status);
           }
@@ -32,7 +33,11 @@ const DistanceCalculator = () => {
     });
     return result;
   };
-
+  const forceUpdate = (value) => {
+    console.log('Distance:', value);
+    array.push(value);
+    return value;
+  };
   return (
     <div>
       <input

@@ -7,7 +7,14 @@ import { addToWishlist } from "../../redux/actions/wishlistActions";
 import { useEffect } from "react";
 import { useState } from "react";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { getArrayUniversity, getAllUniversity, getFullAddressUniversity } from "../../utils/data/university";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import { calculateDistance } from "../../utils/googleApi";
+import { getAllWards } from "../../utils/data/wards";
+import { getAllDistrict } from "../../utils/data/district";
+import { getAllCity } from "../../utils/data/city";
 export const HOME_CATEGORY = "HOME_CATEGORY";
+
 const ProductGrid = ({
   category,
   products,
@@ -46,10 +53,48 @@ const ProductGrid = ({
       }
     }
     const getProductListHome = async () => {
+      const universityArray = getArrayUniversity();
+      const universityObject = getAllUniversity();
+      const userLogin = getUserLogin();
+      const userLoginUniversity = universityObject[userLogin.user.universityId];
+
+
+      const distances = []
+      for (let indexUniversity = 0; indexUniversity < universityArray.length; indexUniversity++) {
+        const university = universityArray[indexUniversity];
+        const originAddress = getFullAddressUniversity(university);
+        const destinationAddress = getFullAddressUniversity(userLoginUniversity);
+        const result = await calculateDistance(
+          originAddress,
+          destinationAddress,
+        );
+        console.log("result", result, `${originAddress},${destinationAddress}`);
+        distances.push({
+          id: university.id,
+          distance: result
+        })
+      }
+
+      console.log("distances", distances)
+
+
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/products",
         method: "get",
         params: {
+          filters: {
+            $or: [{
+              userId: {
+                universityId: {
+                  $eq: userLogin.user.universityId
+                }
+              }
+            },],
+            status: {
+              $eq: "onSale"
+            },
+
+          },
           pagination: {
             page: 1,
             pageSize: 16
@@ -61,11 +106,7 @@ const ProductGrid = ({
             category: true,
             images: true
           },
-          filters: {
-            status: {
-              $eq: "onSale"
-            }
-          },
+
           sort: {
             createdAt: "desc"
           }
