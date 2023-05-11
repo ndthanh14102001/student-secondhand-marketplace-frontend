@@ -10,12 +10,48 @@ import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
 import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
+import { io } from "socket.io-client";
 
 function ChatsFrame({ match }) {
+
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+      const SERVER_URL = "http://35.240.158.158";
+      const setupSocket = io(SERVER_URL, {
+        autoConnect: false
+      });
+
+      let tokenArr = getUserLogin().token.split(" ")
+      console.log(tokenArr[1])
+      setupSocket.auth = {token: tokenArr[1]}
+
+      setupSocket.connect();
+
+      setupSocket.on("disconnect", () => {
+        console.log(socket.connected); // false
+      });
+
+      setupSocket.on("connect", () => {
+        setSocket(setupSocket)
+      });
+      
+      
+
+    //  wait until socket connects before adding event listeners
+    // socket.on("connect", () => {
+    //   console.log(socket.connected); // true
+    // });
+
+    // socket.on("private message", (message) => {
+    //     console.log(message)
+    // })
+  },[])
 
   const { pathname } = useLocation();  
   // const attributes = product?.attributes;
   const userLoginData = getUserLogin()?.user;
+  console.log(getUserLogin());
 
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
@@ -79,10 +115,13 @@ function ChatsFrame({ match }) {
                   />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  <ChatFrame 
-                    sellerData={user !== undefined && user} 
-                    userLoginData={userLoginData}
-                  />
+                  {socket !== null && 
+                    <ChatFrame 
+                      sellerData={user !== undefined && user} 
+                      userLoginData={userLoginData}
+                      socket={socket}
+                    />
+                  }
                 </div>
               </div>
           </div>

@@ -12,9 +12,11 @@ import SendIcon from '@mui/icons-material/Send'
 import axios from 'axios'
 import { useToasts } from "react-toast-notifications";
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
+// import { io } from "socket.io-client";
 
 function ChatFrame(props) {
 
+  const { socket } = props;
   const { addToast } = useToasts();
   const chatTextBoxHeight = 60
   const [partner, setPartner] = useState(null)
@@ -134,76 +136,102 @@ function ChatFrame(props) {
     }
   },[partner, currentUser])
 
-  // Update chat to database
+  // Send message
   const sendMessage = () => {
     let mess = document.getElementById('MessageEditorBox').value
-    // document.getElementById("DisplayMessages").innerHTML += (
-    //   <Box
-    //     sx={{
-    //       display: 'flex',
-    //       flexDirection: 'row-reverse',
-    //       flexGrow: '1',
-    //       alignItems: 'end',
-    //     }}
-    //   >
-    //     <Avatar
-    //         alt={currentUser.username}
-    //         src={`${process.env.REACT_APP_SERVER_ENDPOINT}${currentUser.avatar?.url}`}
-    //         sx={{
-    //           width: 32,
-    //           height: 32,
-    //           marginBottom: '8px',
-    //           backgroundColor: 'rgb(0, 132, 255)',
-    //         }}
-    //       />
-    //     <Box
-    //       sx={{
-    //         backgroundColor: '#e5efff',
-    //         color: 'black',
-    //         fontSize: '14px',
-    //         padding: '8px',
-    //         margin: '8px',
-    //         maxWidth: '75%',
-    //         borderRadius: '9px',
-    //         border: '1px solid lightgrey',
-    //         boxShadow: '1px 1px 1px lightgrey',
-    //       }}
-    //     >
-    //       {mess}
-    //     </Box>
-    //   </Box>
-    // )
+    socket.emit("private message", {
+      content: mess,
+      to: partner.id,
+    });
 
-    const UpdateMessageToDatabase = async () => { 
-      axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/chats?populate=*', 
-        {
+    const dataPrototype = {
+      id : 69,
+      attributes: {
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+        content: mess,
+        read: false,
+        from: {
           data: {
-            content: mess,
-            from: props.userLoginData.id,
-            to: props.sellerData.id,
-            read: false,
+              id: props.userLoginData.id,
+              attributes: {
+                  username: props.userLoginData.username,
+              }
           }
-        })
-      .then((response) => {
-        console.log(response)
-        setChats((prev) => [response.data.data, ...prev])
-        console.log(chats.concat(response.data.data))
-        addToast("Gửi tin nhắn thành công", {
-          appearance: "success",
-          autoDismiss: true
-        });
-        
-      })
-      .catch((error) => {
-        addToast(" gửi tin nhắn thất bại, vui lòng kiểm tra lại đường truyền", {
-          appearance: "error",
-          autoDismiss: true
-        });
-      })
+        },
+        to: {
+          data: {
+              id: props.sellerData.id,
+              attributes: {
+                  username: props.sellerData.username,
+              }
+          }
+        }
+      }
     }
-    UpdateMessageToDatabase();
+    setChats((prev) => [dataPrototype, ...prev])
+    // const UpdateMessageToDatabase = async () => { 
+    //   axios
+    //   .post(process.env.REACT_APP_API_ENDPOINT + '/chats?populate=*', 
+    //     {
+    //       data: {
+    //         content: mess,
+    //         from: props.userLoginData.id,
+    //         to: props.sellerData.id,
+    //         read: false,
+    //       }
+    //     })
+    //   .then((response) => {
+    //     console.log(response)
+    //     setChats((prev) => [response.data.data, ...prev])
+    //     console.log(chats.concat(response.data.data))
+    //     addToast("Gửi tin nhắn thành công", {
+    //       appearance: "success",
+    //       autoDismiss: true
+    //     });
+        
+    //   })
+    //   .catch((error) => {
+    //     addToast(" gửi tin nhắn thất bại, vui lòng kiểm tra lại đường truyền", {
+    //       appearance: "error",
+    //       autoDismiss: true
+    //     });
+    //   })
+    // }
+    // UpdateMessageToDatabase();
   }
+
+  useEffect(()=>{
+    socket.on("private message", (message) => {
+      const dataPrototype = {
+        id : message.id,
+        attributes: {
+          createdAt: message.createdAt,
+          updatedAt: message.updatedAt,
+          content: message.content,
+          read: false,
+          from: {
+            data: {
+                id: props.sellerData.id,
+                attributes: {
+                    username: props.sellerData.username,
+                }
+            }
+          },
+          to: {
+            data: {
+                id: props.userLoginData.id,
+                attributes: {
+                    username: props.userLoginData.username,
+                }
+            }
+          }
+        }
+      }
+      console.log(dataPrototype)
+      setChats((prev) => [dataPrototype, ...prev])
+   })
+  },[socket])
 
   // Message Content
   const MessageContent = () => {

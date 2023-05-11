@@ -12,7 +12,7 @@ import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
-
+import { io } from "socket.io-client";
 
 // Get user data
 const user = getUserLogin();
@@ -57,6 +57,7 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
   const popupErrorBase = useSelector(state => state.popupErrorBase);
