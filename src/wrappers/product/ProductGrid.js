@@ -53,29 +53,29 @@ const ProductGrid = ({
       }
     }
     const getProductListHome = async () => {
-      const universityArray = getArrayUniversity();
-      const universityObject = getAllUniversity();
+      // const universityArray = getArrayUniversity();
+      // const universityObject = getAllUniversity();
       const userLogin = getUserLogin();
-      const userLoginUniversity = universityObject[userLogin.user.universityId];
+      // const userLoginUniversity = universityObject[userLogin.user.universityId];
 
 
-      const distances = []
-      for (let indexUniversity = 0; indexUniversity < universityArray.length; indexUniversity++) {
-        const university = universityArray[indexUniversity];
-        const originAddress = getFullAddressUniversity(university);
-        const destinationAddress = getFullAddressUniversity(userLoginUniversity);
-        const result = await calculateDistance(
-          originAddress,
-          destinationAddress,
-        );
-        console.log("result", result, `${originAddress},${destinationAddress}`);
-        distances.push({
-          id: university.id,
-          distance: result
-        })
-      }
+      // const distances = []
+      // for (let indexUniversity = 0; indexUniversity < universityArray.length; indexUniversity++) {
+      //   const university = universityArray[indexUniversity];
+      //   const originAddress = getFullAddressUniversity(university);
+      //   const destinationAddress = getFullAddressUniversity(userLoginUniversity);
+      //   const result = await calculateDistance(
+      //     originAddress,
+      //     destinationAddress,
+      //   );
+      //   console.log("result", result, `${originAddress},${destinationAddress}`);
+      //   distances.push({
+      //     id: university.id,
+      //     distance: result
+      //   })
+      // }
 
-      console.log("distances", distances)
+      // console.log("distances", distances)
 
 
       const response = await callApi({
