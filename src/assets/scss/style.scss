@@ -36,3 +36,9 @@
 @import "my-account";
 @import "404";
 @import "video-popup";
+
+.ellipsisText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

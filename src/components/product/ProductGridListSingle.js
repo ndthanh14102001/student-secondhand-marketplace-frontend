@@ -9,6 +9,7 @@ import { Avatar, Box, Button, Tooltip, Typography, styled } from "@mui/material"
 import { ddmmyyhhmm } from "../../utils/DateFormat";
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import { getProductImages } from "../../utils/handleData";
+import { getUniversityById } from "../../utils/data/university";
 
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
@@ -125,7 +126,7 @@ const ProductGridListSingle = ({
                   sx={{
                     fontSize: "0.8rem",
                   }}
-                >{user?.university || ""}</Typography>
+                >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
               </Box>
             </BoxInfo>
           </div>

@@ -1,37 +1,37 @@
-import { InputLabel, Select, MenuItem, FormControl } from '@mui/material'
-import React, { useLayoutEffect, useState } from 'react'
-import { UNIVERSITY_LIST } from '../../constants'
-import { useDispatch, useSelector } from 'react-redux'
-import { setUnversityFilter } from '../../redux/actions/filterActions'
+import { Autocomplete, TextField } from '@mui/material'
+import React, { useLayoutEffect, useMemo } from 'react'
+import { useDispatch } from 'react-redux'
+import { setUnversityFilter } from '../../redux/actions/filterActions';
+import { getAllUniversity } from "../../utils/data/university";
 
 export const ALL_UNIVERSITY = "Tất cả"
 const ShopUniversityFilter = () => {
-  const universityFilterValue = useSelector(state => state.filter.university);
+  // const universityFilterValue = useSelector(state => state.filter.university);
+  const university = useMemo(() => {
+    return Object.values(getAllUniversity());
+  }, []);
   const dispatch = useDispatch();
-  
+
   useLayoutEffect(() => {
     dispatch(setUnversityFilter(ALL_UNIVERSITY))
   }, [dispatch])
+  const handleChangeUniversity = (e, newValue) => {
+    if (newValue) {
+      dispatch(setUnversityFilter(newValue.id))
+    } else {
+      dispatch(setUnversityFilter(ALL_UNIVERSITY))
+    }
+  }
   return (
-    <FormControl fullWidth sx={{ marginBottom: "1rem" }} >
-      <InputLabel id="university-select-label">Trường đại học</InputLabel>
-      <Select
-        MenuProps={{
-          disableScrollLock: true
-        }}
-        labelId="university-select-label"
-        id="university-select"
-        value={universityFilterValue}
-        label="Trường đại học"
-        onChange={(e) => dispatch(setUnversityFilter(e.target.value))}
-      >
-        <MenuItem value={ALL_UNIVERSITY}>{ALL_UNIVERSITY}</MenuItem>
-        {UNIVERSITY_LIST.map((university, index) => {
-          return <MenuItem key={index} value={university}>{university}</MenuItem>
-        })}
-      </Select>
-
-    </FormControl>
+    <Autocomplete
+      onChange={handleChangeUniversity}
+      disablePortal
+      id="combo-box-demo"
+      options={university}
+      sx={{ mb: "1rem" }}
+      renderInput={(params) => <TextField {...params} label="Trường Đại Học" />}
+      getOptionLabel={(university) => university?.teN_DON_VI}
+    />
   )
 }
 
