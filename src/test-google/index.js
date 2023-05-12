@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { getArrayUniversity, getAllUniversity, getFullAddressUniversity } from '../utils/data/university';
+import { getArrayUniversity, getAllUniversity, getFullAddressUniversity, getAllDistanceUniversity } from '../utils/data/university';
 import { getUserLogin } from '../utils/userLoginStorage';
 import { calculateDistance } from '../utils/googleApi';
-import fs from "fs";
 const DistanceCalculator = () => {
   const [isLoading, setIsLoading] = useState(true);
   const universityArray = getArrayUniversity();
   const universityObject = getAllUniversity();
   const userLogin = getUserLogin();
+  const distances = getAllDistanceUniversity();
 
   useEffect(() => {
     const getDistance = async () => {
@@ -15,7 +15,7 @@ const DistanceCalculator = () => {
       for (let indexUniversityOrigin = 0; indexUniversityOrigin < universityArray.length; indexUniversityOrigin++) {
         const universityOrigin = universityArray[indexUniversityOrigin];
         console.log("1");
-        let distancestp = {}
+        let distancestp = [];
         for (let indexUniversityDes = 0; indexUniversityDes < universityArray.length; indexUniversityDes++) {
           const universityDes = universityArray[indexUniversityDes];
           console.log("2");
@@ -25,10 +25,14 @@ const DistanceCalculator = () => {
             originAddress,
             destinationAddress,
           );
-          distancestp = {
-            ...distancestp,
-            [universityDes.id]: result
-          };
+          distancestp.push({
+            id: universityDes.id,
+            distance: result
+          });
+          // distancestp = {
+          //   ...distancestp,
+          //   [universityDes.id]: result
+          // };
         }
         distances[universityOrigin.id] = distancestp
       }
@@ -45,7 +49,26 @@ const DistanceCalculator = () => {
       document.body.removeChild(element);
       setIsLoading(false);
     }
-    getDistance();
+    const sortDistanceUniversity = () => {
+      const keys = Object.keys(distances);
+      const value = Object.values(distances);
+      let formated = {}
+      for (let indexKey = 0; indexKey < keys.length; indexKey++) {
+        formated[keys[indexKey]] = value[indexKey].sort((a, b) => Number(a.distance) - Number(b.distance))
+      }
+      console.log("formated", formated);
+      formated = JSON.stringify(formated, null, 2);
+      const filename = 'distance-university-data-sorted.json';
+
+      const element = document.createElement('a');
+      element.setAttribute('href', 'data:text/json;charset=utf-8,' + encodeURIComponent(formated));
+      element.setAttribute('download', filename);
+      element.style.display = 'none';
+      document.body.appendChild(element);
+      element.click();
+      document.body.removeChild(element);
+    }
+    // sortDistanceUniversity();
   }, []);
 
 

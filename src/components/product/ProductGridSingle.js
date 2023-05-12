@@ -118,7 +118,8 @@ const ProductGridSingle = ({
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "flex-start",
-                marginLeft: "1rem"
+                marginLeft: "1rem",
+                width: "100%"
               }}>
                 <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
                 <Tooltip title={getUniversityById(user?.universityId)?.teN_DON_VI || ""}>
@@ -126,7 +127,7 @@ const ProductGridSingle = ({
                     className="ellipsisText"
                     sx={{
                       fontSize: "0.8rem",
-                      maxWidth: "60%"
+                      width: "60%"
                     }}
                   >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
                 </Tooltip>
