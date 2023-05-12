@@ -7,6 +7,7 @@ import { useToasts } from "react-toast-notifications";
 import ProductModal from "./ProductModal";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
 import styled from "@emotion/styled";
+import { getUniversityById } from "../../utils/data/university";
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
@@ -117,14 +118,19 @@ const ProductGridSingle = ({
                 flexDirection: "column",
                 justifyContent: "center",
                 alignItems: "flex-start",
-                marginLeft: "1rem"
+                marginLeft: "1rem",
+                width: "100%"
               }}>
                 <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
-                <Typography component={"span"}
-                  sx={{
-                    fontSize: "0.8rem",
-                  }}
-                >{user?.university || ""}</Typography>
+                <Tooltip title={getUniversityById(user?.universityId)?.teN_DON_VI || ""}>
+                  <Typography component={"span"}
+                    className="ellipsisText"
+                    sx={{
+                      fontSize: "0.8rem",
+                      width: "60%"
+                    }}
+                  >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
+                </Tooltip>
               </Box>
             </BoxInfo>
           </div>

@@ -11,6 +11,7 @@ import ThemeProvider from "./theme";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
+const DistanceCalculator = lazy(() => import("./test-google"));
 
 
 
@@ -229,7 +230,10 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-
+                  <Route
+                    path={process.env.PUBLIC_URL + "/test"}
+                    component={DistanceCalculator}
+                  />
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>
