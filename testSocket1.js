@@ -18,7 +18,7 @@ socket.connect();
 //   content: "Hello",
 //   to: 3,
 // });
-let content = "Hello everyone"
+let content = "11;bán áo da"
 socket.emit("notification", content);
 
 socket.on("disconnect", () => {

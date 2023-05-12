@@ -11,8 +11,9 @@ import ThemeProvider from "./theme";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
-
-
+// import { getUserLogin } from "./utils/userLoginStorage";
+// import { useDispatch } from "react-redux";
+// import { connectSocket, disconnectSocket } from "./redux/actions/socketAction";
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -54,9 +55,27 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+  
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
   const popupErrorBase = useSelector(state => state.popupErrorBase);
+  
+  // const isLogin = useSelector(state => state.userStorage.isLogin);
+  // const user = getUserLogin()?.user;
+
+  // const dispatch = useDispatch();
+  
+  // useEffect(() => {
+  //   if(user){
+  //     const token = getUserLogin().token.split(" ");
+
+  //     dispatch(connectSocket(token[1]));
+  //     return () => {
+  //       dispatch(disconnectSocket());
+  //     };
+  //   }
+  // }, []);
+
   useEffect(() => {
     props.dispatch(
       loadLanguages({

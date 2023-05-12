@@ -10,6 +10,7 @@ import userStorageReducer from "./userStorage";
 import popupReducer from "./popupReducer";
 import filterReducer from "./filterReducer"
 import { popupErrorBaseReducer } from "./popupErrorBase";
+// import socketReducer from "./socketReducer";
 
 const rootReducer = combineReducers({
   multilanguage: createMultilanguageReducer({ currentLanguageCode: "en" }),
@@ -22,7 +23,8 @@ const rootReducer = combineReducers({
   userStorage: userStorageReducer,
   popup: popupReducer,
   filter: filterReducer,
-  popupErrorBase: popupErrorBaseReducer
+  popupErrorBase: popupErrorBaseReducer,
+  // socket: socketReducer,
 });
 
 export default rootReducer;

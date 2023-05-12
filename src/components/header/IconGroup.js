@@ -13,6 +13,7 @@ import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from '@mui/material/Avatar';
 import { useEffect } from "react";
 import Brightness1Icon from '@mui/icons-material/Brightness1';
+import { io } from "socket.io-client";
 const IconGroup = ({
   currency,
   cartData,
@@ -31,6 +32,7 @@ const IconGroup = ({
 
   const [noti, setNoti] = useState([]);
   const [read, setRead] = useState([]);
+  const [socket, setSocket] = useState(null);
   // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
@@ -112,9 +114,78 @@ const IconGroup = ({
     }
   }
 
+  function connectSocket() {
+    const SERVER_URL = "http://35.240.158.158";
+    const setupSocket = io(SERVER_URL, {
+      autoConnect: false
+    });
+
+    let tokenArr = getUserLogin().token.split(" ")
+    setupSocket.auth = {token: tokenArr[1]}
+
+    setupSocket.connect();
+
+    setupSocket.on("disconnect", () => {
+      console.log(socket.connected); // false
+    });
+
+    setupSocket.on("connect", () => {
+      setSocket(setupSocket)
+    });
+    
+  }
+
   useEffect(() => {
     handleFetchData();
+    if(user)
+      connectSocket();
   }, []);
+
+  useEffect( () => {
+    if (socket) {
+      socket.on("notification", async (message) => {
+        console.log(message);
+          const response2 = await callApi({
+            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + message.from.id,
+            method: "get",
+            params: {
+              populate: {
+                avatar: true,
+              }
+            }
+          })
+          if(response2.type === RESPONSE_TYPE){
+            console.log("true")
+            let sender = {
+              data: {
+                id: response2.data.id,
+                attributes: {
+                  fullName: response2.data.fullName,
+                  avatar: {
+                    data: {
+                      attributes: {
+                        url: response2.data.avatar.url,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            let data = {
+                id: message?.id,
+                attributes: {
+                  content: message.content,
+                  createdAt: message.createdAt,
+                  from: sender,
+                }
+              
+            }
+            console.log(data)
+            setNoti((prev) => [data, ...prev]);
+          }
+      });
+    }
+  }, [socket]);
 
   const handleDate = (date) => {
     const inputDate = new Date(date);
@@ -134,7 +205,7 @@ const IconGroup = ({
     return 'ngay bây giờ';
   }
 
-  const handleReadNotification = async(id) => {
+  const handleReadNotification = async(id, link) => {
     
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
@@ -163,7 +234,7 @@ const IconGroup = ({
         },
       })
       if (response1.type === RESPONSE_TYPE) {
-        console.log(response1)
+        history.push(process.env.PUBLIC_URL + "/product/" + link)
       }
     }
   }
@@ -176,9 +247,9 @@ const IconGroup = ({
     noti.map((item) => {
       list.push(item?.id)
     })
-    console.log("lisss" + list)
+   
     const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + user?.id,
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
       method: "get",
       params: {
         populate: {
@@ -188,13 +259,31 @@ const IconGroup = ({
     })
     if (response.type === RESPONSE_TYPE) {
       let read = [];
-      read = response.data?.notification_reads
-      read.map((item) => {
+      let read1 = response.data?.notification_reads
+      read1.map((item) => {
         read.push(item.id)
       })
-      list.concat(read)
-      console.log(list)
+      let final = list.concat(read)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+        method: "put",
+        data: {
+          notification_reads: final,
+        } 
+      })
+      if(response1.type === RESPONSE_TYPE){
+        addToast("đã đọc tất cả thông báo", {
+          appearance: "success",
+          autoDismiss: true
+        });
+       }
     }
+  }
+  const getProduct = (item,status) => {
+    const parts = item.split(';');
+    if(status === 1)
+      return parts[0];
+    return parts[1];
   }
 
   return (
@@ -277,13 +366,14 @@ const IconGroup = ({
             <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
               <div className="notify_header">
                 <div className="title">Thông báo</div>
-                <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>
+                { noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
               </div>
               <ul>
                 {
-                  noti.length === 0 ? "<div className='notify_empty'>Bạn không có thông báo nào </div>":
+                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>):
                   noti.map((item, index) => (
-                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id)}>
+                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content,1))}>
+                      
                       <div className="notify_avatar">
                         <Avatar 
                           alt="avatar" 
@@ -295,7 +385,7 @@ const IconGroup = ({
                       </div>
                       <div className="notify_data">
                         <div className="data">
-                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{item?.attributes?.content}</b> 
+                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content,2)}</b> 
                         </div>
                         <div className="date">
                           {handleDate(item?.attributes?.updatedAt)}
