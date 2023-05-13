@@ -41,6 +41,7 @@ function ChatsNavigator(props) {
 
   const [userList, setUserList] = useState([]);
   const [searchKey, setSearchKey] = useState("");
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   // get first 10 user
   useEffect(()=> {
@@ -95,8 +96,8 @@ function ChatsNavigator(props) {
   return (
     <Box
       sx={{
-        width: '300px',
-        padding: '8px',
+        width: '350px',
+        padding: '12px',
         // margin: '8px',
         backgroundColor: 'white',
         border: '1px solid #f0f0f0',
@@ -111,7 +112,7 @@ function ChatsNavigator(props) {
       }}
     >
       <CustomizedInputBase handleSetSearchKey={handleSetSearchKey}/>
-      <Divider variant="middle" sx={{ m: '12px 0' }} />
+      <Divider variant="middle" sx={{ m: '14px 0' }} />
       <Box sx={{ fontSize: '12px', color: 'grey', textAlign: 'center' }}>
         Mọi người
       </Box>
@@ -132,12 +133,16 @@ function ChatsNavigator(props) {
                 p: '8px 8px',
                 borderRadius: '16px',
                 transitionDuration: '400ms',
+                backgroundColor: selectedIndex === index ? 'lightblue' : '',
                 '&:hover' : {
-                  backgroundColor: 'lightgrey',
+                  backgroundColor: selectedIndex !== index && 'whitesmoke',
                   cursor: 'pointer',
                 }
               }}
-              onClick={() => handleSetSeller(index)}
+              onClick={() => {
+                handleSetSeller(index)
+                setSelectedIndex(index)
+              }}
             >
               <Avatar
                 alt={item.username}
@@ -148,7 +153,7 @@ function ChatsNavigator(props) {
             </Box>
           ))}
         </Box>
-        <Divider variant="middle" />
+        {/* <Divider variant="middle" /> */}
       </Stack>
     </Box>
   )

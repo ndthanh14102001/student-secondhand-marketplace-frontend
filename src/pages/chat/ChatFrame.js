@@ -332,8 +332,7 @@ function ChatFrame(props) {
       style={{
         display: 'flex',
         flexDirection: 'column',
-        minWidth: '600px',
-        width: '55vw',
+        width: 'calc(90vw - 300px)',
         height: '600px',
         borderRadius: '12px',
         overflow: 'hidden',

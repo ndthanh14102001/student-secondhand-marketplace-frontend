@@ -91,16 +91,16 @@ function ChatsFrame({ match }) {
           content="Compare page of flone react minimalist eCommerce template."
         />
       </MetaTags>
-      <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
+      {/* <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
         Chat với người bán
-      </BreadcrumbsItem>
+      </BreadcrumbsItem> */}
       <LayoutOne 
       headerTop="visible"
       >
-        <Breadcrumb />
-        <div className="product-area pt-60 pb-60">
-          <div className="container">
+        {/* <Breadcrumb /> */}
+        <div className="product-area pt-60 pb-60" style={{ padding: 0 }}>
+          <div className="container" style={{  margin: 'auto' }}>
             <div
                 style={{
                   display: 'flex',
@@ -108,7 +108,7 @@ function ChatsFrame({ match }) {
                   flexDirection: 'row',
                 }}
               >
-                <div style={{ marginLeft: '8px', marginTop: '8px' }}>
+                <div style={{ margin: '8px' }}>
                   <ChatsNavigator 
                     handleChangeSeller={handleChangeSeller} 
                     userLoginData={userLoginData}
