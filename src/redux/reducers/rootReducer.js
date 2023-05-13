@@ -10,6 +10,7 @@ import userStorageReducer from "./userStorage";
 import popupReducer from "./popupReducer";
 import filterReducer from "./filterReducer"
 import { popupErrorBaseReducer } from "./popupErrorBase";
+import socketReducer from "./socketReducer";
 // import socketReducer from "./socketReducer";
 
 const rootReducer = combineReducers({
@@ -24,7 +25,7 @@ const rootReducer = combineReducers({
   popup: popupReducer,
   filter: filterReducer,
   popupErrorBase: popupErrorBaseReducer,
-  // socket: socketReducer,
+  socket: socketReducer,
 });
 
 export default rootReducer;

@@ -14,13 +14,23 @@ import Avatar from '@mui/material/Avatar';
 import { useEffect } from "react";
 import Brightness1Icon from '@mui/icons-material/Brightness1';
 import { io } from "socket.io-client";
+import { setSocket as setSocketRedux } from "../../redux/actions/socketActions";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
+}
+
 const IconGroup = ({
   currency,
   cartData,
   wishlistData,
   // compareData,
   // deleteFromCart,
-  iconWhiteClass
+  iconWhiteClass,
 }) => {
   const dispatch = useDispatch();
   const isLogin = useSelector(state => state.userStorage.isLogin);
@@ -33,6 +43,12 @@ const IconGroup = ({
   const [noti, setNoti] = useState([]);
   const [read, setRead] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [transition, setTransition] = React.useState(undefined);
+  const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const [state, setState] = React.useState({
+    open: false,
+  });
+  const { open } = state;
   // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
@@ -128,7 +144,7 @@ const IconGroup = ({
     setupSocket.on("disconnect", () => {
       console.log(socket.connected); // false
     });
-
+    dispatch(setSocketRedux(setupSocket))
     setupSocket.on("connect", () => {
       setSocket(setupSocket)
     });
@@ -137,8 +153,9 @@ const IconGroup = ({
 
   useEffect(() => {
     handleFetchData();
-    if(user)
+    if(user){
       connectSocket();
+    }
   }, []);
 
   useEffect( () => {
@@ -180,12 +197,19 @@ const IconGroup = ({
                 }
               
             }
-            console.log(data)
             setNoti((prev) => [data, ...prev]);
+            setState({ open: true });
+            setTransition(() => TransitionUp);
+            let messagesender = response2.data.fullName + " vừa mới đăng bán " + getProduct(message.content,2 )
+            setMessageInfo(messagesender)
           }
       });
     }
   }, [socket]);
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
 
   const handleDate = (date) => {
     const inputDate = new Date(date);
@@ -444,6 +468,37 @@ const IconGroup = ({
           <i className="pe-7s-menu" />
         </button>
       </div> */}
+      <Snackbar
+        anchorOrigin={{  vertical: 'bottom', horizontal: 'right'  }}
+        open={open}
+        onClose={handleClose}
+        autoHideDuration={6000}
+        message={messageInfo ? messageInfo : undefined}
+        TransitionComponent={transition}
+        key={'bottom right'}
+        action={
+          <React.Fragment>
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              sx={{ p: 0.5 }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </React.Fragment>
+        }
+        ContentProps={{
+          sx: {
+            backgroundColor: "white", 
+            color: "black",
+            width: "200px",
+            flexWrap: "nowrap",
+            flexDirection: "row"
+          }
+        }}
+      >
+      </Snackbar>
     </div >
   );
 };
