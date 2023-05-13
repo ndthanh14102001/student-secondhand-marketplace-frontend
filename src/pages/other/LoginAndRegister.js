@@ -101,7 +101,18 @@ const LoginRegister = ({ location }) => {
 
     } else {
       if (response.status === STATUS_BAD_REQUEST) {
-        setMessageError("Email hoặc mật khẩu không chính xác!")
+        if (response.data.error.name === "ApplicationError") {
+          dispatch(onShowPopup({
+            type: POPUP_TYPE_ERROR,
+            title: "Đăng nhập thất bại",
+            content: "Tài khoản này hiện đang bị khóa",
+            showButtonCancel: false,
+            closeAction: () => dispatch(onClosePopup()),
+            clickOkeAction: () => dispatch(onClosePopup()),
+          }))
+        } else {
+          setMessageError("Email hoặc mật khẩu không chính xác!")
+        }
       }
     }
     dispatch(onCloseModalLoading());

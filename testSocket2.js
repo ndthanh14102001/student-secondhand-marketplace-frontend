@@ -10,13 +10,13 @@ const socket = io(SERVER_URL, {
 //   console.log(socket.connected); // true
 // });
 
-socket.auth = {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgzODk4MDI3LCJleHAiOjE2ODY0OTAwMjd9.56mq5nDDQLiSA_jHndb1rYOBloGh5ClYksgIqaDVQMU"}
+socket.auth = {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNjgxNjExMzIwLCJleHAiOjE2ODQyMDMzMjB9.5LMxZGOreNxty3vJwuSE_3ZDuVrfQH4qs1uAFvFwwUM"}
 
 socket.connect();
 
-//  socket.on("private message", (message) => {
-//     console.log(message)
-//  })
+ socket.on("private message", (message) => {
+    console.log(message)
+ })
 
  socket.on("notification", (notification) => {
   console.log(notification)

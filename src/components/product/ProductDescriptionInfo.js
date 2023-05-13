@@ -9,12 +9,12 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment} from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-
+import InfoIcon from '@mui/icons-material/Info';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
 
@@ -64,6 +64,15 @@ const ProductDescriptionInfo = ({
   const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
   const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
 
+  const reportCriteria = [
+    "Trùng lặp",
+    "Hàng đã bán",
+    "Thông tin không đúng thực tế",
+    "Hàng hư hỏng sau khi mua",
+    "Hàng giả, hàng nhái, hàng dựng",
+    "Lý do khác",
+  ]
+
   const handleClickOpenConfirmReport = () => {
       if(userLoginData === undefined) {
         setOpenNeedLoginDialog(true);
@@ -77,7 +86,30 @@ const ProductDescriptionInfo = ({
     setOpenNeedLoginDialog(false);
   };
 
+  const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
+  const [reportDetailInput, setReportDetailInput] = React.useState('');
+  const handleToggle = (value) => () => {
+    const currentIndex = checkedReportCriteria.indexOf(value);
+    const newChecked = [...checkedReportCriteria];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setCheckedReportCriteria(newChecked);
+  };
+
   const handleReport = () => {
+    let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+      descriptionInput += " và lý do khác"
+    }
+    if(reportDetailInput !== ''){
+      descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+    }
+
     axios
     .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
       {
@@ -86,18 +118,19 @@ const ProductDescriptionInfo = ({
           product: product?.id,
           reporter: userLoginData.id,
           accused: null,
+          description: descriptionInput,
         }
       })
     .then((response) => {
       console.log(response)
-      addToast("Đã report thành công", {
+      addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
         appearance: "success",
         autoDismiss: true
       });
       handleCloseConfirmReport();
     })
     .catch((error) => {
-      addToast(" Đã có lỗi !, report thất bại", {
+      addToast(" Đã có lỗi !, báo cáo thất bại", {
         appearance: "error",
         autoDismiss: true
       });
@@ -212,7 +245,6 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        {console.log(attributes?.userId)}
         <Link to={(userLoginData !== undefined && user.id) && "/chat/" + user.id} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
           <div className="pro-details-cart btn-hover">
             <button
@@ -271,8 +303,44 @@ const ProductDescriptionInfo = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bạn có muốn report sản phẩm "{attributes?.name}" không ?
+            Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
           </DialogContentText>
+          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {reportCriteria.map((value) => {
+              const labelId = `checkbox-list-label-${value}`;
+
+              return (
+                <ListItem
+                  key={value}
+                  disablePadding
+                >
+                  <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={checkedReportCriteria.indexOf(value) !== -1}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': labelId }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText id={labelId} primary={value} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+          <TextField
+            fullWidth
+            label="Mô tả chi tiết"
+            id="outlined-start-adornment"
+            sx={{ padding: 0, mt: '12px' }}
+            value={reportDetailInput}
+            onChange={(event) => {setReportDetailInput(event.target.value)}}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+            }}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>

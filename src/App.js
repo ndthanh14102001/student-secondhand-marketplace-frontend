@@ -11,8 +11,11 @@ import ThemeProvider from "./theme";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
+import { getUserLogin } from "./utils/userLoginStorage";
+import { io } from "socket.io-client";
 const DistanceCalculator = lazy(() => import("./test-google"));
-
+// Get user data
+const user = getUserLogin();
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -55,6 +58,7 @@ const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
   
+
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
   const popupErrorBase = useSelector(state => state.popupErrorBase);
@@ -151,12 +155,18 @@ const App = (props) => {
 
 
                   {/* Chat pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/chat/:id"}
-                    render={(routeProps) => (
-                      <Chat {...routeProps} key={routeProps.match.params.id} />
-                    )}
-                  />
+                  { user !== undefined ? 
+                    <Route
+                      path={process.env.PUBLIC_URL + "/chat/:id"}
+                      render={(routeProps) => (
+                        <Chat {...routeProps} key={routeProps.match.params.id} />
+                      )}
+                    /> : 
+                    <Route
+                    path={process.env.PUBLIC_URL + "/chat"}
+                    component={LoginAndRegister}
+                    />}
+                  
 
 
                   {/* Shop product pages */}

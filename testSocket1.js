@@ -10,14 +10,15 @@ const socket = io(SERVER_URL, {
 //   console.log(socket.connected); // true
 // });
 
-socket.auth = {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgzMzg3MTg0LCJleHAiOjE2ODU5NzkxODR9.cR8_3PcqB_8ZmISqeAqiKSlxu9Cq7oM13ohnnoDgjJU"}
+socket.auth = {token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNjgxNjI2Mzk2LCJleHAiOjE2ODQyMTgzOTZ9.DdikAfqyzXmVmQgSlI1EPL2PJmZ01pHR3VBmoUp9Id0"}
 
 socket.connect();
 
-// socket.emit("private message", {
-//   content: "Hello",
-//   to: 3,
-// });
+socket.emit("private message", {
+  content: "Ek mày",
+  to: 1,
+});
+
 let content = "11;bán áo da"
 socket.emit("notification", content);
 

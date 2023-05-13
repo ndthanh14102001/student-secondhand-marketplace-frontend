@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled } from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, ListItem, IconButton, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, FormControl} from '@mui/material';
 import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -15,6 +15,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import PhoneIcon from '@mui/icons-material/Phone';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import InfoIcon from '@mui/icons-material/Info';
 
 import LayoutOne from '../../layouts/LayoutOne';
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb';
@@ -196,33 +197,77 @@ const UserInfo = ({ match }) => {
   const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
   const userLoginData = getUserLogin()?.user;
 
-  const handleClickOpenConfirmReport = () => {
-    if (userLoginData === undefined) {
-      setOpenNeedLoginDialog(true);
-    } else {
-      setOpenConfirmReport(true);
-    }
-  };
+    const reportCriteria = [
+      "Xúc phạm khách hàng",
+      "Lừa đảo",
+      "Ảnh đại diện không phù hợp",
+      "Thông tin cá nhân không đúng",
+      "Lý do khác"
+    ]
 
-  const handleCloseConfirmReport = () => {
-    setOpenConfirmReport(false);
-    setOpenNeedLoginDialog(false);
-  };
+    const handleClickOpenConfirmReport = () => {
+      if(userLoginData === undefined) {
+        setOpenNeedLoginDialog(true);
+      } else {
+        setOpenConfirmReport(true);
+      }
+    };
+  
+    const handleCloseConfirmReport = () => {
+      setOpenConfirmReport(false);
+      setOpenNeedLoginDialog(false);
+    };
 
-  const handleReport = () => {
-    axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
+    const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
+    const [reportDetailInput, setReportDetailInput] = React.useState('');
+    const handleToggle = (value) => () => {
+      const currentIndex = checkedReportCriteria.indexOf(value);
+      const newChecked = [...checkedReportCriteria];
+  
+      if (currentIndex === -1) {
+        newChecked.push(value);
+      } else {
+        newChecked.splice(currentIndex, 1);
+      }
+  
+      setCheckedReportCriteria(newChecked);
+    };
+
+    // useEffect(() => {
+    //   let description = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    //   if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+    //     description += " và lý do khác"
+    //   }
+    //   if(reportDetailInput !== ''){
+    //     description += ", mô tả chi tiết: " + reportDetailInput
+    //   }
+
+    //   console.log(description)
+    // }, [checkedReportCriteria, reportDetailInput]);
+  
+    const handleReport = () => {
+      let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+      if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+        descriptionInput += " và lý do khác"
+      }
+      if(reportDetailInput !== ''){
+        descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+      }
+
+      axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
         {
           data: {
             type: 'user',
             product: null,
             reporter: userLoginData.id,
             accused: userId,
+            description: descriptionInput,
           }
         })
       .then((response) => {
         console.log(response)
-        addToast(`Báo cáo người dùng "${userInfo?.fullName}" thành công.`, {
+        addToast(`Báo cáo người dùng "${userInfo?.fullName}" thành công. cảm ơn bạn đã báo cáo`, {
           appearance: "success",
           autoDismiss: true
         });
@@ -274,27 +319,68 @@ const UserInfo = ({ match }) => {
                     onClick={handleClickOpenConfirmReport}>
                     Tố cáo
                   </Button>
+
+                  {/* Hộp thoại báo cáo người dùng */}
                   <Dialog
                     open={openConfirmReport}
                     onClose={handleCloseConfirmReport}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
+                    sx={{  }}
                   >
-                    <DialogTitle id="alert-dialog-title">
-                      Xác nhận report người dùng
+                    <DialogTitle id="alert-dialog-title" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
+                      {"Báo cáo người dùng"}
                     </DialogTitle>
-                    <DialogContent>
+                    <DialogContent sx={{ width: '450px' }}>
                       <DialogContentText id="alert-dialog-description">
-                        Bạn có chắc muốn báo cáo người dùng "{userInfo?.fullName}" không ?
+                        Người dùng "{userInfo?.fullName}" có vấn đề gì ?
                       </DialogContentText>
+                      <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                        {reportCriteria.map((value) => {
+                          const labelId = `checkbox-list-label-${value}`;
+
+                          return (
+                            <ListItem
+                              key={value}
+                              disablePadding
+                            >
+                              <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                                <ListItemIcon>
+                                  <Checkbox
+                                    edge="start"
+                                    checked={checkedReportCriteria.indexOf(value) !== -1}
+                                    tabIndex={-1}
+                                    disableRipple
+                                    inputProps={{ 'aria-labelledby': labelId }}
+                                  />
+                                </ListItemIcon>
+                                <ListItemText id={labelId} primary={value} />
+                              </ListItemButton>
+                            </ListItem>
+                          );
+                        })}
+                      </List>
+                      <TextField
+                        fullWidth
+                        label="Mô tả chi tiết"
+                        id="outlined-start-adornment"
+                        sx={{ padding: 0, mt: '12px' }}
+                        value={reportDetailInput}
+                        onChange={(event) => {setReportDetailInput(event.target.value)}}
+                        InputProps={{
+                          startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+                        }}
+                      />
                     </DialogContent>
                     <DialogActions>
-                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+                      <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
                       <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
                         Xác nhận
                       </Button>
                     </DialogActions>
                   </Dialog>
+
+                   {/* Hộp thoại yêu cầu đăng nhập trước khi báo cáo người dùng */}
                   <Dialog
                     open={openNeedLoginDialog}
                     onClose={handleCloseConfirmReport}

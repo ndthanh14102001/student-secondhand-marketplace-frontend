@@ -8,9 +8,44 @@ import { useLocation } from 'react-router-dom'
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb'
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
+import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
+import { io } from "socket.io-client";
 
 function ChatsFrame({ match }) {
+
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+      const SERVER_URL = "http://35.240.158.158";
+      const setupSocket = io(SERVER_URL, {
+        autoConnect: false
+      });
+
+      let tokenArr = getUserLogin().token.split(" ")
+      setupSocket.auth = {token: tokenArr[1]}
+
+      setupSocket.connect();
+
+      setupSocket.on("disconnect", () => {
+        console.log(socket.connected); // false
+      });
+
+      setupSocket.on("connect", () => {
+        setSocket(setupSocket)
+      });
+      
+      
+
+    //  wait until socket connects before adding event listeners
+    // socket.on("connect", () => {
+    //   console.log(socket.connected); // true
+    // });
+
+    // socket.on("private message", (message) => {
+    //     console.log(message)
+    // })
+  },[])
 
   const { pathname } = useLocation();  
   // const attributes = product?.attributes;
@@ -19,6 +54,10 @@ function ChatsFrame({ match }) {
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
 
+  const handleChangeSeller = (info) => {  
+    setUser(info)
+    console.log("Thay đổi user thành: " + info.username)
+  }
 
   // Lấy thông tin người bán hiện tại
   useEffect(() => {
@@ -30,6 +69,7 @@ function ChatsFrame({ match }) {
       });
       if (response.type === RESPONSE_TYPE) {
         setUser(response.data);
+        console.log("thông tin người dùng hiện tại: " + response.data.username)
       }
     }
     getUserInfo();
@@ -42,12 +82,10 @@ function ChatsFrame({ match }) {
     
   // })
 
-
-
   return (
     <Fragment>
       <MetaTags>
-        <title>Student Market | Thông tin người bán</title>
+        <title>Student Market | Trò chuyện</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."
@@ -58,7 +96,7 @@ function ChatsFrame({ match }) {
         Chat với người bán
       </BreadcrumbsItem>
       <LayoutOne 
-       headerTop="visible"
+      headerTop="visible"
       >
         <Breadcrumb />
         <div className="product-area pt-60 pb-60">
@@ -71,10 +109,19 @@ function ChatsFrame({ match }) {
                 }}
               >
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  <ChatsNavigator />
+                  <ChatsNavigator 
+                    handleChangeSeller={handleChangeSeller} 
+                    userLoginData={userLoginData}
+                  />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  <ChatFrame sellerData={user !== undefined && user} userLoginData={userLoginData}/>
+                  {(socket !== null && user !== undefined) && 
+                    <ChatFrame 
+                      sellerData={user}
+                      userLoginData={userLoginData}
+                      socket={socket}
+                    />
+                  }
                 </div>
               </div>
           </div>
