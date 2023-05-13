@@ -16,13 +16,19 @@ import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 
 function ChatFrame(props) {
 
+  // useEffect(()=>{
+  //   console.log("===== Khởi tạo component =====")
+  //   console.log("Bạn: " + props.userLoginData.username + ", id: " + props.userLoginData.id)
+  //   console.log("đối phương: " + props.sellerData.username + ", id: " + props.sellerData.id)
+  //   console.log("==============================") 
+  // },[props.sellerData.id]) 
+
   const { socket } = props;
   const { addToast } = useToasts();
   const chatTextBoxHeight = 60
-  const [partner, setPartner] = useState(null)
-  const [currentUser, setcurrentUser] = useState(null)
+  const [partner, setPartner] = useState(props.sellerData)
+  const [currentUser, setcurrentUser] = useState(props.userLoginData)
   const [chats, setChats] = useState([])
-  const [avatar, setAvatar] = useState({ admin: '', partner: '' })
 
   // Format time data
   const formatDate = (date) => {
@@ -83,10 +89,18 @@ function ChatFrame(props) {
         if(response.data[0].id === props.sellerData.id){
           setPartner(response.data[0]);
           setcurrentUser(response.data[1]);
+          // console.log("===== Có thay đổi chat =====")
+          // console.log("Bạn: " + response.data[1].username + ", id: " + response.data[1].id)
+          // console.log("đối phương: " + response.data[0].username + ", id: " + response.data[0].id)
+          // console.log("============================")
         }
         else {
           setPartner(response.data[1]);
           setcurrentUser(response.data[0]);
+          // console.log("===== Có thay đổi chat =====")
+          // console.log("Bạn: " + response.data[0].username + ", id: " + response.data[0].id)
+          // console.log("đối phương: " + response.data[1].username + ", id: " + response.data[1].id)
+          // console.log("============================")
         }
         
       }
@@ -115,7 +129,6 @@ function ChatFrame(props) {
                 return a.attributes.createdAt.localeCompare(b.attributes.createdAt);
               }).reverse()
               setChats(sortedChat)
-              console.log(ChatArray)
             })
             .catch((error) => {
               addToast("Lỗi nhận tin nhắn chiều thứ hai", {
@@ -138,10 +151,15 @@ function ChatFrame(props) {
 
   // Send message
   const sendMessage = () => {
+    // console.log("===== gửi thông điệp chat =====")
+    // console.log("Bạn: " + currentUser.username + ", id: " + currentUser.id)
+    // console.log("đối phương: " + partner.username + ", id: " + partner.id)
+    // console.log("============================")
+    // console.log("send to: ")
     let mess = document.getElementById('MessageEditorBox').value
     socket.emit("private message", {
       content: mess,
-      to: partner.id,
+      to: props.sellerData.id,
     });
 
     const dataPrototype = {
@@ -153,90 +171,69 @@ function ChatFrame(props) {
         read: false,
         from: {
           data: {
-              id: props.userLoginData.id,
+              id: currentUser.id,
               attributes: {
-                  username: props.userLoginData.username,
+                  username: currentUser.username,
               }
           }
         },
         to: {
           data: {
-              id: props.sellerData.id,
+              id: partner.id,
               attributes: {
-                  username: props.sellerData.username,
+                  username: partner.username,
               }
           }
         }
       }
     }
     setChats((prev) => [dataPrototype, ...prev])
-    // const UpdateMessageToDatabase = async () => { 
-    //   axios
-    //   .post(process.env.REACT_APP_API_ENDPOINT + '/chats?populate=*', 
-    //     {
-    //       data: {
-    //         content: mess,
-    //         from: props.userLoginData.id,
-    //         to: props.sellerData.id,
-    //         read: false,
-    //       }
-    //     })
-    //   .then((response) => {
-    //     console.log(response)
-    //     setChats((prev) => [response.data.data, ...prev])
-    //     console.log(chats.concat(response.data.data))
-    //     addToast("Gửi tin nhắn thành công", {
-    //       appearance: "success",
-    //       autoDismiss: true
-    //     });
-        
-    //   })
-    //   .catch((error) => {
-    //     addToast(" gửi tin nhắn thất bại, vui lòng kiểm tra lại đường truyền", {
-    //       appearance: "error",
-    //       autoDismiss: true
-    //     });
-    //   })
-    // }
-    // UpdateMessageToDatabase();
+    document.getElementById('MessageEditorBox').value = "";
   }
 
+  // Socket receive the message
   useEffect(()=>{
+    socket.removeAllListeners("private message")
     socket.on("private message", (message) => {
-      const dataPrototype = {
-        id : message.id,
-        attributes: {
-          createdAt: message.createdAt,
-          updatedAt: message.updatedAt,
-          content: message.content,
-          read: false,
-          from: {
-            data: {
-                id: props.sellerData.id,
-                attributes: {
-                    username: props.sellerData.username,
-                }
-            }
-          },
-          to: {
-            data: {
-                id: props.userLoginData.id,
-                attributes: {
-                    username: props.userLoginData.username,
-                }
+      // console.log("===== nhận thông điệp chat =====")
+      // console.log("Bạn: " + currentUser.username + ", id: " + currentUser.id)
+      // console.log("đối phương: " + partner.username + ", id: " + partner.id)
+      // console.log("============================")
+      // console.log("received from: ")
+      if(partner.id === message.from.id) {
+        const dataPrototype = {
+          id : message.id,
+          attributes: {
+            createdAt: message.createdAt,
+            updatedAt: message.updatedAt,
+            content: message.content,
+            read: false,
+            from: {
+              data: {
+                  id: partner.id,
+                  attributes: {
+                      username: partner.username,
+                  }
+              }
+            },
+            to: {
+              data: {
+                  id: currentUser.id,
+                  attributes: {
+                      username: currentUser.username,
+                  }
+              }
             }
           }
         }
+        setChats((prev) => [dataPrototype, ...prev])
       }
-      console.log(dataPrototype)
-      setChats((prev) => [dataPrototype, ...prev])
    })
-  },[socket])
+  },[partner])
 
   // Message Content
   const MessageContent = () => {
       return chats.map((item, index) => {
-      console.log('Item thứ ' + index + ' :' + item.attributes.from.data.id)
       if (item.attributes.from.data.id === partner.id) {
         return (
 
@@ -267,7 +264,7 @@ function ChatFrame(props) {
               boxShadow: '1px 1px 1px lightgrey',
             }}
           >
-            <Box>{item.attributes.content}</Box>
+            <Box sx={{ overflowWrap: 'anywhere' }}>{item.attributes.content}</Box>
             <Box
               className="timeDisplay"
               sx={{ fontSize: '10px', color: 'grey', marginTop: '10px', textAlign: 'right' }}
@@ -312,7 +309,7 @@ function ChatFrame(props) {
               boxShadow: '1px 1px 1px lightgrey',
             }}
           >
-            <Box>{item.attributes.content}</Box>
+            <Box sx={{ overflowWrap: 'anywhere' }}>{item.attributes.content}</Box>
             <Box
               className="timeDisplay"
               sx={{ fontSize: '10px', color: 'grey', marginTop: '10px' }}
@@ -429,3 +426,35 @@ function ChatFrame(props) {
 }
 
 export default ChatFrame
+
+
+
+// const UpdateMessageToDatabase = async () => { 
+    //   axios
+    //   .post(process.env.REACT_APP_API_ENDPOINT + '/chats?populate=*', 
+    //     {
+    //       data: {
+    //         content: mess,
+    //         from: props.userLoginData.id,
+    //         to: props.sellerData.id,
+    //         read: false,
+    //       }
+    //     })
+    //   .then((response) => {
+    //     console.log(response)
+    //     setChats((prev) => [response.data.data, ...prev])
+    //     console.log(chats.concat(response.data.data))
+    //     addToast("Gửi tin nhắn thành công", {
+    //       appearance: "success",
+    //       autoDismiss: true
+    //     });
+        
+    //   })
+    //   .catch((error) => {
+    //     addToast(" gửi tin nhắn thất bại, vui lòng kiểm tra lại đường truyền", {
+    //       appearance: "error",
+    //       autoDismiss: true
+    //     });
+    //   })
+    // }
+    // UpdateMessageToDatabase();

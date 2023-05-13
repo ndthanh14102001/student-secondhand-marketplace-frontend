@@ -23,7 +23,6 @@ function ChatsFrame({ match }) {
       });
 
       let tokenArr = getUserLogin().token.split(" ")
-      console.log(tokenArr[1])
       setupSocket.auth = {token: tokenArr[1]}
 
       setupSocket.connect();
@@ -51,13 +50,13 @@ function ChatsFrame({ match }) {
   const { pathname } = useLocation();  
   // const attributes = product?.attributes;
   const userLoginData = getUserLogin()?.user;
-  console.log(getUserLogin());
 
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
 
   const handleChangeSeller = (info) => {  
     setUser(info)
+    console.log("Thay đổi user thành: " + info.username)
   }
 
   // Lấy thông tin người bán hiện tại
@@ -70,6 +69,7 @@ function ChatsFrame({ match }) {
       });
       if (response.type === RESPONSE_TYPE) {
         setUser(response.data);
+        console.log("thông tin người dùng hiện tại: " + response.data.username)
       }
     }
     getUserInfo();
@@ -115,9 +115,9 @@ function ChatsFrame({ match }) {
                   />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  {socket !== null && 
+                  {(socket !== null && user !== undefined) && 
                     <ChatFrame 
-                      sellerData={user !== undefined && user} 
+                      sellerData={user}
                       userLoginData={userLoginData}
                       socket={socket}
                     />
