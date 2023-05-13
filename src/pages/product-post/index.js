@@ -11,7 +11,7 @@ import { useState } from 'react';
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from '../../utils/userLoginStorage';
 import { useToasts } from 'react-toast-notifications';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { onShowPopupErrorBase } from '../../redux/actions/popupErrorBaseActions';
 import { onShowPopup } from '../../redux/actions/popupActions';
 import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
@@ -36,6 +36,9 @@ const ProductPost = () => {
   const { pathname } = useLocation();
   const [productInfo, setProductInfo] = useState(PRODUCT_INFO_INIT_STATE);
   const { addToast } = useToasts();
+  // const [socket, setSocket] = useState(null);
+  const socket = useSelector(state => state.socket.socket);
+  console.log("socket",socket);
   const isValidFormInput = () => {
     let isValidPrice = true;;
     let isValidName = true;;
@@ -108,7 +111,7 @@ const ProductPost = () => {
       formData.append("ref", "api::product.product")
       formData.append("refId", productResponse?.id)
       formData.append("field", "images")
-
+      
       response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/upload",
         method: "post",
@@ -121,6 +124,18 @@ const ProductPost = () => {
           appearance: "success",
           autoDismiss: true
         });
+        // response = await callApi({
+        //   url: process.env.REACT_APP_API_ENDPOINT + "/notifications",
+        //   method: "post",
+        //   data: {
+        //     data: {
+        //       from: user?.id,
+        //       content: "bán" + productInfo.name,
+        //     }
+        //   },
+        // })
+        let content = productResponse?.id + ";"+ productInfo.name;
+        socket.emit("notification", content);
       } else {
         dispatch(onShowPopupErrorBase(response));
       }
@@ -139,6 +154,7 @@ const ProductPost = () => {
       }
     }
   }
+
   return (
     <Fragment>
       <MetaTags>
@@ -152,7 +168,7 @@ const ProductPost = () => {
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
         Đăng bán
       </BreadcrumbsItem>
-      <LayoutOne headerTop="visible">
+      <LayoutOne headerTop="visible" >
         <Breadcrumb />
         <div className="product-area pt-60 pb-60">
           <div className="container">

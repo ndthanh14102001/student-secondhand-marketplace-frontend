@@ -12,13 +12,25 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from '@mui/material/Avatar';
 import { useEffect } from "react";
+import Brightness1Icon from '@mui/icons-material/Brightness1';
+import { io } from "socket.io-client";
+import { setSocket as setSocketRedux } from "../../redux/actions/socketActions";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
+}
+
 const IconGroup = ({
   currency,
   cartData,
   wishlistData,
   // compareData,
   // deleteFromCart,
-  iconWhiteClass
+  iconWhiteClass,
 }) => {
   const dispatch = useDispatch();
   const isLogin = useSelector(state => state.userStorage.isLogin);
@@ -30,6 +42,14 @@ const IconGroup = ({
 
   const [noti, setNoti] = useState([]);
   const [read, setRead] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [transition, setTransition] = React.useState(undefined);
+  const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const [state, setState] = React.useState({
+    open: false,
+  });
+  const { open } = state;
+  // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
   const handleClick = e => {
@@ -105,14 +125,91 @@ const IconGroup = ({
       })
       if (response1.type === RESPONSE_TYPE) {
         let listNoti = response1.data.data;
-        setNoti(listNoti.filter((noti) => list.includes(noti.attributes.from.data.id)))
+        setNoti(listNoti.filter((noti) => list.includes(noti.attributes?.from?.data?.id)))
       }
     }
   }
 
+  function connectSocket() {
+    const SERVER_URL = "http://35.240.158.158";
+    const setupSocket = io(SERVER_URL, {
+      autoConnect: false
+    });
+
+    let tokenArr = getUserLogin().token.split(" ")
+    setupSocket.auth = {token: tokenArr[1]}
+
+    setupSocket.connect();
+
+    setupSocket.on("disconnect", () => {
+      console.log(socket.connected); // false
+    });
+    dispatch(setSocketRedux(setupSocket))
+    setupSocket.on("connect", () => {
+      setSocket(setupSocket)
+    });
+    
+  }
+
   useEffect(() => {
     handleFetchData();
+    if(user){
+      connectSocket();
+    }
   }, []);
+
+  useEffect( () => {
+    if (socket) {
+      socket.on("notification", async (message) => {
+        console.log(message);
+          const response2 = await callApi({
+            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + message.from.id,
+            method: "get",
+            params: {
+              populate: {
+                avatar: true,
+              }
+            }
+          })
+          if(response2.type === RESPONSE_TYPE){
+            console.log("true")
+            let sender = {
+              data: {
+                id: response2.data.id,
+                attributes: {
+                  fullName: response2.data.fullName,
+                  avatar: {
+                    data: {
+                      attributes: {
+                        url: response2.data.avatar.url,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            let data = {
+                id: message?.id,
+                attributes: {
+                  content: message.content,
+                  createdAt: message.createdAt,
+                  from: sender,
+                }
+              
+            }
+            setNoti((prev) => [data, ...prev]);
+            setState({ open: true });
+            setTransition(() => TransitionUp);
+            let messagesender = response2.data.fullName + " vừa mới đăng bán " + getProduct(message.content,2 )
+            setMessageInfo(messagesender)
+          }
+      });
+    }
+  }, [socket]);
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
 
   const handleDate = (date) => {
     const inputDate = new Date(date);
@@ -132,8 +229,86 @@ const IconGroup = ({
     return 'ngay bây giờ';
   }
 
+  const handleReadNotification = async(id, link) => {
+    
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+      method: "get",
+      params: {
+        populate: {
+          reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let list = []
+      let listIdRead = []
+      list = response?.data?.data?.attributes?.reads?.data;
+      list.map((item) => {
+        listIdRead.push(item.id)
+      })
+      listIdRead.push(user?.id)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+        method: "put",
+        data: {
+          data: {
+            reads: listIdRead,
+          }
+        },
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        history.push(process.env.PUBLIC_URL + "/product/" + link)
+      }
+    }
+  }
+
   const isIdRead = (id) => read.includes(id);
   const unRead = noti.filter((item) => !read.includes(item.id));
+
+  const handleReadAll = async() => {
+    let list = []
+    noti.map((item) => {
+      list.push(item?.id)
+    })
+   
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+      method: "get",
+      params: {
+        populate: {
+          notification_reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let read = [];
+      let read1 = response.data?.notification_reads
+      read1.map((item) => {
+        read.push(item.id)
+      })
+      let final = list.concat(read)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+        method: "put",
+        data: {
+          notification_reads: final,
+        } 
+      })
+      if(response1.type === RESPONSE_TYPE){
+        addToast("đã đọc tất cả thông báo", {
+          appearance: "success",
+          autoDismiss: true
+        });
+       }
+    }
+  }
+  const getProduct = (item,status) => {
+    const parts = item.split(';');
+    if(status === 1)
+      return parts[0];
+    return parts[1];
+  }
 
   return (
     <div
@@ -214,12 +389,15 @@ const IconGroup = ({
             </button>
             <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
               <div className="notify_header">
-                <div>Thông báo</div>
+                <div className="title">Thông báo</div>
+                { noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
               </div>
               <ul>
                 {
+                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>):
                   noti.map((item, index) => (
-                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""}>
+                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content,1))}>
+                      
                       <div className="notify_avatar">
                         <Avatar 
                           alt="avatar" 
@@ -231,12 +409,19 @@ const IconGroup = ({
                       </div>
                       <div className="notify_data">
                         <div className="data">
-                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng {item?.attributes?.content}  
+                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content,2)}</b> 
                         </div>
                         <div className="date">
                           {handleDate(item?.attributes?.updatedAt)}
                         </div>
                       </div>
+                      { 
+                        isIdRead(item?.id) ? 
+                        "" : 
+                        <div className="notify_icon-read">
+                          <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
+                        </div>
+                      }
                     </li>
                   ))
                 }
@@ -283,6 +468,37 @@ const IconGroup = ({
           <i className="pe-7s-menu" />
         </button>
       </div> */}
+      <Snackbar
+        anchorOrigin={{  vertical: 'bottom', horizontal: 'right'  }}
+        open={open}
+        onClose={handleClose}
+        autoHideDuration={6000}
+        message={messageInfo ? messageInfo : undefined}
+        TransitionComponent={transition}
+        key={'bottom right'}
+        action={
+          <React.Fragment>
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              sx={{ p: 0.5 }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </React.Fragment>
+        }
+        ContentProps={{
+          sx: {
+            backgroundColor: "white", 
+            color: "black",
+            width: "200px",
+            flexWrap: "nowrap",
+            flexDirection: "row"
+          }
+        }}
+      >
+      </Snackbar>
     </div >
   );
 };
