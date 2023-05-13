@@ -270,6 +270,7 @@ const IconGroup = ({
     let list = []
     noti.map((item) => {
       list.push(item?.id)
+      setRead(prev => prev.concat(item?.id))
     })
    
     const response = await callApi({
