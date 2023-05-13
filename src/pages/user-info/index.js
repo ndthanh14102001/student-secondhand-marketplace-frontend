@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled} from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled } from '@mui/material';
 import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -31,8 +31,8 @@ import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
 import { onClosePopup } from '../../redux/actions/popupActions';
 
 import { getUserLogin } from "../../utils/userLoginStorage";
+import { getUniversityById } from "../../utils/data/university";
 
-import { NavLink } from "react-router-dom/cjs/react-router-dom";
 function a11yProps(index) {
   return {
     id: `products-tab-${index}`,
@@ -105,7 +105,7 @@ const UserInfo = ({ match }) => {
             avatar: {
               populate: "*"
             },
-            followers:{
+            followers: {
               populate: "*"
             }
           }
@@ -114,10 +114,10 @@ const UserInfo = ({ match }) => {
       if (response.type === RESPONSE_TYPE) {
         const responseData = response.data;
         setUserInfo(responseData);
-        if(user){
+        if (user) {
           responseData.followers.map((follower) => {
             setListIdFollow(prevList => prevList.concat(follower.id));
-            if(follower.id === user?.id){
+            if (follower.id === user?.id) {
               setIsFollow(true);
             }
           })
@@ -135,8 +135,8 @@ const UserInfo = ({ match }) => {
   }
 
   const handleUnFollow = async () => {
-    let list = listIdFollow.filter((item)=> item !== user.id);
-    setListIdFollow(listIdFollow.filter((item)=> item !== user.id));
+    let list = listIdFollow.filter((item) => item !== user.id);
+    setListIdFollow(listIdFollow.filter((item) => item !== user.id));
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
       method: "put",
@@ -152,15 +152,15 @@ const UserInfo = ({ match }) => {
       setIsFollow(false);
       setOpenUnFollow(false);
     }
-    
+
   }
 
   const handleFollow = async () => {
-    if(isFollow){
+    if (isFollow) {
       setOpenUnFollow(true)
     }
-    else{
-      if(user){
+    else {
+      if (user) {
         let list = listIdFollow.concat(user.id);
         setListIdFollow(listIdFollow.concat(user.id));
         const response = await callApi({
@@ -178,7 +178,7 @@ const UserInfo = ({ match }) => {
           setIsFollow(true);
         }
       }
-      else{
+      else {
         dispatch(onShowPopup({
           type: POPUP_TYPE_ERROR,
           title: "Đăng nhập",
@@ -191,27 +191,27 @@ const UserInfo = ({ match }) => {
     }
   }
 
-    //Function Report
-    const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
-    const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
-    const userLoginData = getUserLogin()?.user;
+  //Function Report
+  const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+  const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
+  const userLoginData = getUserLogin()?.user;
 
-    const handleClickOpenConfirmReport = () => {
-      if(userLoginData === undefined) {
-        setOpenNeedLoginDialog(true);
-      } else {
-        setOpenConfirmReport(true);
-      }
-    };
-  
-    const handleCloseConfirmReport = () => {
-      setOpenConfirmReport(false);
-      setOpenNeedLoginDialog(false);
-    };
-  
-    const handleReport = () => {
-      axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+  const handleClickOpenConfirmReport = () => {
+    if (userLoginData === undefined) {
+      setOpenNeedLoginDialog(true);
+    } else {
+      setOpenConfirmReport(true);
+    }
+  };
+
+  const handleCloseConfirmReport = () => {
+    setOpenConfirmReport(false);
+    setOpenNeedLoginDialog(false);
+  };
+
+  const handleReport = () => {
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
         {
           data: {
             type: 'user',
@@ -236,9 +236,9 @@ const UserInfo = ({ match }) => {
         });
         handleCloseConfirmReport();
       })
-    }
+  }
 
-    // End function report
+  // End function report
   return (
     <Fragment>
       <MetaTags>
@@ -250,7 +250,7 @@ const UserInfo = ({ match }) => {
       </MetaTags>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
-        Thông tin người bán
+      Thông tin người bán
       </BreadcrumbsItem>
       <LayoutOne headerTop="visible">
         <Breadcrumb />
@@ -261,15 +261,15 @@ const UserInfo = ({ match }) => {
                 <Box sx={{
                   float: 'right',
                   display: 'flex',
-                 }}>
-                  <Button 
-                    sx={{ 
-                      textTransform: "capitalize", 
-                      ml: '8px', 
-                      fontSize: '10px' 
-                    }} 
-                    color="error" 
-                    variant='text' 
+                }}>
+                  <Button
+                    sx={{
+                      textTransform: "capitalize",
+                      ml: '8px',
+                      fontSize: '10px'
+                    }}
+                    color="error"
+                    variant='text'
                     startIcon={<ReportProblemOutlinedIcon />}
                     onClick={handleClickOpenConfirmReport}>
                     Tố cáo
@@ -318,7 +318,7 @@ const UserInfo = ({ match }) => {
                       </a>
                     </DialogActions>
                   </Dialog>
-                 </Box>
+                </Box>
                 <Grid container>
                   <Grid item xs={6}
                     sx={{
@@ -333,9 +333,9 @@ const UserInfo = ({ match }) => {
                     <Box marginLeft={"1rem"} sx={{ display: 'flex', flexDirection: 'column' }}>
                       <Typography fontWeight={"bold"} marginBottom={"1rem"}>{userInfo?.fullName}</Typography>
                       {
-                        isFollow ? 
-                      <Button sx={{ textTransform: "capitalize" }} variant='outlined' startIcon={<CheckIcon />} onClick={handleFollow}>Đang theo dõi</Button> :
-                      <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />} onClick={handleFollow}>Theo dõi</Button>
+                        isFollow ?
+                          <Button sx={{ textTransform: "capitalize" }} variant='outlined' startIcon={<CheckIcon />} onClick={handleFollow}>Đang theo dõi</Button> :
+                          <Button sx={{ textTransform: "capitalize" }} variant='contained' startIcon={<AddIcon />} onClick={handleFollow}>Theo dõi</Button>
                       }
                     </Box>
                   </Grid>
@@ -348,7 +348,7 @@ const UserInfo = ({ match }) => {
                     <BoxUserInfo >
                       <SchoolIcon />
                       <Typography fontWeight={"bold"} marginLeft="1rem">{"Trường đại học"}</Typography>
-                      <Typography marginLeft="1rem">{userInfo?.university}</Typography>
+                      <Typography marginLeft="1rem">{getUniversityById(userInfo?.universityId)?.teN_DON_VI}</Typography>
                     </BoxUserInfo>
                     <BoxUserInfo >
                       <LocationOnIcon />
@@ -380,12 +380,12 @@ const UserInfo = ({ match }) => {
         <Dialog open={openUnFollow} onClose={handleCloseUnFollow}>
           <DialogTitle>{'Bạn có muốn hủy theo dõi người dùng này không?'}</DialogTitle>
           <DialogActions sx={{ justifyContent: 'center' }}>
-              <Button onClick={handleCloseUnFollow} variant="contained" color="error">
-                không
-              </Button>
-              <Button onClick={handleUnFollow} variant="contained">
-                có
-              </Button>
+            <Button onClick={handleCloseUnFollow} variant="contained" color="error">
+              không
+            </Button>
+            <Button onClick={handleUnFollow} variant="contained">
+              có
+            </Button>
           </DialogActions>
         </Dialog>
       </LayoutOne>

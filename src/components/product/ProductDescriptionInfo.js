@@ -85,7 +85,7 @@ const ProductDescriptionInfo = ({
           type: 'product',
           product: product?.id,
           reporter: userLoginData.id,
-          accused: attributes?.userId
+          accused: null,
         }
       })
     .then((response) => {
@@ -212,24 +212,27 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        <div className="pro-details-cart btn-hover">
-          <button
-            onClick={() => { }
-              // addToCart(
-              //   product,
-              //   addToast,
-              //   quantityCount,
-              //   selectedProductColor,
-              //   selectedProductSize
-              // )
-            }
-            disabled={productCartQty >= productStock}
-          >
-            <ChatIcon />
-            {" "}
-            Chat với người bán
-          </button>
-        </div>
+        {console.log(attributes?.userId)}
+        <Link to={(userLoginData !== undefined && user.id) && "/chat/" + user.id} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+          <div className="pro-details-cart btn-hover">
+            <button
+              onClick={() => { }
+                // addToCart(
+                //   product,
+                //   addToast,
+                //   quantityCount,
+                //   selectedProductColor,
+                //   selectedProductSize
+                // )
+              }
+              disabled={productCartQty >= productStock}
+            >
+              <ChatIcon />
+              {" "}
+              Chat với người bán
+            </button>
+          </div>
+        </Link>
       </div>
       <Button
         startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
@@ -291,7 +294,7 @@ const ProductDescriptionInfo = ({
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Bạn cần phải đăng nhập để có thể tố cáo
+            Bạn cần phải đăng nhập để thực hiện hành động này
           </DialogContentText>
         </DialogContent>
         <DialogActions>

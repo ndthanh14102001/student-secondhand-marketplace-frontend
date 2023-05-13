@@ -11,9 +11,8 @@ import ThemeProvider from "./theme";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
-// import { getUserLogin } from "./utils/userLoginStorage";
-// import { useDispatch } from "react-redux";
-// import { connectSocket, disconnectSocket } from "./redux/actions/socketAction";
+const DistanceCalculator = lazy(() => import("./test-google"));
+
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -153,8 +152,10 @@ const App = (props) => {
 
                   {/* Chat pages */}
                   <Route
-                    path={process.env.PUBLIC_URL + "/chat"}
-                    component={Chat}
+                    path={process.env.PUBLIC_URL + "/chat/:id"}
+                    render={(routeProps) => (
+                      <Chat {...routeProps} key={routeProps.match.params.id} />
+                    )}
                   />
 
 
@@ -246,7 +247,10 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-
+                  <Route
+                    path={process.env.PUBLIC_URL + "/test"}
+                    component={DistanceCalculator}
+                  />
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>

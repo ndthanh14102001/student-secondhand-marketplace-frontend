@@ -101,7 +101,7 @@ const ShopGridStandard = ({ location, products }) => {
                             $eq: "onSale"
                         },
                         userId: {
-                            university: {
+                            universityId: {
                                 $eq: universityFilter === ALL_UNIVERSITY ? undefined : universityFilter
                             },
                         },

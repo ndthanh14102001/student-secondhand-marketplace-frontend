@@ -16,14 +16,10 @@ import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/mod
 import {
   Box,
   Button,
-  InputLabel,
-  Select,
   TextField,
   Typography,
   styled,
-  MenuItem,
-  FormControl,
-  FormHelperText, InputAdornment, IconButton, Checkbox, FormControlLabel
+  InputAdornment, IconButton, Checkbox, FormControlLabel, Autocomplete
 } from "@mui/material";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -33,10 +29,11 @@ import { login } from "../../redux/actions/userStorageActions";
 import { onShowPopup, onClosePopup } from "../../redux/actions/popupActions";
 import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
 import { useRef } from "react";
-import { UNIVERSITY_LIST } from "../../constants";
+
 import PasswordStrengthBar from "../../components/PasswordStrengthBar";
 import { useMemo } from "react";
 import { ERROR_COLOR, getColorToPasswordStrength } from "../../components/PasswordStrengthBar/constants";
+import { getAllUniversity } from "../../utils/data/university";
 const LOGIN_KEY = "login";
 const REGISTER_KEY = "register";
 
@@ -58,6 +55,9 @@ const BoxInput = styled(Box)(() => ({
   marginBottom: "1rem",
 }));
 const LoginRegister = ({ location }) => {
+  const universityData = useMemo(() => {
+    return Object.values(getAllUniversity());
+  }, []);
   const history = useHistory();
   const dispatch = useDispatch();
   const { pathname } = location;
@@ -150,7 +150,7 @@ const LoginRegister = ({ location }) => {
           fullName: registerInfo.fullName,
           phone: registerInfo.phone,
           address: registerInfo.address,
-          university: registerInfo.university
+          universityId: registerInfo.university?.id
         },
       })
 
@@ -225,10 +225,10 @@ const LoginRegister = ({ location }) => {
       isValidPhone: true
     })
   }
-  const handleChangeUniversity = e => {
+  const handleChangeUniversity = (e, newValue) => {
     setRegisterInfo({
       ...registerInfo,
-      university: e.target.value,
+      university: newValue,
       isValidUniversity: true
     })
   }
@@ -408,7 +408,7 @@ const LoginRegister = ({ location }) => {
                                   onChange={handleChangePhone}
                                 />
                               </BoxInput>
-                              <BoxInput>
+                              {/* <BoxInput>
                                 <FormControl fullWidth error={!registerInfo.isValidUniversity}>
                                   <InputLabel id="university-select-label">Trường đại học</InputLabel>
                                   <Select
@@ -417,12 +417,23 @@ const LoginRegister = ({ location }) => {
                                     label="Trường đại học"
                                     onChange={handleChangeUniversity}
                                   >
-                                    {UNIVERSITY_LIST.map((university, indexUniversity) => {
-                                      return <MenuItem value={university} key={indexUniversity}>{university}</MenuItem>
+                                    {Object.values(getAllUniversity()).map((university, indexUniversity) => {
+                                      return <MenuItem value={university?.id} key={university?.id}>{university?.teN_DON_VI}</MenuItem>
                                     })}
                                   </Select>
                                   {!registerInfo.isValidUniversity && <FormHelperText>Hãy chọn Trường Đại Học</FormHelperText>}
                                 </FormControl>
+                              </BoxInput> */}
+                              <BoxInput>
+                                <Autocomplete
+                                  onChange={handleChangeUniversity}
+                                  disablePortal
+                                  id="combo-box-demo"
+                                  options={universityData}
+                                  sx={{ width: 300 }}
+                                  renderInput={(params) => <TextField {...params} label="Trường Đại Học" />}
+                                  getOptionLabel={(university) => university?.teN_DON_VI}
+                                />
                               </BoxInput>
                               <BoxInput>
                                 <TextField
