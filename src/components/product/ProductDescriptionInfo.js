@@ -9,11 +9,19 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment} from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import InfoIcon from '@mui/icons-material/Info';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+
+// import ChatsFrame from "../../components/chat"
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import axios from "axios";
+import { getUserLogin } from "../../utils/userLoginStorage";
 
 const ProductDescriptionInfo = ({
   product,
@@ -27,8 +35,13 @@ const ProductDescriptionInfo = ({
   addToast,
   addToCart,
   addToWishlist,
+  sendReport,
   addToCompare
 }) => {
+  const attributes = product?.attributes;
+  const user = attributes?.userId?.data;
+  const userLoginData = getUserLogin()?.user;
+
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
   );
@@ -36,7 +49,7 @@ const ProductDescriptionInfo = ({
     product.variation ? product.variation[0].size[0].name : ""
   );
   const [productStock, setProductStock] = useState(
-    product.variation ? product.variation[0].size[0].stock : product.stock
+    attributes?.status
   );
   const [quantityCount, setQuantityCount] = useState(1);
 
@@ -47,21 +60,94 @@ const ProductDescriptionInfo = ({
     selectedProductSize
   );
 
+  //Function Report
+  const [openConfirmReport, setOpenConfirmReport] = React.useState(false);
+  const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
+
+  const reportCriteria = [
+    "Trùng lặp",
+    "Hàng đã bán",
+    "Thông tin không đúng thực tế",
+    "Hàng hư hỏng sau khi mua",
+    "Hàng giả, hàng nhái, hàng dựng",
+    "Lý do khác",
+  ]
+
+  const handleClickOpenConfirmReport = () => {
+      if(userLoginData === undefined) {
+        setOpenNeedLoginDialog(true);
+      } else {
+        setOpenConfirmReport(true);
+      }
+  };
+
+  const handleCloseConfirmReport = () => {
+    setOpenConfirmReport(false);
+    setOpenNeedLoginDialog(false);
+  };
+
+  const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
+  const [reportDetailInput, setReportDetailInput] = React.useState('');
+  const handleToggle = (value) => () => {
+    const currentIndex = checkedReportCriteria.indexOf(value);
+    const newChecked = [...checkedReportCriteria];
+
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
+
+    setCheckedReportCriteria(newChecked);
+  };
+
+  const handleReport = () => {
+    let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+      descriptionInput += " và lý do khác"
+    }
+    if(reportDetailInput !== ''){
+      descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+    }
+
+    axios
+    .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+      {
+        data: {
+          type: 'product',
+          product: product?.id,
+          reporter: userLoginData.id,
+          accused: null,
+          description: descriptionInput,
+        }
+      })
+    .then((response) => {
+      console.log(response)
+      addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
+        appearance: "success",
+        autoDismiss: true
+      });
+      handleCloseConfirmReport();
+    })
+    .catch((error) => {
+      addToast(" Đã có lỗi !, báo cáo thất bại", {
+        appearance: "error",
+        autoDismiss: true
+      });
+      handleCloseConfirmReport();
+    })
+  }
+
   return (
     <div className="product-details-content ml-70">
-      <h2>{product.name}</h2>
+
+      <h2>{attributes?.name}</h2>
+      {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
+        <span>Đã bán</span>
+      </div>}
 
       <div className="product-details-price">
-        {discountedPrice !== null ? (
-          <Fragment>
-            <span>{currency.currencySymbol + finalDiscountedPrice}</span>{" "}
-            <span className="old">
-              {currency.currencySymbol + finalProductPrice}
-            </span>
-          </Fragment>
-        ) : (
-          <span>{currency.currencySymbol + finalProductPrice} </span>
-        )}
+        <span>{finalProductPrice} </span>
       </div>
       {/* {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
@@ -144,43 +230,41 @@ const ProductDescriptionInfo = ({
       )} */}
       <div className="pro-details-quality">
         <div className="pro-details-cart btn-hover">
-          {productStock && productStock > 0 ? (
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText("0123456789");
-                addToast("Đã copy số điện thoại", {
-                  appearance: "success",
-                  autoDismiss: true
-                });
-              }}
-              disabled={productCartQty >= productStock}
-            >
-              <PhoneInTalkIcon />
-              {" "}
-              0123456789
-            </button>
-          ) : (
-            <button disabled>Out of Stock</button>
-          )}
-        </div>
-        <div className="pro-details-cart btn-hover">
           <button
-            onClick={() => { }
-              // addToCart(
-              //   product,
-              //   addToast,
-              //   quantityCount,
-              //   selectedProductColor,
-              //   selectedProductSize
-              // )
-            }
+            onClick={() => {
+              navigator.clipboard.writeText("0123456789");
+              addToast("Đã copy số điện thoại", {
+                appearance: "success",
+                autoDismiss: true
+              });
+            }}
             disabled={productCartQty >= productStock}
           >
-            <ChatIcon />
+            <PhoneInTalkIcon />
             {" "}
-            Chat với người bán
+            {user?.attributes?.phone}
           </button>
         </div>
+        <Link to={(userLoginData !== undefined && user.id) && "/chat/" + user.id} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+          <div className="pro-details-cart btn-hover">
+            <button
+              onClick={() => { }
+                // addToCart(
+                //   product,
+                //   addToast,
+                //   quantityCount,
+                //   selectedProductColor,
+                //   selectedProductSize
+                // )
+              }
+              disabled={productCartQty >= productStock}
+            >
+              <ChatIcon />
+              {" "}
+              Chat với người bán
+            </button>
+          </div>
+        </Link>
       </div>
       <Button
         startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
@@ -193,6 +277,103 @@ const ProductDescriptionInfo = ({
         disabled={wishlistItem !== undefined}
       >Yêu thích
       </Button>
+      <Button
+        startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
+        // onClick={() => addToWishlist(product, addToast)}
+        title={
+          sendReport !== undefined
+            ? "sent report"
+            : "sent report"
+        }
+        disabled={sendReport !== undefined}
+        sx={{ color: 'red' }}
+        onClick={handleClickOpenConfirmReport}
+      >Báo cáo
+      </Button>
+
+      {/* Dialog confirm report product */}
+      <Dialog
+        open={openConfirmReport}
+        onClose={handleCloseConfirmReport}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Xác nhận report sản phẩm
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
+          </DialogContentText>
+          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            {reportCriteria.map((value) => {
+              const labelId = `checkbox-list-label-${value}`;
+
+              return (
+                <ListItem
+                  key={value}
+                  disablePadding
+                >
+                  <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                    <ListItemIcon>
+                      <Checkbox
+                        edge="start"
+                        checked={checkedReportCriteria.indexOf(value) !== -1}
+                        tabIndex={-1}
+                        disableRipple
+                        inputProps={{ 'aria-labelledby': labelId }}
+                      />
+                    </ListItemIcon>
+                    <ListItemText id={labelId} primary={value} />
+                  </ListItemButton>
+                </ListItem>
+              );
+            })}
+          </List>
+          <TextField
+            fullWidth
+            label="Mô tả chi tiết"
+            id="outlined-start-adornment"
+            sx={{ padding: 0, mt: '12px' }}
+            value={reportDetailInput}
+            onChange={(event) => {setReportDetailInput(event.target.value)}}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+            }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+          <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+            Xác nhận
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog if user haven't log in yet ! */}
+      <Dialog
+        open={openNeedLoginDialog}
+        onClose={handleCloseConfirmReport}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          Hello bạn ơi
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Bạn cần phải đăng nhập để thực hiện hành động này
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+          <a href={process.env.PUBLIC_URL + "/login-register"}>
+            <Button sx={{ textTransform: 'none' }}>
+              Đăng nhập
+            </Button>
+          </a>
+        </DialogActions>
+      </Dialog>
       {
         product.category ? (
           <div className="pro-details-meta">
@@ -262,7 +443,7 @@ const ProductDescriptionInfo = ({
         </ul>
       </div> */}
       <div>
-        <ProductOwnerInfo />
+        <ProductOwnerInfo user={user} check={1} />
       </div>
     </div >
   );

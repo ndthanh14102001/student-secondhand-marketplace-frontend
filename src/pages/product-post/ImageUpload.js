@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Avatar, Box, Grid, IconButton, Typography } from '@mui/material'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,23 +16,47 @@ const ImageUploadBoxStyle = {
   padding: "1rem",
   border: (theme) => "2px dashed " + theme.palette.primary.main
 }
-const ImageUpload = () => {
+const ImageUpload = ({ productInfo, setProductInfo }) => {
   const inputFileRef = useRef();
   const inputFileAddRef = useRef();
-  const [files, setFiles] = useState([]);
   const handleUploadImages = (e) => {
-    setFiles(Object.values(e.target.files));
+
+    setProductInfo(prev => ({
+      ...prev,
+      images: Object.values(e.target.files),
+      isValidImages: true
+    }));
   }
   const handleAddImage = (e) => {
-    setFiles(prev => [...prev, ...Object.values(e.target.files)]);
+    // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
+    setProductInfo(prev => ({
+      ...prev,
+      images: [...prev.images, ...Object.values(e.target.files)],
+      isValidImages: true
+    }));
   }
   const handleRemoveImage = (index) => {
-    setFiles(prev => {
-      return prev.filter((file, indexFile) => {
+    // setFiles(prev => {
+    //   return prev.filter((file, indexFile) => {
+    //     return index !== indexFile
+    //   });
+    // });
+    setProductInfo(prev => ({
+      ...prev,
+      images: prev.images.filter((file, indexFile) => {
         return index !== indexFile
-      });
-    });
+      }),
+      isValidImages: true
+    }));
   };
+  const handleShowImage = (file) => {
+    try {
+      return URL.createObjectURL(file)
+    } catch (e) {
+      const imageAttributes = file?.attributes;
+      return process.env.REACT_APP_SERVER_ENDPOINT + imageAttributes?.url
+    }
+  }
   return (
     <>
       <input
@@ -52,7 +76,7 @@ const ImageUpload = () => {
         multiple
       />
       <Box height="100%">
-        {files.length === 0 && <Box
+        {productInfo.images.length === 0 && <Box
           onClick={() => inputFileRef.current.click()}
           sx={{
             height: "100%",
@@ -65,10 +89,10 @@ const ImageUpload = () => {
               width: "60px",
             }}
           />
-          <Typography fontWeight={"bold"}> Đăng từ 1 đến 6 hình ảnh</Typography>
+          <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
         </Box>}
-        {files.length > 0}
-        {files.length > 0 && <Grid container spacing={2}>
+        {productInfo.images.length > 0}
+        {productInfo.images.length > 0 && <Grid container spacing={2}>
           <Grid item xs={3}>
             <Box
               onClick={() => inputFileAddRef.current.click()}
@@ -83,7 +107,7 @@ const ImageUpload = () => {
               }} />
             </Box>
           </Grid>
-          {files.map((file, index) => {
+          {productInfo.images.map((file, index) => {
             return <Grid item xs={3}>
               <Box sx={{ position: "relative" }}>
                 <IconButton
@@ -98,7 +122,7 @@ const ImageUpload = () => {
                   <CloseIcon />
                 </IconButton>
                 <Avatar
-                  src={URL.createObjectURL(file)}
+                  src={handleShowImage(file)}
                   variant="square"
                   sx={{
                     width: "80px", height: "80px",

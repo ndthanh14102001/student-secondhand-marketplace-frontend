@@ -15,6 +15,7 @@
   }
   .card-body {
     border-bottom: 1px solid #ebebeb;
+    display: flex;
   }
   h3.panel-title {
     background-color: #f9f9f9;
@@ -89,6 +90,28 @@
         color: #000;
         height: 40px;
         padding: 0 15px;
+      }
+      select {
+        background: transparent none repeat scroll 0 0;
+        border: 1px solid #ebebeb;
+        color: #000;
+        height: 40px;
+        padding: 0 15px;
+      }
+      .input-style-active{
+        border: 2px solid lightblue;
+        $shadow-color: rgb(24, 144, 255);
+        $shadow-opacity: 0.2;
+        $shadow-offset-x: 0;
+        $shadow-offset-y: 0;
+        $shadow-blur: 0;
+        $shadow-spread: 2px;
+
+        box-shadow: $shadow-offset-x $shadow-offset-y $shadow-blur $shadow-spread rgba($shadow-color, $shadow-opacity);
+
+      }
+      .pointer{
+        cursor: pointer;
       }
     }
     .billing-back-btn {
@@ -188,4 +211,9 @@
       }
     }
   }
+}
+
+.col-wrapper{
+  flex: 0 0 85%;
+  max-width: 100%;
 }

@@ -7,8 +7,15 @@ import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
-import ModalLoading from "./components/modal-loading";
+// import ModalLoading from "./components/modal-loading";
 import Popup from "./components/Popup";
+import PopupErrorBase from "./components/popup-error-base";
+import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
+import { getUserLogin } from "./utils/userLoginStorage";
+import { io } from "socket.io-client";
+const DistanceCalculator = lazy(() => import("./test-google"));
+// Get user data
+const user = getUserLogin();
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -18,6 +25,9 @@ const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
 
 // product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
+
+// chat pages
+const Chat = lazy(() => import("./pages/chat/index.js"));
 
 // blog pages
 const BlogStandard = lazy(() => import("./pages/blog/BlogStandard"));
@@ -33,7 +43,11 @@ const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
+const ProductUpdate = lazy(() => import("./pages/product-update"));
+const UserInfo = lazy(() => import("./pages/user-info"));
+
 const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
+const ForgotPassword = lazy(() => import("./pages/other/forgot-password"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
@@ -43,8 +57,28 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
+  
+
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
+  const popupErrorBase = useSelector(state => state.popupErrorBase);
+  
+  // const isLogin = useSelector(state => state.userStorage.isLogin);
+  // const user = getUserLogin()?.user;
+
+  // const dispatch = useDispatch();
+  
+  // useEffect(() => {
+  //   if(user){
+  //     const token = getUserLogin().token.split(" ");
+
+  //     dispatch(connectSocket(token[1]));
+  //     return () => {
+  //       dispatch(disconnectSocket());
+  //     };
+  //   }
+  // }, []);
+
   useEffect(() => {
     props.dispatch(
       loadLanguages({
@@ -69,10 +103,26 @@ const App = (props) => {
         onButtonCancelClick={popup.actions.clickCancelButton}
         content={popup.content}
       />
-      <ModalLoading open={modalLoading.open} />
+
+      {/* <ModalLoading open={modalLoading.open} /> */}
+      {modalLoading.open && < div className="flone-preloader-wrapper">
+        <div className="flone-preloader">
+          <span></span>
+          <span></span>
+        </div>
+      </div>}
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
+            <PopupErrorBase
+              open={popupErrorBase.open}
+              onClose={() => {
+                props.dispatch(onClosePopupErrorBase());
+              }}
+              type={popupErrorBase.type}
+              title={popupErrorBase.title}
+              content={popupErrorBase.content}
+            />
             <ScrollToTop>
               <Suspense
                 fallback={
@@ -99,9 +149,25 @@ const App = (props) => {
 
                   {/* Shop pages */}
                   <Route
-                    path={process.env.PUBLIC_URL + "/shop-grid-standard"}
+                    path={process.env.PUBLIC_URL + "/category"}
                     component={ShopGridStandard}
                   />
+
+
+                  {/* Chat pages */}
+                  { user !== undefined ? 
+                    <Route
+                      path={process.env.PUBLIC_URL + "/chat/:id"}
+                      render={(routeProps) => (
+                        <Chat {...routeProps} key={routeProps.match.params.id} />
+                      )}
+                    /> : 
+                    <Route
+                    path={process.env.PUBLIC_URL + "/chat"}
+                    component={LoginAndRegister}
+                    />}
+                  
+
 
                   {/* Shop product pages */}
                   <Route
@@ -151,10 +217,25 @@ const App = (props) => {
                     component={ProductPost}
                   />
                   <Route
+                    path={process.env.PUBLIC_URL + "/product-update/:id"}
+                    render={(routeProps) => (
+                      <ProductUpdate {...routeProps} key={routeProps.match.params.id} updatePage={true} />
+                    )}
+                  />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/user/info/:id"}
+                    render={(routeProps) => (
+                      <UserInfo {...routeProps} key={routeProps.match.params.id} />
+                    )}
+                  />
+                  <Route
                     path={process.env.PUBLIC_URL + "/login-register"}
                     component={LoginAndRegister}
                   />
-
+                  <Route
+                    path={process.env.PUBLIC_URL + "/forgot-password"}
+                    component={ForgotPassword}
+                  />
                   <Route
                     path={process.env.PUBLIC_URL + "/cart"}
                     component={Cart}
@@ -176,7 +257,10 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-
+                  <Route
+                    path={process.env.PUBLIC_URL + "/test"}
+                    component={DistanceCalculator}
+                  />
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>
@@ -184,7 +268,7 @@ const App = (props) => {
           </Router>
         </BreadcrumbsProvider>
       </ToastProvider>
-    </ThemeProvider>
+    </ThemeProvider >
   );
 };
 

@@ -5,8 +5,18 @@ import { useToasts } from "react-toast-notifications";
 import { getDiscountPrice } from "../../helpers/product";
 import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
-import { Button, Tooltip } from "@mui/material";
+import { Avatar, Box, Button, Tooltip, Typography, styled } from "@mui/material";
+import { ddmmyyhhmm } from "../../utils/DateFormat";
+import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+import { getProductImages } from "../../utils/handleData";
+import { getUniversityById } from "../../utils/data/university";
 
+const BoxInfo = styled(Box)(() => ({
+  display: "flex",
+  justifyContent: "flex-start",
+  alignItems: "center",
+  marginTop: "0.6rem"
+}));
 const ProductGridListSingle = ({
   product,
   currency,
@@ -19,15 +29,20 @@ const ProductGridListSingle = ({
   sliderClassName,
   spaceBottomClass
 }) => {
+
   const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
 
-  const discountedPrice = getDiscountPrice(product.price, product.discount);
-  const finalProductPrice = +(product.price * currency.currencyRate).toFixed(2);
-  const finalDiscountedPrice = +(
-    discountedPrice * currency.currencyRate
-  ).toFixed(2);
+  const attributes = product?.attributes;
+  const formatter = new Intl.NumberFormat("vi", {
+    style: "currency",
+    currency: "VND",
+  });
+  const finalProductPrice = formatter.format(attributes?.price || product?.price || 0);
+  const images = getProductImages(attributes) || product?.images;
+  const user = attributes?.userId?.data?.attributes || product?.userId;
+  const avatar = user?.avatar?.data?.attributes?.url || user?.avatar?.url;
 
   return (
     <Fragment>
@@ -42,13 +57,13 @@ const ProductGridListSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={process.env.PUBLIC_URL + product.image[0]}
+                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && (images[0]?.attributes?.url || images[0]?.url)}`}
                 alt=""
               />
-              {product.image.length > 1 ? (
+              {images && images?.length && images.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={process.env.PUBLIC_URL + product.image[1]}
+                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && (images[1]?.attributes?.url || images[1]?.url)}`}
                   alt=""
                 />
               ) : (
@@ -83,33 +98,37 @@ const ProductGridListSingle = ({
               </div>
             </div>
           </div>
-          <div className="product-content text-center">
-            <Tooltip title={product.name}>
-              <h3 className="product-name">
-                <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                  {product.name}
-                </Link>
-              </h3>
-            </Tooltip>
-            {/* {product.rating && product.rating > 0 ? (
-              <div className="product-rating">
-                <Rating ratingValue={product.rating} />
-              </div>
-            ) : (
-              ""
-            )} */}
-            <div className="product-price">
-              {discountedPrice !== null ? (
-                <Fragment>
-                  <span>{currency.currencySymbol + finalDiscountedPrice}</span>{" "}
-                  <span className="old">
-                    {currency.currencySymbol + finalProductPrice}
-                  </span>
-                </Fragment>
-              ) : (
-                <span>{currency.currencySymbol + finalProductPrice} </span>
-              )}
+          <div className="product-content">
+            <div>
+              <Tooltip title={attributes?.name || product?.name}>
+                <h3 className="product-name">
+                  <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
+                    {attributes?.name || product?.name}
+                  </Link>
+                </h3>
+              </Tooltip>
             </div>
+            <div className="product-price" >
+              <span style={{ margin: 0 }}>{finalProductPrice} </span>
+            </div>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))} </Typography>
+            <BoxInfo>
+              <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
+              <Box sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "flex-start",
+                marginLeft: "1rem"
+              }}>
+                <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
+                <Typography component={"span"}
+                  sx={{
+                    fontSize: "0.8rem",
+                  }}
+                >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
+              </Box>
+            </BoxInfo>
           </div>
         </div>
         <div className="shop-list-wrap mb-30">
@@ -120,31 +139,19 @@ const ProductGridListSingle = ({
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
                     <img
                       className="default-img img-fluid"
-                      src={process.env.PUBLIC_URL + product.image[0]}
+                      src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 0 && images[0]?.attributes?.url}`}
                       alt=""
                     />
-                    {product.image.length > 1 ? (
+                    {images && images?.length && images.length > 1 ? (
                       <img
                         className="hover-img img-fluid"
-                        src={process.env.PUBLIC_URL + product.image[1]}
+                        src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images.length > 1 && images[0]?.attributes?.url}`}
                         alt=""
                       />
                     ) : (
                       ""
                     )}
                   </Link>
-                  {product.discount || product.new ? (
-                    <div className="product-img-badges">
-                      {product.discount ? (
-                        <span className="pink">-{product.discount}%</span>
-                      ) : (
-                        ""
-                      )}
-                      {product.new ? <span className="purple">New</span> : ""}
-                    </div>
-                  ) : (
-                    ""
-                  )}
                 </div>
               </div>
             </div>
@@ -152,22 +159,11 @@ const ProductGridListSingle = ({
               <div className="shop-list-content">
                 <h3>
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-                    {product.name}
+                    {attributes?.name || product?.name}
                   </Link>
                 </h3>
                 <div className="product-list-price">
-                  {discountedPrice !== null ? (
-                    <Fragment>
-                      <span>
-                        {currency.currencySymbol + finalDiscountedPrice}
-                      </span>{" "}
-                      <span className="old">
-                        {currency.currencySymbol + finalProductPrice}
-                      </span>
-                    </Fragment>
-                  ) : (
-                    <span>{currency.currencySymbol + finalProductPrice} </span>
-                  )}
+                  <span>{finalProductPrice} </span>
                 </div>
                 {/* {product.rating && product.rating > 0 ? (
                   <div className="rating-review">
@@ -178,14 +174,14 @@ const ProductGridListSingle = ({
                 ) : (
                   ""
                 )} */}
-                {product.shortDescription ? (
-                  <p>{product.shortDescription}</p>
+                {attributes?.shortDescription ? (
+                  <p>{attributes.shortDescription}</p>
                 ) : (
                   ""
                 )}
 
                 <div className=" d-flex align-items-center">
-                  {product.stock && product.stock > 0 ?
+                  {(attributes?.status && attributes?.status === PRODUCT_ON_SALE_STATUS) || (product?.status === PRODUCT_ON_SALE_STATUS) ?
                     <Button variant="contained" onClick={() => {
                       history.push(`${process.env.PUBLIC_URL}/product/${product.id}`)
                     }}>
@@ -230,9 +226,9 @@ const ProductGridListSingle = ({
         onHide={() => setModalShow(false)}
         product={product}
         currency={currency}
-        discountedprice={discountedPrice}
+        // discountedprice={discountedPrice}
         finalproductprice={finalProductPrice}
-        finaldiscountedprice={finalDiscountedPrice}
+        // finaldiscountedprice={finalDiscountedPrice}
         cartitem={cartItem}
         wishlistitem={wishlistItem}
         compareitem={compareItem}

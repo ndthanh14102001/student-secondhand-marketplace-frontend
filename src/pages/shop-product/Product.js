@@ -1,17 +1,46 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
-import { connect } from "react-redux";
+import { connect, useDispatch } from "react-redux";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import RelatedProductSlider from "../../wrappers/product/RelatedProductSlider";
 import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab";
 import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
-const Product = ({ location, product }) => {
+const Product = ({ location, match }) => {
+  const dispatch = useDispatch();
   const { pathname } = location;
+  // const itemId = location.match.params.id;
+  const [product, setProduct] = useState(null);
+  const productId = match.params.id
+  useEffect(() => {
 
+    const getProductById = async () => {
+      dispatch(onOpenModalLoading())
+      const response = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/products/" + productId,
+        method: "get",
+        params: {
+          populate: {
+            userId: {
+              populate: "*"
+            },
+            category: true,
+            images: true
+          }
+        }
+      });
+      if (response.type === RESPONSE_TYPE) {
+        setProduct(response.data?.data);
+      }
+      dispatch(onCloseModalLoading())
+    }
+    getProductById();
+  }, [productId,dispatch])
   return (
     <Fragment>
       <MetaTags>
@@ -32,23 +61,24 @@ const Product = ({ location, product }) => {
         <Breadcrumb />
 
         {/* product description with image */}
-        <ProductImageDescription
+        {product && <ProductImageDescription
           spaceTopClass="pt-100"
           spaceBottomClass="pb-100"
           product={product}
-        />
+        />}
 
         {/* product description tab */}
-        <ProductDescriptionTab
+        {product && <ProductDescriptionTab
           spaceBottomClass="pb-90"
-          productFullDesc={product.fullDescription}
-        />
+          productFullDesc={product?.attributes?.description}
+          id={product?.id}
+        />}
 
         {/* related product slider */}
-        <RelatedProductSlider
+        {/* <RelatedProductSlider
           spaceBottomClass="pb-95"
           category={product.category[0]}
-        />
+        /> */}
       </LayoutOne>
     </Fragment>
   );
@@ -59,13 +89,13 @@ Product.propTypes = {
   product: PropTypes.object
 };
 
-const mapStateToProps = (state, ownProps) => {
-  const itemId = ownProps.match.params.id;
-  return {
-    product: state.productData.products.filter(
-      single => single.id === itemId
-    )[0]
-  };
-};
+// const mapStateToProps = (state, ownProps) => {
+//   const itemId = ownProps.match.params.id;
+//   return {
+//     product: state.productData.products.filter(
+//       single => single.id === itemId
+//     )[0]
+//   };
+// };
 
-export default connect(mapStateToProps)(Product);
+export default Product;

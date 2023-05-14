@@ -15,6 +15,15 @@ export const rememberLogin = (token, info) => {
   cookies.set(KEY, { token: "Bearer " + token, user: info }, { expires: getAccountExpiresBase(), path: "/" });
 };
 
+export const updateUser = (newInfo) => {
+  const cookies = new Cookies();
+  const existingData = cookies.get(KEY);
+  if (existingData) {
+    const updatedData = { ...existingData, user: newInfo };
+    cookies.set(KEY, updatedData, { expires: getAccountExpiresBase(), path: "/" });
+  }
+};
+
 export const getUserLogin = () => {
   const cookies = new Cookies();
 

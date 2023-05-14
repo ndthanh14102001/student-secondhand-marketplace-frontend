@@ -6,12 +6,14 @@ const ShopTopbar = ({
   getLayout,
   getFilterSortParams,
   productCount,
-  sortedProductCount
+  sortedProductCount,
+  valueFilter
 }) => {
   return (
     <Fragment>
       {/* shop top action */}
       <ShopTopAction
+        valueFilter={valueFilter}
         getLayout={getLayout}
         getFilterSortParams={getFilterSortParams}
         productCount={productCount}

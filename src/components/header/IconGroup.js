@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
@@ -8,19 +8,48 @@ import PostAddIcon from '@mui/icons-material/PostAdd';
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
 import { logout } from "../../redux/actions/userStorageActions";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import Avatar from '@mui/material/Avatar';
+import { useEffect } from "react";
+import Brightness1Icon from '@mui/icons-material/Brightness1';
+import { io } from "socket.io-client";
+import { setSocket as setSocketRedux } from "../../redux/actions/socketActions";
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+
+function TransitionUp(props) {
+  return <Slide {...props} direction="up" />;
+}
+
 const IconGroup = ({
   currency,
   cartData,
   wishlistData,
   // compareData,
   // deleteFromCart,
-  iconWhiteClass
+  iconWhiteClass,
 }) => {
   const dispatch = useDispatch();
   const isLogin = useSelector(state => state.userStorage.isLogin);
   const accountDropRef = useRef();
   const searchRef = useRef();
+  const notificationRef = useRef();
   const history = useHistory();
+  const user = getUserLogin()?.user;
+
+  const [noti, setNoti] = useState([]);
+  const [read, setRead] = useState([]);
+  const [socket, setSocket] = useState(null);
+  const [transition, setTransition] = React.useState(undefined);
+  const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const [state, setState] = React.useState({
+    open: false,
+  });
+  const { open } = state;
+  // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
   const handleClick = e => {
@@ -32,6 +61,9 @@ const IconGroup = ({
   const handleCloseSearch = e => {
     searchRef.current.classList.remove("active");
   };
+  const handleCloseBell = () => {
+    notificationRef.current.classList.remove("active");
+  }
   // const triggerMobileMenu = () => {
   //   const offcanvasMobileMenu = document.querySelector(
   //     "#offcanvas-mobile-menu"
@@ -39,6 +71,7 @@ const IconGroup = ({
   //   offcanvasMobileMenu.classList.add("active");
   // };
   const handleLogout = () => {
+    history.push(process.env.PUBLIC_URL)
     clearUserLogin();
     addToast("Đăng xuất thành công", {
       appearance: "success",
@@ -46,6 +79,236 @@ const IconGroup = ({
     });
     dispatch(logout());
     handleCloseAvatarDrop();
+  }
+
+  // const handleFetchData = async() => {
+  async function handleFetchData() {
+    let list = [];
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+      method: "get",
+      params: {
+        populate: {
+          followers: true,
+          notification_reads: true
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let fl = response.data?.followers;
+      fl.map((follower) => {
+        list = list.concat(follower.id)
+      })
+      let reads = response.data?.notification_reads;
+      reads.map((read) => {
+        setRead(prev => prev.concat(read.id))
+      })
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/notifications",
+        method: "get",
+        params: {
+          populate: {
+            from: {
+              populate: {
+                avatar: true
+              }
+            },
+            reads: true
+          },
+          sort: {
+            createdAt: "desc",
+          },
+          pagination: {
+            limit: "10"
+          }
+        },
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        let listNoti = response1.data.data;
+        setNoti(listNoti.filter((noti) => list.includes(noti.attributes?.from?.data?.id)))
+      }
+    }
+  }
+
+  function connectSocket() {
+    const SERVER_URL = "http://35.240.158.158";
+    const setupSocket = io(SERVER_URL, {
+      autoConnect: false
+    });
+
+    let tokenArr = getUserLogin().token.split(" ")
+    setupSocket.auth = { token: tokenArr[1] }
+
+    setupSocket.connect();
+
+    setupSocket.on("disconnect", () => {
+      console.log(socket.connected); // false
+    });
+    dispatch(setSocketRedux(setupSocket))
+    setupSocket.on("connect", () => {
+      setSocket(setupSocket)
+    });
+
+  }
+
+  useEffect(() => {
+    handleFetchData();
+    if (user) {
+      connectSocket();
+    }
+  }, []);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("notification", async (message) => {
+        console.log("message", message);
+        const response2 = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + message.from.id,
+          method: "get",
+          params: {
+            populate: {
+              avatar: true,
+            }
+          }
+        })
+        if (response2.type === RESPONSE_TYPE) {
+          console.log("true")
+          let sender = {
+            data: {
+              id: response2.data.id,
+              attributes: {
+                fullName: response2.data.fullName,
+                avatar: {
+                  data: {
+                    attributes: {
+                      url: response2.data.avatar.url,
+                    }
+                  }
+                }
+              }
+            }
+          }
+          let data = {
+            id: message?.id,
+            attributes: {
+              content: message.content,
+              createdAt: message.createdAt,
+              from: sender,
+            }
+
+          }
+          setNoti((prev) => [data, ...prev]);
+          setState({ open: true });
+          setTransition(() => TransitionUp);
+          let messagesender = response2.data.fullName + " vừa mới đăng bán " + getProduct(message.content, 2)
+          setMessageInfo(messagesender)
+        }
+      });
+    }
+  },[socket]);
+
+  const handleClose = () => {
+    setState({ ...state, open: false });
+  };
+
+  const handleDate = (date) => {
+    const inputDate = new Date(date);
+    const now = new Date();
+    const oneDayInMs = 1000 * 60 * 60 * 24;
+    const oneHourInMs = 1000 * 60 * 60;
+    const oneMinuteInMs = 1000 * 60
+    const diffInDays = Math.floor((now.getTime() - inputDate.getTime()) / oneDayInMs);
+    const diffInHours = Math.floor((now.getTime() - inputDate.getTime()) / oneHourInMs);
+    const diffInMinutes = Math.floor((now.getTime() - inputDate.getTime()) / oneMinuteInMs);
+    if (diffInDays > 0)
+      return `${diffInDays} ngày trước`;
+    if (diffInHours > 0)
+      return `${diffInHours} giờ trước`;
+    if (diffInMinutes > 0)
+      return `${diffInMinutes} phút trước`;
+    return 'ngay bây giờ';
+  }
+
+  const handleReadNotification = async (id, link) => {
+
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+      method: "get",
+      params: {
+        populate: {
+          reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let list = []
+      let listIdRead = []
+      list = response?.data?.data?.attributes?.reads?.data;
+      list.map((item) => {
+        listIdRead.push(item.id)
+      })
+      listIdRead.push(user?.id)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
+        method: "put",
+        data: {
+          data: {
+            reads: listIdRead,
+          }
+        },
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        history.push(process.env.PUBLIC_URL + "/product/" + link)
+      }
+    }
+  }
+
+  const isIdRead = (id) => read.includes(id);
+  const unRead = noti.filter((item) => !read.includes(item.id));
+
+  const handleReadAll = async () => {
+    let list = []
+    noti.map((item) => {
+      list.push(item?.id)
+      setRead(prev => prev.concat(item?.id))
+    })
+
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+      method: "get",
+      params: {
+        populate: {
+          notification_reads: true,
+        }
+      }
+    })
+    if (response.type === RESPONSE_TYPE) {
+      let read = [];
+      let read1 = response.data?.notification_reads
+      read1.map((item) => {
+        read.push(item.id)
+      })
+      let final = list.concat(read)
+      const response1 = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
+        method: "put",
+        data: {
+          notification_reads: final,
+        }
+      })
+      if (response1.type === RESPONSE_TYPE) {
+        addToast("đã đọc tất cả thông báo", {
+          appearance: "success",
+          autoDismiss: true
+        });
+      }
+    }
+  }
+  const getProduct = (item, status) => {
+    const parts = item.split(';');
+    if (status === 1)
+      return parts[0];
+    return parts[1];
   }
 
   return (
@@ -112,6 +375,62 @@ const IconGroup = ({
           </span>
         </Link>
       </div> */}
+      {isLogin &&
+        <ClickAwayListener onClickAway={handleCloseBell}>
+          <div className="same-style account-setting d-none d-lg-block" >
+            <button
+              className="account-setting-active"
+              onClick={handleClick}
+            >
+              {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
+              <i className="pe-7s-bell" />
+              <span className="count-styles">
+                {unRead && unRead.length ? unRead.length : 0}
+              </span>
+            </button>
+            <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
+              <div className="notify_header">
+                <div className="title">Thông báo</div>
+                {noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
+              </div>
+              <ul>
+                {
+                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
+                    noti.map((item, index) => (
+                      <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content, 1))}>
+
+                        <div className="notify_avatar">
+                          <Avatar
+                            alt="avatar"
+                            src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ?
+                              (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url)
+                              : "abc"
+                            }
+                          />
+                        </div>
+                        <div className="notify_data">
+                          <div className="data">
+                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content, 2)}</b>
+                          </div>
+                          <div className="date">
+                            {handleDate(item?.attributes?.updatedAt)}
+                          </div>
+                        </div>
+                        {
+                          isIdRead(item?.id) ?
+                            "" :
+                            <div className="notify_icon-read">
+                              <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
+                            </div>
+                        }
+                      </li>
+                    ))
+                }
+              </ul>
+            </div>
+          </div>
+        </ClickAwayListener>
+      }
       <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
@@ -150,6 +469,37 @@ const IconGroup = ({
           <i className="pe-7s-menu" />
         </button>
       </div> */}
+      <Snackbar
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        open={open}
+        onClose={handleClose}
+        autoHideDuration={6000}
+        message={messageInfo ? messageInfo : undefined}
+        TransitionComponent={transition}
+        key={'bottom right'}
+        action={
+          <React.Fragment>
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              sx={{ p: 0.5 }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+            </IconButton>
+          </React.Fragment>
+        }
+        ContentProps={{
+          sx: {
+            backgroundColor: "white",
+            color: "black",
+            width: "200px",
+            flexWrap: "nowrap",
+            flexDirection: "row"
+          }
+        }}
+      >
+      </Snackbar>
     </div >
   );
 };
