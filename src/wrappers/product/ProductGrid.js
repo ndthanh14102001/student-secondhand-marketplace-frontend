@@ -59,7 +59,7 @@ const ProductGrid = ({
             universityCaculated[user.universityId] = distancesUniversity[user.universityId];
           }
         })
-        distances.sort((a,b) => Number(a.distance) -Number(b.distance) )
+        distances.sort((a, b) => Number(a.distance) - Number(b.distance))
         setDistancesUniversityHasProduct(distances);
       } else {
         setDistancesUniversityHasProduct([]);
@@ -288,12 +288,12 @@ const ProductGrid = ({
           />
         );
       })}
-      <Box className="col-md-12" sx={{ display: "flex", justifyContent: "center" }}>
+      {hasMore && <Box className="col-md-12" sx={{ display: "flex", justifyContent: "center" }}>
         <Box sx={{ m: 1, position: 'relative' }}>
           <Button
             variant="contained"
             // sx={buttonSx}
-            disabled={isLoadingData || !hasMore}
+            disabled={isLoadingData}
             onClick={handleShowNextPage}
           >
             Hiển thị thêm
@@ -312,7 +312,7 @@ const ProductGrid = ({
             />
           )}
         </Box>
-      </Box>
+      </Box>}
     </Fragment>
   );
 };

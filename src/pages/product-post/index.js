@@ -38,7 +38,6 @@ const ProductPost = () => {
   const { addToast } = useToasts();
   // const [socket, setSocket] = useState(null);
   const socket = useSelector(state => state.socket.socket);
-  console.log("socket",socket);
   const isValidFormInput = () => {
     let isValidPrice = true;;
     let isValidName = true;;
@@ -111,7 +110,7 @@ const ProductPost = () => {
       formData.append("ref", "api::product.product")
       formData.append("refId", productResponse?.id)
       formData.append("field", "images")
-      
+
       response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/upload",
         method: "post",
@@ -134,7 +133,7 @@ const ProductPost = () => {
         //     }
         //   },
         // })
-        let content = productResponse?.id + ";"+ productInfo.name;
+        let content = productResponse?.id + ";" + productInfo.name;
         socket.emit("notification", content);
       } else {
         dispatch(onShowPopupErrorBase(response));
