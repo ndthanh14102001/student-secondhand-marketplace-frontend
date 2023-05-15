@@ -11,41 +11,16 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
 import { io } from "socket.io-client";
+import { useSelector } from 'react-redux'
 
 function ChatsFrame({ match }) {
 
   const [socket, setSocket] = useState(null);
+  const setupSocket = useSelector(state => state.socket.socket);
 
-  useEffect(() => {
-      const SERVER_URL = "http://35.240.158.158";
-      const setupSocket = io(SERVER_URL, {
-        autoConnect: false
-      });
-
-      let tokenArr = getUserLogin().token.split(" ")
-      setupSocket.auth = {token: tokenArr[1]}
-
-      setupSocket.connect();
-
-      setupSocket.on("disconnect", () => {
-        console.log(socket.connected); // false
-      });
-
-      setupSocket.on("connect", () => {
-        setSocket(setupSocket)
-      });
-      
-      
-
-    //  wait until socket connects before adding event listeners
-    // socket.on("connect", () => {
-    //   console.log(socket.connected); // true
-    // });
-
-    // socket.on("private message", (message) => {
-    //     console.log(message)
-    // })
-  },[])
+  useEffect(()=>{
+    setSocket(setupSocket)
+  },[setupSocket])
 
   const { pathname } = useLocation();  
   // const attributes = product?.attributes;
