@@ -86,7 +86,7 @@ function ChatFrame(props) {
       })
 
       if (response.type === RESPONSE_TYPE) {
-        if(response.data[0].id === props.sellerData.id){
+        if(response.data[0].id === props?.sellerData?.id){
           setPartner(response.data[0]);
           setcurrentUser(response.data[1]);
           // console.log("===== Có thay đổi chat =====")
@@ -106,27 +106,27 @@ function ChatFrame(props) {
       }
     }
 
-    if(props.sellerData.id !== undefined && props.userLoginData.id !== undefined){
+    if(props?.sellerData?.id !== undefined && props?.userLoginData?.id !== undefined){
       getSellerInfo();
     }
-  },[props.sellerData.id, props.userLoginData.id])
+  },[props?.sellerData?.id])
 
   // Get chat from database
   useEffect(() => {
     let ChatArray = [];
     const getChats = async () => {
       await axios
-        .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${currentUser.id}&filters[$and][1][to][id][$eq]=${partner.id}&populate=*`)
+        .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${currentUser?.id}&filters[$and][1][to][id][$eq]=${partner?.id}&populate=*`)
         .then((response) => {
           // setChats(prev => [...prev, ...response.data])
-          ChatArray = ChatArray.concat(response.data.data)
+          ChatArray = ChatArray.concat(response.data?.data)
           axios
-            .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${partner.id}&filters[$and][1][to][id][$eq]=${currentUser.id}&populate=*`)
+            .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${partner?.id}&filters[$and][1][to][id][$eq]=${currentUser?.id}&populate=*`)
             .then((response) => {
               // setChats(prev => [...prev, ...response.data])
-              ChatArray = ChatArray.concat(response.data.data)
+              ChatArray = ChatArray.concat(response.data?.data)
               let sortedChat = ChatArray.sort(function (a, b) {
-                return a.attributes.createdAt.localeCompare(b.attributes.createdAt);
+                return a.attributes.createdAt.localeCompare(b?.attributes?.createdAt);
               }).reverse()
               setChats(sortedChat)
             })
@@ -144,19 +144,22 @@ function ChatFrame(props) {
         });
       })
     }
-    if(props.sellerData.id !== undefined && props.userLoginData.id !== undefined && partner !== null && currentUser !== null){
+    if(props?.sellerData?.id !== undefined && props?.userLoginData?.id !== undefined && partner !== null && currentUser !== null){
       getChats();
     }
   },[partner, currentUser])
 
   // Send message
-  const sendMessage = () => {
+  const sendMessage = (e) => {
+    let mess = document.getElementById('MessageEditorBox').value
+    if(mess.length < 1) {
+      return;
+    }
     // console.log("===== gửi thông điệp chat =====")
     // console.log("Bạn: " + currentUser.username + ", id: " + currentUser.id)
     // console.log("đối phương: " + partner.username + ", id: " + partner.id)
     // console.log("============================")
     // console.log("send to: ")
-    let mess = document.getElementById('MessageEditorBox').value
     socket.emit("private message", {
       content: mess,
       to: props.sellerData.id,
@@ -188,7 +191,15 @@ function ChatFrame(props) {
       }
     }
     setChats((prev) => [dataPrototype, ...prev])
-    document.getElementById('MessageEditorBox').value = "";
+    document.getElementById('MessageEditorBox').value = '';
+  }
+
+  //Send message by pressing enter
+  const sendMessageByEnter = (e) => {
+    console.log(e)
+    if(e.key === 'Enter'){
+      sendMessage(e)
+   }
   }
 
   // Socket receive the message
@@ -412,6 +423,7 @@ function ChatFrame(props) {
           inputProps={{
             style: { border: 'none'},
           }}
+          onKeyDown={sendMessageByEnter}
         />
         <IconButton 
           sx={{ margin: '8px 4px' }} 
