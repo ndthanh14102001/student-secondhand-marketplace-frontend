@@ -402,8 +402,8 @@ const IconGroup = ({
                       <div className="notify_avatar">
                         <Avatar 
                           alt="avatar" 
-                          src={item?.attributes?.from?.data?.attributes?.avatar.data.attributes.url ? 
-                            (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar.data.attributes.url) 
+                          src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ? 
+                            (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url) 
                             : "abc"
                           } 
                         />  
