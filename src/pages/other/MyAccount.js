@@ -41,12 +41,12 @@ const MyAccount = ({ location }) => {
   });
 
   const [inputValue, setInputValue] = useState({
-    username: user.user.username,
-    fullName: user.user.fullName,
-    email: user.user.email,
-    address: user.user.address,
-    phone: user.user.phone,
-    universityId: user.user.universityId
+    username: user?.user?.username,
+    fullName: user?.user?.fullName,
+    email: user?.user?.email,
+    address: user?.user?.address,
+    phone: user?.user?.phone,
+    university: user?.user?.university
   });
 
   const [inputPassword, setInputPassword] = useState({
@@ -68,7 +68,7 @@ const MyAccount = ({ location }) => {
 
   async function fetchData() {
     const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id ,
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.user?.id ,
       method: "get",
       params: {
         populate: {

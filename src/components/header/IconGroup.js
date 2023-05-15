@@ -62,7 +62,7 @@ const IconGroup = ({
   const handleCloseSearch = e => {
     searchRef.current.classList.remove("active");
   };
-  const handleCloseBell = () =>{
+  const handleCloseBell = () => {
     notificationRef.current.classList.remove("active");
   }
   // const triggerMobileMenu = () => {
@@ -97,11 +97,11 @@ const IconGroup = ({
     })
     if (response.type === RESPONSE_TYPE) {
       let fl = response.data?.followers;
-      fl.map((follower) =>{
+      fl.map((follower) => {
         list = list.concat(follower.id)
       })
       let reads = response.data?.notification_reads;
-      reads.map((read) =>{
+      reads.map((read) => {
         setRead(prev => prev.concat(read.id))
       })
       const response1 = await callApi({
@@ -110,16 +110,16 @@ const IconGroup = ({
         params: {
           populate: {
             from: {
-              populate:{
+              populate: {
                 avatar: true
               }
             },
             reads: true
           },
-          sort:{
+          sort: {
             createdAt: "desc",
           },
-          pagination:{
+          pagination: {
             limit: "10"
           }
         },
@@ -138,7 +138,7 @@ const IconGroup = ({
     });
 
     let tokenArr = getUserLogin().token.split(" ")
-    setupSocket.auth = {token: tokenArr[1]}
+    setupSocket.auth = { token: tokenArr[1] }
 
     setupSocket.connect();
 
@@ -149,17 +149,17 @@ const IconGroup = ({
     setupSocket.on("connect", () => {
       setSocket(setupSocket)
     });
-    
+
   }
 
   useEffect(() => {
     handleFetchData();
-    if(user){
+    if (user) {
       connectSocket();
     }
   }, []);
 
-  useEffect( () => {
+  useEffect(() => {
     if (socket) {
       socket.on("notification",(message) => {
         setMessageSender(message);  
@@ -227,23 +227,23 @@ const IconGroup = ({
   const handleDate = (date) => {
     const inputDate = new Date(date);
     const now = new Date();
-    const oneDayInMs = 1000 * 60 * 60 * 24; 
+    const oneDayInMs = 1000 * 60 * 60 * 24;
     const oneHourInMs = 1000 * 60 * 60;
     const oneMinuteInMs = 1000 * 60
     const diffInDays = Math.floor((now.getTime() - inputDate.getTime()) / oneDayInMs);
-    const diffInHours =  Math.floor((now.getTime() - inputDate.getTime()) / oneHourInMs);
-    const diffInMinutes =  Math.floor((now.getTime() - inputDate.getTime()) / oneMinuteInMs);
-    if(diffInDays > 0)
+    const diffInHours = Math.floor((now.getTime() - inputDate.getTime()) / oneHourInMs);
+    const diffInMinutes = Math.floor((now.getTime() - inputDate.getTime()) / oneMinuteInMs);
+    if (diffInDays > 0)
       return `${diffInDays} ngày trước`;
-    if(diffInHours > 0)
+    if (diffInHours > 0)
       return `${diffInHours} giờ trước`;
-    if(diffInMinutes > 0)
+    if (diffInMinutes > 0)
       return `${diffInMinutes} phút trước`;
     return 'ngay bây giờ';
   }
 
-  const handleReadNotification = async(id, link) => {
-    
+  const handleReadNotification = async (id, link) => {
+
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
       method: "get",
@@ -279,13 +279,13 @@ const IconGroup = ({
   const isIdRead = (id) => read.includes(id);
   const unRead = noti.filter((item) => !read.includes(item.id));
 
-  const handleReadAll = async() => {
+  const handleReadAll = async () => {
     let list = []
     noti.map((item) => {
       list.push(item?.id)
       setRead(prev => prev.concat(item?.id))
     })
-   
+
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
       method: "get",
@@ -307,19 +307,19 @@ const IconGroup = ({
         method: "put",
         data: {
           notification_reads: final,
-        } 
+        }
       })
-      if(response1.type === RESPONSE_TYPE){
+      if (response1.type === RESPONSE_TYPE) {
         addToast("đã đọc tất cả thông báo", {
           appearance: "success",
           autoDismiss: true
         });
-       }
+      }
     }
   }
-  const getProduct = (item,status) => {
+  const getProduct = (item, status) => {
     const parts = item.split(';');
-    if(status === 1)
+    if (status === 1)
       return parts[0];
     return parts[1];
   }
@@ -388,7 +388,7 @@ const IconGroup = ({
           </span>
         </Link>
       </div> */}
-      {isLogin && 
+      {isLogin &&
         <ClickAwayListener onClickAway={handleCloseBell}>
           <div className="same-style account-setting d-none d-lg-block" >
             <button
@@ -396,7 +396,7 @@ const IconGroup = ({
               onClick={handleClick}
             >
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
-              <i className="pe-7s-bell"/>
+              <i className="pe-7s-bell" />
               <span className="count-styles">
                 {unRead && unRead.length ? unRead.length : 0}
               </span>
@@ -404,7 +404,7 @@ const IconGroup = ({
             <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
               <div className="notify_header">
                 <div className="title">Thông báo</div>
-                { noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
+                {noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
               </div>
               <ul>
                 {
@@ -483,7 +483,7 @@ const IconGroup = ({
         </button>
       </div> */}
       <Snackbar
-        anchorOrigin={{  vertical: 'bottom', horizontal: 'right'  }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         open={open}
         onClose={handleClose}
         autoHideDuration={6000}
@@ -504,7 +504,7 @@ const IconGroup = ({
         }
         ContentProps={{
           sx: {
-            backgroundColor: "white", 
+            backgroundColor: "white",
             color: "black",
             width: "200px",
             flexWrap: "nowrap",
