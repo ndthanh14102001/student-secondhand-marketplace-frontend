@@ -395,36 +395,36 @@ const IconGroup = ({
               </div>
               <ul>
                 {
-                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
-                    noti.map((item, index) => (
-                      <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content, 1))}>
-
-                        <div className="notify_avatar">
-                          <Avatar
-                            alt="avatar"
-                            src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ?
-                              (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url)
-                              : "abc"
-                            }
-                          />
+                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>):
+                  noti.map((item, index) => (
+                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content,1))}>
+                      
+                      <div className="notify_avatar">
+                        <Avatar 
+                          alt="avatar" 
+                          src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ? 
+                            (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url) 
+                            : "abc"
+                          } 
+                        />  
+                      </div>
+                      <div className="notify_data">
+                        <div className="data">
+                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content,2)}</b> 
                         </div>
-                        <div className="notify_data">
-                          <div className="data">
-                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content, 2)}</b>
-                          </div>
-                          <div className="date">
-                            {handleDate(item?.attributes?.updatedAt)}
-                          </div>
+                        <div className="date">
+                          {handleDate(item?.attributes?.updatedAt)}
                         </div>
-                        {
-                          isIdRead(item?.id) ?
-                            "" :
-                            <div className="notify_icon-read">
-                              <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
-                            </div>
-                        }
-                      </li>
-                    ))
+                      </div>
+                      { 
+                        isIdRead(item?.id) ? 
+                        "" : 
+                        <div className="notify_icon-read">
+                          <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
+                        </div>
+                      }
+                    </li>
+                  ))
                 }
               </ul>
             </div>

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useCallback, useState, useEffect } from "react";
+import React, { Fragment, useCallback, useState, useEffect,useMemo } from "react";
 import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
@@ -14,8 +14,13 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { UNIVERSITY_LIST } from '../../constants'
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
+import { getAllUniversity } from "../../utils/data/university";
+import { getUniversityById } from '../../utils/data/university'
 
 const MyAccount = ({ location }) => {
+  const universityData = useMemo(() => {
+    return Object.values(getAllUniversity());
+  }, []);
   const { pathname } = location;
 
   const user = getUserLogin();
@@ -32,7 +37,7 @@ const MyAccount = ({ location }) => {
     email: "",
     address: "",
     phone: "",
-    university: ""
+    universityId: ""
   });
 
   const [inputValue, setInputValue] = useState({
@@ -164,10 +169,10 @@ const MyAccount = ({ location }) => {
         }))
         count++;
       }
-      if(inputValue.university === ""){
+      if(inputValue.universityId === ""){
         setMessageError((prev) => ({
           ...prev,
-          university: "bạn chọn trường đại học"
+          universityId: "bạn chọn trường đại học"
         }))
         count++;
       }
@@ -182,7 +187,7 @@ const MyAccount = ({ location }) => {
               email: inputValue.email,
               address: inputValue.address,
               phone: inputValue.phone,
-              university: inputValue.university
+              universityId: inputValue.universityId
             },
             // headers: {
             //   Authorization: user.token,
@@ -322,6 +327,8 @@ const MyAccount = ({ location }) => {
     } 
   }
 
+  console.log("uni",inputValue?.universityId)
+
   return (
     <Fragment>
       <MetaTags>
@@ -411,13 +418,13 @@ const MyAccount = ({ location }) => {
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Trường đại học</label>
-                                  <select id="university" name="university"  value={inputValue.university} disabled={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"}>
+                                  <select id="universityId" name="universityId"  value={inputValue?.universityId} disabled={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"}>
                                     <option value="">--Chọn trường đại học của bạn--</option>
-                                    {UNIVERSITY_LIST.map((list)=>(
-                                      <option value={list}>{list}</option>
+                                    {universityData.map((list,index)=>(
+                                      <option key={index} value={list.id} >{list?.teN_DON_VI}</option>
                                     ))}
                                   </select>
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.university}</Typography>
+                                  <Typography color="error" sx={{ mt:1 }}>{messageError.universityId}</Typography>
                                   {/* <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} /> */}
                                 </div>
                               </div>
@@ -491,8 +498,8 @@ const MyAccount = ({ location }) => {
                           {
                             follower.length === 0 ? 
                             <Typography> abc</Typography> :
-                            follower.map((fl) => (
-                              <ProductOwnerInfo user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
+                            follower.map((fl,index) => (
+                              <ProductOwnerInfo key={index} user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
                             ))
                           }
                         </Card.Body>

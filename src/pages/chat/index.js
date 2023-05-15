@@ -17,7 +17,8 @@ function ChatsFrame({ match }) {
 
   const [socket, setSocket] = useState(null);
   const setupSocket = useSelector(state => state.socket.socket);
-  useEffect(() => {
+
+  useEffect(()=>{
     setSocket(setupSocket)
   },[setupSocket])
 

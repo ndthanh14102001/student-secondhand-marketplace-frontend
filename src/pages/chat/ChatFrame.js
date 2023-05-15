@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   Box,
+  CircularProgress,
   Divider,
   IconButton,
   InputBase,
@@ -29,6 +30,7 @@ function ChatFrame(props) {
   const [partner, setPartner] = useState(props.sellerData)
   const [currentUser, setcurrentUser] = useState(props.userLoginData)
   const [chats, setChats] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   // Format time data
   const formatDate = (date) => {
@@ -113,6 +115,7 @@ function ChatFrame(props) {
 
   // Get chat from database
   useEffect(() => {
+    setIsLoading(true)
     let ChatArray = [];
     const getChats = async () => {
       await axios
@@ -129,6 +132,7 @@ function ChatFrame(props) {
                 return a.attributes.createdAt.localeCompare(b?.attributes?.createdAt);
               }).reverse()
               setChats(sortedChat)
+              setIsLoading(false)
             })
             .catch((error) => {
               addToast("Lỗi nhận tin nhắn chiều thứ hai", {
@@ -151,15 +155,14 @@ function ChatFrame(props) {
 
   // Send message
   const sendMessage = (e) => {
-    let mess = document.getElementById('MessageEditorBox').value
-    if(mess.length < 1) {
+    
+    const targetMessBox = document.getElementById('MessageEditorBox');
+    if(targetMessBox.value.length < 1){
       return;
+    } else {
+      console.log("proceed sending message")
     }
-    // console.log("===== gửi thông điệp chat =====")
-    // console.log("Bạn: " + currentUser.username + ", id: " + currentUser.id)
-    // console.log("đối phương: " + partner.username + ", id: " + partner.id)
-    // console.log("============================")
-    // console.log("send to: ")
+    let mess = targetMessBox.value
     socket.emit("private message", {
       content: mess,
       to: props.sellerData.id,
@@ -200,6 +203,16 @@ function ChatFrame(props) {
     if(e.key === 'Enter'){
       sendMessage(e)
    }
+  }
+
+  // Send chat when press enter
+  const sendMessageWhenPressEnter = (e) => {
+    if(e.target.value?.length === 1 && e.key === "Enter"){
+      document.getElementById('MessageEditorBox').value = "";
+      return;
+    } else if (e.key === "Enter") {
+      sendMessage()
+    }
   }
 
   // Socket receive the message
@@ -387,11 +400,13 @@ function ChatFrame(props) {
             display: 'flex',
             flexDirection: 'column-reverse',
            }}
-          id="DisplayMessages">          
-            <MessageContent />
-          {/* <Box>
-            <Divider>18:62</Divider>
-          </Box> */}
+          id="DisplayMessages">
+          {isLoading ? 
+            <Box sx={{ display: 'flex', justifyContent: 'center', height: '300px' }}>
+              <CircularProgress />
+            </Box> : 
+            <MessageContent />}
+            
         </Box>
       </Box>
 
@@ -423,7 +438,7 @@ function ChatFrame(props) {
           inputProps={{
             style: { border: 'none'},
           }}
-          onKeyDown={sendMessageByEnter}
+          onKeyUp={sendMessageWhenPressEnter}
         />
         <IconButton 
           sx={{ margin: '8px 4px' }} 
