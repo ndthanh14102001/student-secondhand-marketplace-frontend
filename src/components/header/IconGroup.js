@@ -167,7 +167,6 @@ const IconGroup = ({
     }
   }, [socket]);
 
-  console.log("messs",messageSender)
 
   useEffect(() => {
     const updateMessage = async () => {
