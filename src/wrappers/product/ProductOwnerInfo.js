@@ -125,10 +125,18 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
     }
   }
 
+  const truncateString = (str) => {
+    if (str.length > 20) {
+      return str.slice(0, 15) + "...";
+    }
+    return str;
+  }
+
   return (
     <Box
       className="product-onwer-info"
-      display={"flex"}
+      // display={"flex"}
+      sx={{ display: "flex", minWidth: "50%" }}
     >
       <Avatar
         sx={{ width: 100, height: 100 }}
@@ -172,11 +180,11 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
           <p>Vị trí :</p>
           <Tooltip title={getUniversityById(userAttributes?.universityId || user?.universityId)?.teN_DON_VI || ""}>
             <Typography
-              className="ellipsisText"
+              className=""
               width={"80%"}
               component="span"
               fontWeight="bold"
-              marginLeft={"0.4rem"}>{getUniversityById(userAttributes?.universityId || user?.universityId)?.teN_DON_VI || ""}</Typography>
+              marginLeft={"0.4rem"}>{truncateString(getUniversityById(userAttributes?.universityId || user?.universityId)?.teN_DON_VI || "")}</Typography>
           </Tooltip>
         </Box>
       </Box>

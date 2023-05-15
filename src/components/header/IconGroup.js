@@ -45,6 +45,7 @@ const IconGroup = ({
   const [socket, setSocket] = useState(null);
   const [transition, setTransition] = React.useState(undefined);
   const [messageInfo, setMessageInfo] = React.useState(undefined);
+  const [messageSender, setMessageSender] = React.useState("");
   const [state, setState] = React.useState({
     open: false,
   });
@@ -160,52 +161,64 @@ const IconGroup = ({
 
   useEffect( () => {
     if (socket) {
-      socket.on("notification", async (message) => {
-        console.log(message);
-          const response2 = await callApi({
-            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + message.from.id,
-            method: "get",
-            params: {
-              populate: {
-                avatar: true,
-              }
+      socket.on("notification",(message) => {
+        setMessageSender(message);  
+      });
+    }
+  }, [socket]);
+
+  console.log("messs",messageSender)
+
+  useEffect(() => {
+    const updateMessage = async () => {
+        const response2 = await callApi({
+          url: `${process.env.REACT_APP_API_ENDPOINT}/users/${messageSender?.from?.id}`,
+          method: "get",
+          params: {
+            populate: {
+              avatar: true,
             }
-          })
-          if(response2.type === RESPONSE_TYPE){
-            console.log("true")
-            let sender = {
-              data: {
-                id: response2.data.id,
-                attributes: {
-                  fullName: response2.data.fullName,
-                  avatar: {
-                    data: {
-                      attributes: {
-                        url: response2.data.avatar.url,
-                      }
+          }
+        });
+  
+        if (response2.type === RESPONSE_TYPE) {
+          const sender = {
+            data: {
+              id: response2?.data?.id,
+              attributes: {
+                fullName: response2?.data?.fullName,
+                avatar: {
+                  data: {
+                    attributes: {
+                      url: response2?.data?.avatar?.url ? response2?.data?.avatar?.url : "",
                     }
                   }
                 }
               }
             }
-            let data = {
-                id: message?.id,
-                attributes: {
-                  content: message.content,
-                  createdAt: message.createdAt,
-                  from: sender,
-                }
-              
+          };
+  
+          const data = {
+            id: messageSender?.id,
+            attributes: {
+              content: messageSender?.content,
+              createdAt: messageSender?.createdAt,
+              from: sender,
             }
-            setNoti((prev) => [data, ...prev]);
-            setState({ open: true });
-            setTransition(() => TransitionUp);
-            let messagesender = response2.data.fullName + " vừa mới đăng bán " + getProduct(message.content,2 )
-            setMessageInfo(messagesender)
-          }
-      });
-    }
-  }, [socket]);
+          };
+  
+          setNoti(prevNoti => [data, ...prevNoti]);
+          setState({ open: true });
+          setTransition(() => TransitionUp);
+  
+          const messagesender = `${response2.data.fullName} vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
+          setMessageInfo(messagesender);
+        }
+    };
+
+    updateMessage();
+  }, [messageSender]);
+  
 
   const handleClose = () => {
     setState({ ...state, open: false });
