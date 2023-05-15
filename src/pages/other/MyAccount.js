@@ -327,8 +327,6 @@ const MyAccount = ({ location }) => {
     } 
   }
 
-  console.log("uni",inputValue?.universityId)
-
   return (
     <Fragment>
       <MetaTags>
