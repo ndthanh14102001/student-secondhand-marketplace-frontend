@@ -92,7 +92,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
       if(response.type === RESPONSE_TYPE){
         fetchData();
         setComment("");
-        addToast("thay đổi thông tin cá nhân thành công", {
+        addToast("Bình luận thành công", {
           appearance: "success",
           autoDismiss: true
         });
@@ -125,7 +125,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 <Nav.Link eventKey="productDescription">Mô tả</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="productReviews">Bình luận(2)</Nav.Link>
+                <Nav.Link eventKey="productReviews">Bình luận({listComments.length})</Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content className="description-review-bottom">
