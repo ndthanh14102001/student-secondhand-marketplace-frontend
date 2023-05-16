@@ -437,12 +437,12 @@ const LoginRegister = ({ location }) => {
                               </BoxInput> */}
                               <BoxInput>
                                 <Autocomplete
+                                  fullWidth
                                   onChange={handleChangeUniversity}
                                   disablePortal
                                   id="combo-box-demo"
                                   options={universityData}
-                                  sx={{ width: 300 }}
-                                  renderInput={(params) => <TextField {...params} label="Trường Đại Học" />}
+                                  renderInput={(params) => <TextField fullWidth {...params} label="Trường Đại Học" />}
                                   getOptionLabel={(university) => university?.teN_DON_VI}
                                 />
                               </BoxInput>

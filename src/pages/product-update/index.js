@@ -41,8 +41,8 @@ const ProductUpdate = ({ match }) => {
   const [productInfo, setProductInfo] = useState(PRODUCT_INFO_INIT_STATE);
   const { addToast } = useToasts();
   useEffect(() => {
-    dispatch(onOpenModalLoading())
     const getProductById = async () => {
+      dispatch(onOpenModalLoading())
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/products/" + productId,
         method: "get",

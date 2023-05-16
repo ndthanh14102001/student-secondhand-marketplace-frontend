@@ -4,7 +4,7 @@ import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 // import ModalLoading from "./components/modal-loading";
@@ -12,6 +12,7 @@ import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
+import { login, logout } from "./redux/actions/userStorageActions"
 const DistanceCalculator = lazy(() => import("./test-google"));
 // Get user data
 // const user = getUserLogin();
@@ -56,7 +57,7 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
-  
+  const dispatch = useDispatch();
 
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
@@ -68,6 +69,11 @@ const App = (props) => {
 
 
   useEffect(() => {
+    if (user) {
+      dispatch(login())
+    } else {
+      dispatch(logout())
+    }
     props.dispatch(
       loadLanguages({
         languages: {
@@ -143,19 +149,19 @@ const App = (props) => {
 
 
                   {/* Chat pages */}
-                  { user !== undefined ? 
+                  {user !== undefined ?
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
                         <Chat {...routeProps} key={routeProps.match.params.id} />
                       )}
                     />
-                    : 
+                    :
                     <Route
-                    path={process.env.PUBLIC_URL + "/chat"}
-                    component={LoginAndRegister}
+                      path={process.env.PUBLIC_URL + "/chat"}
+                      component={LoginAndRegister}
                     />}
-                  
+
                   {user !== undefined &&
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
