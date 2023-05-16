@@ -224,7 +224,7 @@ function ChatFrame(props) {
 
   // Initiate Socket receive the message
   useEffect(()=>{
-    if(partner !== undefined) {
+    // if(partner !== undefined) {
       socket.removeAllListeners("private message")
       socket.on("private message", (message) => {
         // console.log('socket emit from this partner: ')
@@ -240,7 +240,7 @@ function ChatFrame(props) {
               data: {
                   id: message.from.id,
                   attributes: {
-                      username: partner.username,
+                      // username: partner.username,
                   }
               }
             },
@@ -248,18 +248,19 @@ function ChatFrame(props) {
               data: {
                   id: currentUser.id,
                   attributes: {
-                      username: currentUser.username,
+                      // username: currentUser.username,
                   }
               }
             }
           }
         }
+        console.log(dataPrototype)
         props.onUpdateUnreadChat(dataPrototype)
         if(partner?.id === message.from.id) {
           setChats((prev) => [dataPrototype, ...prev])
         }
       })
-    }
+    // }
   },[partner])
 
   // Message Content
