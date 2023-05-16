@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Chip,
   Divider,
   IconButton,
   InputBase,
@@ -39,7 +40,10 @@ function CustomizedInputBase(props) {
 
 function ChatsNavigator(props) {
 
-  const [userList, setUserList] = useState([]);
+  // const [userFromURL, setUserFromURL] = useState();
+  // const [userFromSearch, setUserFromSearch] = useState([]);
+  const [userList, setUserList] = useState();
+  const [CustomUserList, setCustomUserList] = useState();
   const [searchKey, setSearchKey] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -85,6 +89,25 @@ function ChatsNavigator(props) {
     getSellerInfo();
   },[searchKey])
 
+  useEffect(() => {
+    if(userList !== undefined && props.inComingMessage !== undefined){
+      console.log(props.inComingMessage)
+      const getUnreadMessageCount = (idPartner) => {
+        return props.inComingMessage.reduce((countRead, message) => {
+          if (message.attributes.from.data.id === idPartner && !message.attributes.read) {
+            return countRead + 1;
+          }
+          return countRead;
+        }, 0);
+      };
+
+      let newUserList = userList.map((item) => {
+        return {...item, unreadMessage: getUnreadMessageCount(item.id)}
+      });
+      setCustomUserList(newUserList)
+    }
+  }, [userList, props.inComingMessage])
+
   const handleSetSeller = (index) => {
     props.handleChangeSeller(userList[index])
   }
@@ -122,7 +145,7 @@ function ChatsNavigator(props) {
         sx={{ overflowY: 'auto', overflowX: 'hidden' }}
       >
         <Box>
-          {userList.map((item, index) => (
+          {CustomUserList?.map((item, index) => (
             <Box
               key={index}
               sx={{
@@ -149,7 +172,8 @@ function ChatsNavigator(props) {
                 src={`${process.env.REACT_APP_SERVER_ENDPOINT}${item.avatar?.url}`}
                 sx={{ width: 48, height: 48 }}
               />
-              <Box sx={{ ml: '8px' }}>{item.username}</Box>
+              <Box sx={{ ml: '8px', width: '100%' }}>{item.username}</Box>
+              {item.unreadMessage > 0 && <Chip color="error" size="small" label={item.unreadMessage} />}
             </Box>
           ))}
         </Box>

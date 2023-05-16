@@ -245,7 +245,11 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        <Link to={(userLoginData !== undefined && user.id) && "/chat/" + user.id} onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+        <Link 
+          to={
+            (userLoginData !== undefined && user.id !== undefined) && 
+              ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)} 
+          onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
           <div className="pro-details-cart btn-hover">
             <button
               onClick={() => { }
@@ -261,7 +265,7 @@ const ProductDescriptionInfo = ({
             >
               <ChatIcon />
               {" "}
-              Chat với người bán
+              {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
             </button>
           </div>
         </Link>
