@@ -9,20 +9,21 @@ import {
   TextField,
   Typography,
 } from '@mui/material'
-import SendIcon from '@mui/icons-material/Send'
 import axios from 'axios'
 import { useToasts } from "react-toast-notifications";
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
-// import { io } from "socket.io-client";
 
+import SearchIcon from '@mui/icons-material/Search';
+
+/* ICON IMPORT SECTION */
+import SendIcon from '@mui/icons-material/Send'
+import PersonIcon from '@mui/icons-material/Person';
+import ChatIcon from '@mui/icons-material/Chat';
+
+// IMPORTANT: this component still accept props "props.sellerData" as null
+// All variable involved to the aforemention props: partner (all involve with validation will not be counted)
 function ChatFrame(props) {
 
-  // useEffect(()=>{
-  //   console.log("===== Khởi tạo component =====")
-  //   console.log("Bạn: " + props.userLoginData.username + ", id: " + props.userLoginData.id)
-  //   console.log("đối phương: " + props.sellerData.username + ", id: " + props.sellerData.id)
-  //   console.log("==============================") 
-  // },[props.sellerData.id]) 
 
   const { socket } = props;
   const { addToast } = useToasts();
@@ -54,6 +55,7 @@ function ChatFrame(props) {
 
   // Get both user data with given id pass from parent component
   useEffect(()=> {
+    console.log("Get both user data with given id pass from parent component when props.sellerData change")
     const getSellerInfo = async () => {
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + `/users/?filters[id]=${props.sellerData.id}&filters[id]=${props.userLoginData.id}`,
@@ -91,26 +93,18 @@ function ChatFrame(props) {
         if(response.data[0].id === props?.sellerData?.id){
           setPartner(response.data[0]);
           setcurrentUser(response.data[1]);
-          // console.log("===== Có thay đổi chat =====")
-          // console.log("Bạn: " + response.data[1].username + ", id: " + response.data[1].id)
-          // console.log("đối phương: " + response.data[0].username + ", id: " + response.data[0].id)
-          // console.log("============================")
         }
         else {
           setPartner(response.data[1]);
           setcurrentUser(response.data[0]);
-          // console.log("===== Có thay đổi chat =====")
-          // console.log("Bạn: " + response.data[0].username + ", id: " + response.data[0].id)
-          // console.log("đối phương: " + response.data[1].username + ", id: " + response.data[1].id)
-          // console.log("============================")
         }
-        
       }
     }
 
     if(props?.sellerData?.id !== undefined && props?.userLoginData?.id !== undefined){
       getSellerInfo();
     }
+
   },[props?.sellerData?.id])
 
   // Get chat from database
@@ -148,14 +142,35 @@ function ChatFrame(props) {
         });
       })
     }
+
     if(props?.sellerData?.id !== undefined && props?.userLoginData?.id !== undefined && partner !== null && currentUser !== null){
       getChats();
     }
   },[partner, currentUser])
 
-  // Send message
+  // Set chats to read (Proceed only once)
+  useEffect(() => {
+    if(partner !== undefined && chats !== undefined){
+      const updateRecords = async () => {
+        const promises = chats.map((item) => {
+          console.log("tin nhắn id: " + item.id + "/ read: " + item.attributes.read)
+          if(item.attributes.from.data.id === partner.id && !item.attributes.read) { 
+            console.log('tin nhắn dc set true là: ' + item.id)
+            return axios.put(`${process.env.REACT_APP_API_ENDPOINT}/chats/${item.id}`, {data: { read: true }} );
+          }
+        });
+        await Promise.all(promises);
+        props.handleNavigateChats(partner.id)
+      };
+      
+      updateRecords();
+    }
+  },[partner, chats])
+
+  // Send message (socket emit)
   const sendMessage = (e) => {
-    
+    console.log("socket emit to this man: ")
+    console.log(partner)
     const targetMessBox = document.getElementById('MessageEditorBox');
     if(targetMessBox.value.length < 1){
       return;
@@ -165,7 +180,7 @@ function ChatFrame(props) {
     let mess = targetMessBox.value
     socket.emit("private message", {
       content: mess,
-      to: props.sellerData.id,
+      to: partner.id,
     });
 
     const dataPrototype = {
@@ -197,14 +212,6 @@ function ChatFrame(props) {
     document.getElementById('MessageEditorBox').value = '';
   }
 
-  //Send message by pressing enter
-  const sendMessageByEnter = (e) => {
-    console.log(e)
-    if(e.key === 'Enter'){
-      sendMessage(e)
-   }
-  }
-
   // Send chat when press enter
   const sendMessageWhenPressEnter = (e) => {
     if(e.target.value?.length === 1 && e.key === "Enter"){
@@ -215,16 +222,13 @@ function ChatFrame(props) {
     }
   }
 
-  // Socket receive the message
+  // Initiate Socket receive the message
   useEffect(()=>{
-    socket.removeAllListeners("private message")
-    socket.on("private message", (message) => {
-      // console.log("===== nhận thông điệp chat =====")
-      // console.log("Bạn: " + currentUser.username + ", id: " + currentUser.id)
-      // console.log("đối phương: " + partner.username + ", id: " + partner.id)
-      // console.log("============================")
-      // console.log("received from: ")
-      if(partner.id === message.from.id) {
+    // if(partner !== undefined) {
+      socket.removeAllListeners("private message")
+      socket.on("private message", (message) => {
+        // console.log('socket emit from this partner: ')
+        // console.log(partner)
         const dataPrototype = {
           id : message.id,
           attributes: {
@@ -234,9 +238,9 @@ function ChatFrame(props) {
             read: false,
             from: {
               data: {
-                  id: partner.id,
+                  id: message.from.id,
                   attributes: {
-                      username: partner.username,
+                      // username: partner.username,
                   }
               }
             },
@@ -244,15 +248,19 @@ function ChatFrame(props) {
               data: {
                   id: currentUser.id,
                   attributes: {
-                      username: currentUser.username,
+                      // username: currentUser.username,
                   }
               }
             }
           }
         }
-        setChats((prev) => [dataPrototype, ...prev])
-      }
-   })
+        console.log(dataPrototype)
+        props.onUpdateUnreadChat(dataPrototype)
+        if(partner?.id === message.from.id) {
+          setChats((prev) => [dataPrototype, ...prev])
+        }
+      })
+    // }
   },[partner])
 
   // Message Content
@@ -346,6 +354,40 @@ function ChatFrame(props) {
     )
   }
 
+  //Welcome panel (getting started)
+  const WelcomeToChatPanel = () => {
+    return (
+      <Box sx={{ display: 'flex', height: '400px', alignItems: 'center', justifyContent: 'center', }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', padding: '18px', width: '420px', border: '1px solid lightgrey', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ background: 'linear-gradient(140deg, #ad00d9 0%, #BC70A4 60%, #BFD641 100%)', height: '90px', position: 'absolute', width: '500px', left: '-20px', top: '-30px', zIndex: '1' }}/>
+          <div style={{ height: '60px', zIndex: '2' }}>
+            <h3 style={{ textAlign: 'center', color: 'white', fontFamily: 'Verdana,sans-serif', fontSize: '20px', fontWeight: 'bold' }}>Chào mừng đến với chat</h3>
+          </div>
+          <div style={{ fontSize: '14px', marginBottom: '8px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#a749ff', marginRight: '10px', borderRadius: '50%' }}><PersonIcon sx={{ fontSize: '20px', color: 'white', margin: '5px' }} /></div>
+            Chọn người dùng bên thanh bên trái để bắt đầu trò chuyện.
+          </div>
+          <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#a749ff', marginRight: '10px', borderRadius: '50%' }}><SearchIcon sx={{ fontSize: '20px', color: 'white', margin: '5px' }} /></div>
+            Bạn cũng có thể tìm người dùng bằng thanh tìm kiếm, chọn trong danh sách để bắt đầu cuộc trò chuyện mới. </div>
+        </Box>
+      </Box>
+    )
+  }
+
+  const NoChatYetPanel = () => {
+    return (
+      <Box sx={{ display: 'flex', height: '200px', alignItems: 'center', justifyContent: 'center', }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', backgroundColor: 'white', padding: '18px', width: '420px', border: '1px solid lightgrey', borderRadius: '10px', overflow: 'hidden', position: 'relative' }}>
+          <div style={{ fontSize: '14px', display: 'flex', alignItems: 'center' }}>
+            <div style={{ backgroundColor: '#a749ff', marginRight: '10px', borderRadius: '50%' }}><ChatIcon sx={{ fontSize: '18px', color: 'white', margin: '5px' }} /></div>
+            Hiện tại chưa có tin nhắn, bạn có thể bắt đầu cuộc trò chuyện đầu tiên
+          </div>
+        </Box>
+      </Box>
+    )
+  }
+
   //UseEffect update chat
   useEffect(() => {
     MessageContent();
@@ -368,19 +410,27 @@ function ChatFrame(props) {
         sx={{
           display: 'flex',
           flexDirection: 'row',
-          alignItems: 'center',
           padding: '12px',
           backgroundColor: 'white',
           overflow: 'hidden',
+          minHeight: '54px',
           borderBottom: '1px solid #f0f0f0',
         }}
       >
-        <Avatar
-          alt={props.sellerData.username}
-          src={`${process.env.REACT_APP_SERVER_ENDPOINT}${partner?.avatar?.url}`}
-          sx={{ width: 32, height: 32 }}
-        />
-        <Typography sx={{ ml: '12px' }}>{props.sellerData.username}</Typography>
+        {
+          props.sellerData !== undefined &&
+          <Box  sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'row',}}>
+            <Avatar
+              alt={props.sellerData?.username}
+              src={`${process.env.REACT_APP_SERVER_ENDPOINT}${partner?.avatar?.url}`}
+              sx={{ width: 32, height: 32 }}
+            />
+            <Typography sx={{ ml: '12px' }}>{props.sellerData?.username}</Typography>
+          </Box>
+        }
       </Box>
 
       {/* Display chats */}
@@ -401,12 +451,18 @@ function ChatFrame(props) {
             flexDirection: 'column-reverse',
            }}
           id="DisplayMessages">
-          {isLoading ? 
-            <Box sx={{ display: 'flex', justifyContent: 'center', height: '300px' }}>
-              <CircularProgress />
-            </Box> : 
-            <MessageContent />}
-            
+          {
+          props.isPartnerDeclared ? (
+            isLoading ? 
+              (<Box sx={{ display: 'flex', justifyContent: 'center', height: '300px' }}>
+                <CircularProgress />
+              </Box> )
+              : 
+              (chats.length === 0 ? <NoChatYetPanel /> : <MessageContent />)
+            ):(
+            <WelcomeToChatPanel />
+            )
+          } 
         </Box>
       </Box>
 

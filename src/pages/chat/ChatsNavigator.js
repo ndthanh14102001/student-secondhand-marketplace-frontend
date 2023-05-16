@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Chip,
   Divider,
   IconButton,
   InputBase,
@@ -39,7 +40,10 @@ function CustomizedInputBase(props) {
 
 function ChatsNavigator(props) {
 
-  const [userList, setUserList] = useState([]);
+  // const [userFromURL, setUserFromURL] = useState();
+  // const [userFromSearch, setUserFromSearch] = useState([]);
+  const [userList, setUserList] = useState();
+  const [CustomUserList, setCustomUserList] = useState();
   const [searchKey, setSearchKey] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
@@ -85,6 +89,59 @@ function ChatsNavigator(props) {
     getSellerInfo();
   },[searchKey])
 
+  useEffect(() => {
+    if(userList !== undefined && props.inComingMessage !== undefined){
+      console.log(props.inComingMessage)
+      const getUnreadMessageCount = (idPartner) => {
+        return props.inComingMessage.reduce((countRead, message) => {
+          if (message.attributes.from.data.id === idPartner && !message.attributes.read) {
+            return countRead + 1;
+          }
+          return countRead;
+        }, 0);
+      };
+
+      const getNewestMessage = (idPartner) => {
+        let newArr = props.inComingMessage.sort(function (a, b) {
+          return a.attributes.createdAt.localeCompare(b?.attributes?.createdAt);
+        }).reverse()
+        let breakLoop = false;
+        // console.log("after shuffle")
+        // console.log(newArr)
+        return newArr.map((item, index) => {
+          if(item.attributes.from.data.id === idPartner && !breakLoop){
+            breakLoop = true;
+            return newArr[index].attributes.content
+          }
+        })
+      }
+
+      // const getReadStatus = (idPartner) => {
+      //   let newArr = props.inComingMessage.sort(function (a, b) {
+      //     return a.attributes.createdAt.localeCompare(b?.attributes?.createdAt);
+      //   }).reverse()
+      //   let breakLoop = false;
+      //   return newArr.map((item, index) => {
+      //     if(item.attributes.from.data.id === idPartner && !breakLoop){
+      //       breakLoop = true;
+      //       return newArr[index].attributes.read
+      //     }
+      //   })
+      // }
+
+      let newUserList = userList.map((item) => {
+        return {
+          ...item, 
+          unreadMessage: getUnreadMessageCount(item.id), 
+          newestMessage: getNewestMessage(item.id),
+          // read: getReadStatus(item.id)
+        }
+      });
+      console.log(newUserList)
+      setCustomUserList(newUserList)
+    }
+  }, [userList, props.inComingMessage])
+
   const handleSetSeller = (index) => {
     props.handleChangeSeller(userList[index])
   }
@@ -122,7 +179,7 @@ function ChatsNavigator(props) {
         sx={{ overflowY: 'auto', overflowX: 'hidden' }}
       >
         <Box>
-          {userList.map((item, index) => (
+          {CustomUserList?.map((item, index) => (
             <Box
               key={index}
               sx={{
@@ -147,9 +204,13 @@ function ChatsNavigator(props) {
               <Avatar
                 alt={item.username}
                 src={`${process.env.REACT_APP_SERVER_ENDPOINT}${item.avatar?.url}`}
-                sx={{ width: 48, height: 48 }}
+                sx={{ width: 52, height: 52 }}
               />
-              <Box sx={{ ml: '8px' }}>{item.username}</Box>
+              <Box sx={{ ml: '12px', width: '100%', display: 'flex', flexDirection: 'column' }}>
+                <Box sx={{ fontSize: '16px' }}>{item.username}</Box>
+                {/* <Box sx={{ fontSize: '13px', color: item.newestMessage.read ? 'grey' : 'blue', mt: '2px', fontWeight: item.newestMessage.read ? '' : 'bold'}}>{item.newestMessage}</Box> */}
+              </Box>
+              {item.unreadMessage > 0 && <Chip color="error" size="small" label={item.unreadMessage} />}
             </Box>
           ))}
         </Box>
