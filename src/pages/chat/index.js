@@ -8,13 +8,15 @@ import { useLocation } from 'react-router-dom'
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb'
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
 import { io } from "socket.io-client";
+import { onCloseModalLoading } from '../../redux/actions/modalLoadingActions'
 
 function ChatsFrame({ match }) {
 
+  const dispatch = useDispatch()
   const setupSocket = useSelector(state => state.socket.socket);
 
   // const { pathname } = useLocation();  
@@ -62,6 +64,10 @@ function ChatsFrame({ match }) {
     setIncomingMessage((prev) => [...prev, input])
   }
   
+  //Tắt cái modal loading
+  useEffect(() => {
+    dispatch(onCloseModalLoading())
+  },[])
 
   // Lấy thông tin người bán hiện tại theo id
   useEffect(() => {
