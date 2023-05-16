@@ -45,7 +45,8 @@ const ProductGrid = ({
     hasMore: true,
     page: 1,
     productRecomended: 0,
-    productRecommenderNext: NUMBER_PRODUCT_RECOMMENDER
+    productRecommenderNext: NUMBER_PRODUCT_RECOMMENDER,
+    remainingProductInUni: 0
   })
 
   useEffect(() => {
@@ -231,6 +232,7 @@ const ProductGrid = ({
                 recomenderInfoCopy.hasMore = true;
               }
               if (Array.isArray(response.data?.data) && response.data?.data.length > 0) {
+                const metaPagination = response.data?.meta?.pagination;
                 recomenderInfoCopy.productRecomended = recomenderInfoCopy.productRecomended + response.data?.data.length;
                 recomenderInfoCopy.productRecommenderNext = recomenderInfoCopy.productRecommenderNext - response.data?.data.length;
 
