@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Button, ClickAwayListener } from "@mui/material";
+import { Box, Button, ClickAwayListener } from "@mui/material";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
@@ -166,7 +166,6 @@ const IconGroup = ({
       });
     }
   }, [socket]);
-
 
   useEffect(() => {
     const updateMessage = async () => {
@@ -486,7 +485,7 @@ const IconGroup = ({
         open={open}
         onClose={handleClose}
         autoHideDuration={6000}
-        message={messageInfo ? messageInfo : undefined}
+        // message={messageInfo ? messageInfo : undefined}
         TransitionComponent={transition}
         key={'bottom right'}
         action={
