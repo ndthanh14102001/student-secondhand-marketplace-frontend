@@ -8,58 +8,68 @@ import { useLocation } from 'react-router-dom'
 import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb'
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
+import { useDispatch, useSelector } from 'react-redux';
 import LoginRegister from "../other/LoginAndRegister";
 import axios from 'axios'
 import { io } from "socket.io-client";
+import { onCloseModalLoading } from '../../redux/actions/modalLoadingActions'
 
 function ChatsFrame({ match }) {
 
-  const [socket, setSocket] = useState(null);
+  const dispatch = useDispatch()
+  const setupSocket = useSelector(state => state.socket.socket);
 
-  useEffect(() => {
-      const SERVER_URL = "http://35.240.158.158";
-      const setupSocket = io(SERVER_URL, {
-        autoConnect: false
-      });
-
-      let tokenArr = getUserLogin().token.split(" ")
-      setupSocket.auth = {token: tokenArr[1]}
-
-      setupSocket.connect();
-
-      setupSocket.on("disconnect", () => {
-        console.log(socket.connected); // false
-      });
-
-      setupSocket.on("connect", () => {
-        setSocket(setupSocket)
-      });
-      
-      
-
-    //  wait until socket connects before adding event listeners
-    // socket.on("connect", () => {
-    //   console.log(socket.connected); // true
-    // });
-
-    // socket.on("private message", (message) => {
-    //     console.log(message)
-    // })
-  },[])
-
-  const { pathname } = useLocation();  
+  // const { pathname } = useLocation();  
   // const attributes = product?.attributes;
   const userLoginData = getUserLogin()?.user;
 
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
 
+  // Mảng tin nhắn từ mọi người tới người đăng nhập hiện tại
+  const [isNotCalledYet, setIsNotCalledYet] = useState(true)
+  const [inComingMessage, setIncomingMessage] = useState();
+
   const handleChangeSeller = (info) => {  
     setUser(info)
     console.log("Thay đổi user thành: " + info.username)
   }
 
-  // Lấy thông tin người bán hiện tại
+  //After change partner, the unread messages become read
+  const handleNavigateChats = (partnerID) => {
+    if(inComingMessage !== undefined){
+      setIncomingMessage((prev) => {
+        console.log("Incoming Chat")
+        console.log(prev)
+        console.log("Chat frame chats")
+        console.log(partnerID)
+        return prev.map((item) => {
+          if (item.attributes.from.data.id === partnerID && !item.attributes.read) {
+            return {
+              ...item,
+              attributes: {
+                ...item.attributes,
+                read: true
+              }
+            };
+          }
+          return item;
+        })
+      });
+    }
+  };
+
+  //Update new message to IncomingMessage
+  const onUpdateUnreadChat = (input) => {
+    setIncomingMessage((prev) => [...prev, input])
+  }
+  
+  //Tắt cái modal loading
+  useEffect(() => {
+    dispatch(onCloseModalLoading())
+  },[])
+
+  // Lấy thông tin người bán hiện tại theo id
   useEffect(() => {
     const getUserInfo = async () => {
       const userId = match.params.id;
@@ -69,18 +79,34 @@ function ChatsFrame({ match }) {
       });
       if (response.type === RESPONSE_TYPE) {
         setUser(response.data);
-        console.log("thông tin người dùng hiện tại: " + response.data.username)
+        console.log("thông tin người bán hiện tại được cập nhật lại theo ng bán: " + response.data.username)
       }
     }
     getUserInfo();
   }, [match])
 
-  //Lấy thông tin tất cả người dùng (TẠM THỜI CHƯA DÙNG TỚI)
-  // axios.get(process.env.REACT_APP_API_ENDPOINT + '/users')
-  // .then((response) => {
-  //   console.log(response)
-    
-  // })
+  // các hàm phải chạy 1 lần khi khởi tạo component
+  useEffect(()=>{
+    console.log("Đã chạy hàm này")
+    if(userLoginData !== undefined && isNotCalledYet) {
+      console.log("Đã chạy hàm này 2")
+      getChatsRelatedToLoggedInPerson();
+      setIsNotCalledYet(false)
+    }
+  },[userLoginData])
+
+  //Lấy tin nhắn của tất cả mọi người gửi cho đến NGƯỜI ĐĂNG NHẬP
+  const getChatsRelatedToLoggedInPerson = async () => {
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + `/chats?pagination[page]=1&pagination[pageSize]=100&filters[to][id][$eq]=${userLoginData.id}&populate=*`,
+      method: "get",
+    });
+    if (response.type === RESPONSE_TYPE) {
+      // console.log('Danh sách chat tới người log in hiện tại')
+      // console.log(response.data)
+      setIncomingMessage(response.data.data)
+    }
+  }
 
   return (
     <Fragment>
@@ -112,14 +138,18 @@ function ChatsFrame({ match }) {
                   <ChatsNavigator 
                     handleChangeSeller={handleChangeSeller} 
                     userLoginData={userLoginData}
+                    inComingMessage={inComingMessage}
                   />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
-                  {(socket !== null && user !== undefined) && 
+                  {(setupSocket !== null) && 
                     <ChatFrame 
                       sellerData={user}
                       userLoginData={userLoginData}
-                      socket={socket}
+                      socket={setupSocket}
+                      isPartnerDeclared={match.params.id !== undefined || user !== undefined}
+                      handleNavigateChats={handleNavigateChats}
+                      onUpdateUnreadChat={onUpdateUnreadChat}
                     />
                   }
                 </div>

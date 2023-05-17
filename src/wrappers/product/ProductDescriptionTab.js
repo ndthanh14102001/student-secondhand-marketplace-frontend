@@ -13,6 +13,7 @@ import { useDispatch } from 'react-redux';
 import { onShowPopup } from '../../redux/actions/popupActions';
 import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
 import { onClosePopup } from '../../redux/actions/popupActions';
+import '../../assets/css/textEditor.css';
 
 const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
@@ -21,9 +22,12 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
   const [urlAvatar, setUrlAvatar] = useState();
   const [listComments, setListComments] = useState([]);
   const [comment, setComment] = useState();
+  const [isHovered, setIsHovered] = useState(false);
 
   const { addToast } = useToasts();
   const dispatch = useDispatch();
+  
+  const MessageComponent = <div dangerouslySetInnerHTML={{ __html: productFullDesc }} />;
 
   async function getUrlAvatar() {
     if(user !== null){
@@ -92,7 +96,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
       if(response.type === RESPONSE_TYPE){
         fetchData();
         setComment("");
-        addToast("thay đổi thông tin cá nhân thành công", {
+        addToast("Bình luận thành công", {
           appearance: "success",
           autoDismiss: true
         });
@@ -110,6 +114,16 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
     }
   }
 
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
+
+  const color = isHovered ? 'primary' : 'action';
+
   return (
     <div className={`description-review-area ${spaceBottomClass}`}>
       <div className="container">
@@ -125,7 +139,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 <Nav.Link eventKey="productDescription">Mô tả</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="productReviews">Bình luận(2)</Nav.Link>
+                <Nav.Link eventKey="productReviews">Bình luận({listComments.length})</Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content className="description-review-bottom">
@@ -149,7 +163,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 </div>
               </Tab.Pane>
               <Tab.Pane eventKey="productDescription">
-                {productFullDesc}
+                {MessageComponent}
               </Tab.Pane>
               <Tab.Pane eventKey="productReviews">
                 <div className="review">
@@ -254,7 +268,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                         value={comment}
                         onChange={handleInputChange}
                     />
-                    <SendIcon color="action" onClick={handleSendCmt} />
+                    <SendIcon color={color} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleSendCmt} sx={{ cursor: 'pointer' }} />
                   </Paper>
                 </Box>
                 </div>

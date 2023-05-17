@@ -4,7 +4,7 @@ import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
-import { connect, useSelector } from "react-redux";
+import { connect, useDispatch, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 // import ModalLoading from "./components/modal-loading";
@@ -12,10 +12,10 @@ import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
-import { io } from "socket.io-client";
+import { login, logout } from "./redux/actions/userStorageActions"
 const DistanceCalculator = lazy(() => import("./test-google"));
 // Get user data
-const user = getUserLogin();
+// const user = getUserLogin();
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -57,29 +57,23 @@ const Checkout = lazy(() => import("./pages/other/Checkout"));
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
 const App = (props) => {
-  
+  const dispatch = useDispatch();
 
   const popup = useSelector(state => state.popup);
   const modalLoading = useSelector(state => state.modalLoading);
   const popupErrorBase = useSelector(state => state.popupErrorBase);
-  
-  // const isLogin = useSelector(state => state.userStorage.isLogin);
-  // const user = getUserLogin()?.user;
 
-  // const dispatch = useDispatch();
-  
-  // useEffect(() => {
-  //   if(user){
-  //     const token = getUserLogin().token.split(" ");
 
-  //     dispatch(connectSocket(token[1]));
-  //     return () => {
-  //       dispatch(disconnectSocket());
-  //     };
-  //   }
-  // }, []);
+  // [DON'T DELETE THIS] This line exist to check if user is logged in yet
+  const user = getUserLogin()?.user;
+
 
   useEffect(() => {
+    if (user) {
+      dispatch(login())
+    } else {
+      dispatch(logout())
+    }
     props.dispatch(
       loadLanguages({
         languages: {
@@ -155,18 +149,24 @@ const App = (props) => {
 
 
                   {/* Chat pages */}
-                  { user !== undefined ? 
+                  {user !== undefined ?
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
                         <Chat {...routeProps} key={routeProps.match.params.id} />
                       )}
-                    /> : 
+                    />
+                    :
                     <Route
-                    path={process.env.PUBLIC_URL + "/chat"}
-                    component={LoginAndRegister}
+                      path={process.env.PUBLIC_URL + "/chat"}
+                      component={LoginAndRegister}
                     />}
-                  
+
+                  {user !== undefined &&
+                    <Route
+                      path={process.env.PUBLIC_URL + "/chat"}
+                      component={Chat}
+                    />}
 
 
                   {/* Shop product pages */}

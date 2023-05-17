@@ -5,7 +5,7 @@ import { useToasts } from "react-toast-notifications";
 import { useLocation } from 'react-router-dom';
 import { MetaTags } from 'react-meta-tags'
 import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
-import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, ListItem, IconButton, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, FormControl} from '@mui/material';
+import { Avatar, Box, Button, Grid, Paper, Tab, Tabs, Typography, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, styled, ListItem, IconButton, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, FormControl } from '@mui/material';
 import axios from "axios";
 
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
@@ -129,7 +129,7 @@ const UserInfo = ({ match }) => {
       dispatch(onCloseModalLoading())
     }
     getUserInfo();
-  }, [userId, dispatch]);
+  }, [userId]);
 
   const handleCloseUnFollow = () => {
     setOpenUnFollow(false);
@@ -197,65 +197,65 @@ const UserInfo = ({ match }) => {
   const [openNeedLoginDialog, setOpenNeedLoginDialog] = React.useState(false);
   const userLoginData = getUserLogin()?.user;
 
-    const reportCriteria = [
-      "Xúc phạm khách hàng",
-      "Lừa đảo",
-      "Ảnh đại diện không phù hợp",
-      "Thông tin cá nhân không đúng",
-      "Lý do khác"
-    ]
+  const reportCriteria = [
+    "Xúc phạm khách hàng",
+    "Lừa đảo",
+    "Ảnh đại diện không phù hợp",
+    "Thông tin cá nhân không đúng",
+    "Lý do khác"
+  ]
 
-    const handleClickOpenConfirmReport = () => {
-      if(userLoginData === undefined) {
-        setOpenNeedLoginDialog(true);
-      } else {
-        setOpenConfirmReport(true);
-      }
-    };
-  
-    const handleCloseConfirmReport = () => {
-      setOpenConfirmReport(false);
-      setOpenNeedLoginDialog(false);
-    };
+  const handleClickOpenConfirmReport = () => {
+    if (userLoginData === undefined) {
+      setOpenNeedLoginDialog(true);
+    } else {
+      setOpenConfirmReport(true);
+    }
+  };
 
-    const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
-    const [reportDetailInput, setReportDetailInput] = React.useState('');
-    const handleToggle = (value) => () => {
-      const currentIndex = checkedReportCriteria.indexOf(value);
-      const newChecked = [...checkedReportCriteria];
-  
-      if (currentIndex === -1) {
-        newChecked.push(value);
-      } else {
-        newChecked.splice(currentIndex, 1);
-      }
-  
-      setCheckedReportCriteria(newChecked);
-    };
+  const handleCloseConfirmReport = () => {
+    setOpenConfirmReport(false);
+    setOpenNeedLoginDialog(false);
+  };
 
-    // useEffect(() => {
-    //   let description = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
-    //   if(checkedReportCriteria.indexOf("Lý do khác") > 0){
-    //     description += " và lý do khác"
-    //   }
-    //   if(reportDetailInput !== ''){
-    //     description += ", mô tả chi tiết: " + reportDetailInput
-    //   }
+  const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
+  const [reportDetailInput, setReportDetailInput] = React.useState('');
+  const handleToggle = (value) => () => {
+    const currentIndex = checkedReportCriteria.indexOf(value);
+    const newChecked = [...checkedReportCriteria];
 
-    //   console.log(description)
-    // }, [checkedReportCriteria, reportDetailInput]);
-  
-    const handleReport = () => {
-      let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
-      if(checkedReportCriteria.indexOf("Lý do khác") > 0){
-        descriptionInput += " và lý do khác"
-      }
-      if(reportDetailInput !== ''){
-        descriptionInput += ", mô tả chi tiết: " + reportDetailInput
-      }
+    if (currentIndex === -1) {
+      newChecked.push(value);
+    } else {
+      newChecked.splice(currentIndex, 1);
+    }
 
-      axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
+    setCheckedReportCriteria(newChecked);
+  };
+
+  // useEffect(() => {
+  //   let description = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+  //   if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+  //     description += " và lý do khác"
+  //   }
+  //   if(reportDetailInput !== ''){
+  //     description += ", mô tả chi tiết: " + reportDetailInput
+  //   }
+
+  //   console.log(description)
+  // }, [checkedReportCriteria, reportDetailInput]);
+
+  const handleReport = () => {
+    let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    if (checkedReportCriteria.indexOf("Lý do khác") > 0) {
+      descriptionInput += " và lý do khác"
+    }
+    if (reportDetailInput !== '') {
+      descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+    }
+
+    axios
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
         {
           data: {
             type: 'user',
@@ -295,7 +295,7 @@ const UserInfo = ({ match }) => {
       </MetaTags>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
-      Thông tin người bán
+        Thông tin người bán
       </BreadcrumbsItem>
       <LayoutOne headerTop="visible">
         <Breadcrumb />
@@ -326,7 +326,7 @@ const UserInfo = ({ match }) => {
                     onClose={handleCloseConfirmReport}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
-                    sx={{  }}
+                    sx={{}}
                   >
                     <DialogTitle id="alert-dialog-title" sx={{ textAlign: 'center', fontWeight: 'bold' }}>
                       {"Báo cáo người dùng"}
@@ -366,7 +366,7 @@ const UserInfo = ({ match }) => {
                         id="outlined-start-adornment"
                         sx={{ padding: 0, mt: '12px' }}
                         value={reportDetailInput}
-                        onChange={(event) => {setReportDetailInput(event.target.value)}}
+                        onChange={(event) => { setReportDetailInput(event.target.value) }}
                         InputProps={{
                           startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
                         }}
@@ -380,7 +380,7 @@ const UserInfo = ({ match }) => {
                     </DialogActions>
                   </Dialog>
 
-                   {/* Hộp thoại yêu cầu đăng nhập trước khi báo cáo người dùng */}
+                  {/* Hộp thoại yêu cầu đăng nhập trước khi báo cáo người dùng */}
                   <Dialog
                     open={openNeedLoginDialog}
                     onClose={handleCloseConfirmReport}

@@ -18,7 +18,6 @@ const ProductGrid = ({
   sliderClassName,
   spaceBottomClass
 }) => {
-  console.log("products", products);
   return (
     < Fragment >
       {
