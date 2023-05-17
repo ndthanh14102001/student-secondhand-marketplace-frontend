@@ -20,6 +20,8 @@ import { Box, Button, CircularProgress } from "@mui/material";
 import userApi from "../../api/user-api";
 import { onShowPopupErrorBase } from "../../redux/actions/popupErrorBaseActions";
 export const HOME_CATEGORY = "HOME_CATEGORY";
+
+const NUMBER_PRODUCT_RECOMMENDER = 2;
 const ProductGrid = ({
   category,
   products,
@@ -36,11 +38,16 @@ const ProductGrid = ({
   const dispatch = useDispatch();
   const userLogin = getUserLogin();
   const [productList, setProductList] = useState([]);
-  const [indexUniversityFilter, setIndexUniviersityFilter] = useState(0);
-  const [page, setPage] = useState(1)
-  const [hasMore, setHasMore] = useState(true);
   const [isLoadingData, setIsLoadingData] = useState(true);
-  const [distancesUniversityHasProduct, setDistancesUniversityHasProduct] = useState([]);
+  const [recomenderInfo, setRecomenderInfo] = useState({
+    distancesUniversityHasProduct: [],
+    indexUniversityFilter: 0,
+    hasMore: true,
+    page: 1,
+    productRecomended: 0,
+    productRecommenderNext: NUMBER_PRODUCT_RECOMMENDER,
+    remainingProductInUni: 0
+  })
 
   useEffect(() => {
     const getDistancesUniversityHasUser = async () => {
@@ -60,9 +67,15 @@ const ProductGrid = ({
           }
         })
         distances.sort((a, b) => Number(a.distance) - Number(b.distance))
-        setDistancesUniversityHasProduct(distances);
+        setRecomenderInfo(prev => ({
+          ...prev,
+          distancesUniversityHasProduct: distances,
+        }));
       } else {
-        setDistancesUniversityHasProduct([]);
+        setRecomenderInfo(prev => ({
+          ...prev,
+          distancesUniversityHasProduct: [],
+        }));
       }
     }
     getDistancesUniversityHasUser();
@@ -92,16 +105,14 @@ const ProductGrid = ({
       }
     }
     const getProductListHomeNoRecommender = async () => {
-
-      if (hasMore && isLoadingData) {
-        console.log("page", page);
+      if (recomenderInfo.hasMore && isLoadingData) {
         const response = await callApi({
           url: process.env.REACT_APP_API_ENDPOINT + "/products",
           method: "get",
           params: {
             pagination: {
-              page: page,
-              pageSize: 2
+              page: recomenderInfo.page,
+              pageSize: 8
             },
             populate: {
               userId: {
@@ -122,92 +133,121 @@ const ProductGrid = ({
         });
         if (response.type === RESPONSE_TYPE) {
           const metaPagination = response.data?.meta?.pagination;
-
-          setPage(prev => prev + 1);
-          setHasMore(metaPagination?.pageCount >= page + 1);
+          setRecomenderInfo(prev => ({
+            ...prev,
+            hasMore: metaPagination?.pageCount >= prev.page + 1,
+            page: prev.page + 1
+          }))
           setIsLoadingData(false);
           setProductList(prev => [...prev, ...response.data?.data])
         }
       }
 
     }
+    const getFilterUniversityByIndex = (indexUniversity) => {
+      const universityIdFilter = [];
+      let hasMoreTmp = recomenderInfo.hasMore;
+      if (recomenderInfo.distancesUniversityHasProduct[indexUniversity]) {
+        universityIdFilter.push({
+          userId: {
+            universityId: {
+              $eq: recomenderInfo.distancesUniversityHasProduct[indexUniversity].id
+            }
+          }
+        })
+      } else {
+        hasMoreTmp = false
+        setRecomenderInfo(prev => ({
+          ...prev,
+          hasMore: false
+        }));
+        setIsLoadingData(false);
+      }
+      return {
+        universityIdFilter,
+        hasMoreTmp,
+      }
+    }
     const getProductListHomeHasRecomender = async () => {
-      console.log("page", page);
-      if (distancesUniversityHasProduct.length > 0) {
-        let pageTmp = page;
-        let hasMoreTmp = hasMore;
-        let indexUniversityFilterTmp = indexUniversityFilter;
+      const recomenderInfoCopy = { ...recomenderInfo };
 
-        const universityIdFilter = []
-        if (distancesUniversityHasProduct[indexUniversityFilter]) {
-          universityIdFilter.push({
-            userId: {
-              universityId: {
-                $eq: distancesUniversityHasProduct[indexUniversityFilter].id
-              }
-            }
-          })
-        } else {
-          hasMoreTmp = false
-          setHasMore(hasMoreTmp);
-          setIsLoadingData(false);
-        }
+      if (recomenderInfo.distancesUniversityHasProduct.length > 0) {
 
-        while (true && hasMoreTmp) {
-          const response = await callApi({
-            url: process.env.REACT_APP_API_ENDPOINT + "/products",
-            method: "get",
-            params: {
-              filters: {
-                $or: universityIdFilter,
-                status: {
-                  $eq: "onSale"
+        console.log("recomenderInfoCopy", recomenderInfoCopy)
+        while (true && recomenderInfoCopy.hasMore) {
+          let universityIdFilter = []
+          const filterUniversity = getFilterUniversityByIndex(recomenderInfoCopy.indexUniversityFilter);
+          universityIdFilter = filterUniversity.universityIdFilter;
+          recomenderInfoCopy.hasMore = filterUniversity.hasMoreTmp;
+          if (recomenderInfoCopy.hasMore) {
+            const response = await callApi({
+              url: process.env.REACT_APP_API_ENDPOINT + "/products",
+              method: "get",
+              params: {
+                filters: {
+                  $or: universityIdFilter,
+                  status: {
+                    $eq: "onSale"
+                  },
+
                 },
-
-              },
-              pagination: {
-                page: page,
-                pageSize: 8
-              },
-              populate: {
-                userId: {
-                  populate: "*"
+                pagination: {
+                  page: recomenderInfoCopy.page,
+                  pageSize: recomenderInfoCopy.productRecommenderNext
                 },
-                category: true,
-                images: true
-              },
-              sort: {
-                createdAt: "desc"
+                populate: {
+                  userId: {
+                    populate: "*"
+                  },
+                  category: true,
+                  images: true
+                },
+                sort: {
+                  createdAt: "desc"
+                }
               }
-            }
-          });
-          if (response.type === RESPONSE_TYPE) {
-            const metaPagination = response.data?.meta?.pagination;
-            if (page + 1 > metaPagination?.pageCount) {
-              pageTmp = 1
-              if (indexUniversityFilterTmp + 1 > distancesUniversityHasProduct?.length) {
-                hasMoreTmp = false;
-                indexUniversityFilterTmp = 0;
-                setHasMore(hasMoreTmp);
-                setPage(pageTmp);
-                setIsLoadingData(false);
-                break;
+            });
+            if (response.type === RESPONSE_TYPE) {
+              const metaPagination = response.data?.meta?.pagination;
+              if (recomenderInfoCopy.page + 1 > metaPagination?.pageCount) {
+                console.log("check", response);
+                recomenderInfoCopy.page = 1
+                if (recomenderInfoCopy.indexUniversityFilter + 1 > recomenderInfoCopy.distancesUniversityHasProduct?.length) {
+                  recomenderInfoCopy.hasMore = false;
+                  recomenderInfoCopy.indexUniversityFilter = 0;
+                  setRecomenderInfo({
+                    ...recomenderInfoCopy
+                  })
+                  setIsLoadingData(false);
+                  break;
+                } else {
+                  console.log("check3", response);
+                  recomenderInfoCopy.hasMore = true;
+                  recomenderInfoCopy.indexUniversityFilter = recomenderInfoCopy.indexUniversityFilter + 1;
+                }
+
               } else {
-                hasMoreTmp = true;
-                indexUniversityFilterTmp = indexUniversityFilterTmp + 1;
+                console.log("check2", response);
+                recomenderInfoCopy.page = recomenderInfoCopy.page + 1
+                recomenderInfoCopy.hasMore = true;
               }
+              if (Array.isArray(response.data?.data) && response.data?.data.length > 0) {
+                const metaPagination = response.data?.meta?.pagination;
+                recomenderInfoCopy.productRecomended = recomenderInfoCopy.productRecomended + response.data?.data.length;
+                recomenderInfoCopy.productRecommenderNext = recomenderInfoCopy.productRecommenderNext - response.data?.data.length;
 
-            } else {
-              pageTmp = page + 1
-              hasMoreTmp = true;
-            }
-            if (Array.isArray(response.data?.data) && response.data?.data.length > 0) {
-              setProductList(prev => [...prev, ...response.data?.data])
-              setIndexUniviersityFilter(indexUniversityFilterTmp);
-              setHasMore(hasMoreTmp);
-              setPage(pageTmp);
-              setIsLoadingData(false);
-              break;
+                setProductList(prev => [...prev, ...response.data?.data])
+
+                if (recomenderInfoCopy.productRecommenderNext === 0) {
+                  console.log("indexUniversityFilterTmp", recomenderInfoCopy);
+                  recomenderInfoCopy.productRecommenderNext = NUMBER_PRODUCT_RECOMMENDER;
+                  setRecomenderInfo({
+                    ...recomenderInfoCopy
+                  })
+                  setIsLoadingData(false);
+                  break;
+                }
+              }
             }
           }
         }
@@ -226,9 +266,9 @@ const ProductGrid = ({
       getProductListByCategory();
     }
 
-  }, [category, isLoadingData, distancesUniversityHasProduct.length]);
+  }, [category, isLoadingData, recomenderInfo.distancesUniversityHasProduct.length]);
   const handleShowNextPage = () => {
-    if (hasMore) {
+    if (recomenderInfo.hasMore) {
       setIsLoadingData(true);
     }
   }
@@ -288,7 +328,7 @@ const ProductGrid = ({
           />
         );
       })}
-      {hasMore && <Box className="col-md-12" sx={{ display: "flex", justifyContent: "center" }}>
+      {recomenderInfo.hasMore && <Box className="col-md-12" sx={{ display: "flex", justifyContent: "center" }}>
         <Box sx={{ m: 1, position: 'relative' }}>
           <Button
             variant="contained"
