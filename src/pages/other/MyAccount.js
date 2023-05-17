@@ -12,10 +12,8 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import { updateUser } from "../../utils/userLoginStorage";
 import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
-import { UNIVERSITY_LIST } from '../../constants'
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 import { getAllUniversity } from "../../utils/data/university";
-import { getUniversityById } from '../../utils/data/university'
 
 const MyAccount = ({ location }) => {
   const universityData = useMemo(() => {
@@ -80,7 +78,7 @@ const MyAccount = ({ location }) => {
       }
     })
     if (response.type === RESPONSE_TYPE) {
-      setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
+      setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data?.avatar?.url);
       const arr = response.data?.user_followed;
       setFollower(arr);
       arr.map((userFollow) => {
@@ -255,7 +253,7 @@ const MyAccount = ({ location }) => {
           setUrlAvatar(reader.result);
         };
         reader.readAsDataURL(file);
-        console.log(reader.result);
+        // console.log(reader.result);
       }
     };
     input.click();
@@ -381,35 +379,35 @@ const MyAccount = ({ location }) => {
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Tên tài khoản</label>
-                                  <input type="text" name="username" value={inputValue.username} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input type="text" name="username" value={inputValue?.username} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.username}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Họ tên</label>
-                                  <input type="text" name="fullName" value={inputValue.fullName} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input type="text" name="fullName" value={inputValue?.fullName} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.fullName}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Email </label>
-                                  <input id="email" name="email" type="email" value={inputValue.email} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="email" name="email" type="email" value={inputValue?.email} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.email}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Địa chỉ</label>
-                                  <input id="address" name="address" type="email" value={inputValue.address} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="address" name="address" type="email" value={inputValue?.address} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.address}</Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Số điện thoại</label>
-                                  <input id="phone" name="phone" type="number" value={inputValue.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
+                                  <input id="phone" name="phone" type="number" value={inputValue?.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
                                   <Typography color="error" sx={{ mt:1 }}>{messageError.phone}</Typography>
                                 </div>
                               </div>

@@ -12,6 +12,7 @@ import {
 import React, { useEffect, useState } from 'react'
 import validator from 'validator';
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
+import TextEditor from '../../components/TextEditor';
 export function MyListSubheader(
   props
 ) {
@@ -141,19 +142,29 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
         {!productInfo.isValidCategoryChoose && <FormHelperText>Hãy chọn danh mục </FormHelperText>}
       </FormControl>
 
-      <InputProductInfo required label="Mô tả" multiline rows={4}
-        error={!productInfo?.isValidDescription}
-        helperText={!productInfo?.isValidDescription && "Mô tả phải lớn hơn hoặc bằng 10 từ"}
-        value={productInfo.description}
-        onChange={e => setProductInfo(prev => ({
-          ...prev,
-          description: e.target.value,
-          isValidDescription: true
-        }))}
-      />
+      <Box>
+        <TextEditor
+          value={productInfo.description}
+          setValue={value => {
+            setProductInfo(prev => ({
+              ...prev,
+              description: value,
+              isValidDescription: true
+            }));
+          }}
+          placeholder="Enter your text here"
+          toolbarTextHoverColor="#000000"
+          toolbarBackgroundColor="#D3D3D3"
+          contentEditorBackgroundColor="#FFFFFF"
+          contentEditorTextColor="#000000"
+        />
+        {!productInfo?.isValidDescription && <FormHelperText error>Mô tả phải lớn hơn hoặc bằng 10 từ</FormHelperText>}
+      </Box>
+      
       <Box sx={{
         display: "flex",
-        justifyContent: "space-between"
+        justifyContent: "space-between",
+        marginTop: "10px",
       }}>
         <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }} type="button">Xem trước</Button>
         <Button variant='contained' sx={ActionStyles} type="submit" >Đăng bán</Button>
