@@ -8,20 +8,15 @@ import { useEffect } from "react";
 import { useState } from "react";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import {
-  getArrayUniversity, getAllUniversity, getFullAddressUniversity,
-  getAllDistanceUniversity, getAllDistanceUniversityObject
+  getAllDistanceUniversityObject
 } from "../../utils/data/university";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import { calculateDistance } from "../../utils/googleApi";
-import { getAllWards } from "../../utils/data/wards";
-import { getAllDistrict } from "../../utils/data/district";
-import { getAllCity } from "../../utils/data/city";
 import { Box, Button, CircularProgress } from "@mui/material";
 import userApi from "../../api/user-api";
 import { onShowPopupErrorBase } from "../../redux/actions/popupErrorBaseActions";
 export const HOME_CATEGORY = "HOME_CATEGORY";
 
-const NUMBER_PRODUCT_RECOMMENDER = 2;
+const NUMBER_PRODUCT_RECOMMENDER = 8;
 const ProductGrid = ({
   category,
   products,
