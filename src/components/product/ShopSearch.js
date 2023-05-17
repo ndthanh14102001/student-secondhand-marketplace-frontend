@@ -12,7 +12,7 @@ const ShopSearch = () => {
     dispatch(setNameFilter(searchValue.trim()));
   }
   return (
-    <Box mb="2rem">
+    <Box className="mb-20">
       <TextField
         value={searchValue}
         onChange={e => setSearchValue(e.target.value)}
