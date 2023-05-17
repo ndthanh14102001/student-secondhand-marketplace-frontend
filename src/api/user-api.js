@@ -32,7 +32,6 @@ const userApi = {
     })
     if (response.type === RESPONSE_TYPE) {
       const responseData = response.data;
-      console.log("responseData", responseData);
       if (Array.isArray(responseData)) {
         data = responseData.filter((user) => user?.product?.length > 0)
       }
