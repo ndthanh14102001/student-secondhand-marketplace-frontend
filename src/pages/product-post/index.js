@@ -157,7 +157,7 @@ const ProductPost = () => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Product Post</title>
+        <title>Đăng bán sản phẩm của bạn</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."

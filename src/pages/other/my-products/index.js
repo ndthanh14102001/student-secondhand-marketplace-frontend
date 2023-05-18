@@ -24,7 +24,7 @@ const MyProducts = () => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | My Products</title>
+        <title>Sản phấm của bạn</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."
