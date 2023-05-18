@@ -160,7 +160,10 @@ const App = (props) => {
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
-                        <Chat {...routeProps} key={routeProps.match.params.id} parentHandleNavigateChats={handleNavigateChats} />
+                        <Chat 
+                          {...routeProps} 
+                          key={routeProps.match.params.id} 
+                          parentHandleNavigateChats={handleNavigateChats} />
                       )}
                     />
                     :
@@ -173,7 +176,10 @@ const App = (props) => {
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       render={(routeProps) => (
-                        <Chat {...routeProps} key={routeProps.match.params.id} parentHandleNavigateChats={handleNavigateChats} />
+                        <Chat 
+                          {...routeProps} 
+                          key={routeProps.match.params.id} 
+                          parentHandleNavigateChats={handleNavigateChats} />
                       )}
                     />}
 

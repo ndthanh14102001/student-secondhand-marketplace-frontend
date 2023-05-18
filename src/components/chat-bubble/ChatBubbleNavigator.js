@@ -63,9 +63,13 @@ function ChatBubbleNavigator(props) {
         }
     }
 
+    // Eliminate user that has been navigated
     useEffect(()=>{
         if(userList.length > 0 && props.selectedChatPartner !== undefined){
-            setUserList((prev) => prev.filter((object) => object.id !== props.selectedChatPartner))
+            setUserList((prev) => {
+                props.getChatsCount(prev.filter((object) => object.id !== props.selectedChatPartner).reduce((total, obj) => total + obj.unreadCount, 0))
+                return prev.filter((object) => object.id !== props.selectedChatPartner)
+            })
         }
     },[props.selectedChatPartner])
 
