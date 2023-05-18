@@ -17,7 +17,6 @@ function ChatBubbleNavigator(props) {
 
     // Get all unread message & Initiate Socket receive the message to login user
     useEffect(()=>{
-        console.log("socket bên ChatBubbleNavigator (chưa biết null hay không ?): " + chatBubbleSocket)
         if(chatBubbleSocket !== null){
             const listener = (message) => {
                 // const dataPrototype = {
@@ -73,7 +72,6 @@ function ChatBubbleNavigator(props) {
     useEffect(() => {
         if(incomingMessage.length !== 0){
             let tempCustomUserList = [];
-            let FinalUserList = [];
             console.log("incomingMessage array: ")
             console.log(incomingMessage)
             const uniqueUserIDsList = [...new Set(incomingMessage.map((object) => object.attributes.from.data.id))];
@@ -82,6 +80,8 @@ function ChatBubbleNavigator(props) {
                 id: id,
                 unreadCount: incomingMessage.filter((object) => object.attributes.from.data.id === id).length
             }));
+
+            props.getChatsCount(tempCustomUserList.reduce((total, obj) => total + obj.unreadCount, 0))
 
             console.log("tempCustomUserList: ")
             console.log(tempCustomUserList)

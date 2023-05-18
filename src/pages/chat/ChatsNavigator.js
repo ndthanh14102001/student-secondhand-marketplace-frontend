@@ -47,7 +47,7 @@ function ChatsNavigator(props) {
   const [searchKey, setSearchKey] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  // get first 10 user
+  // get first 10 user from database
   useEffect(()=> {
     const getSellerInfo = async () => {
       const response = await callApi({
