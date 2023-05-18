@@ -325,8 +325,6 @@ const MyAccount = ({ location }) => {
     } 
   }
 
-  console.log("input", inputValue);
-
   return (
     <Fragment>
       <MetaTags>
