@@ -8,6 +8,7 @@ import axios from "axios";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import ForumIcon from '@mui/icons-material/Forum';
 
+
 function ChatBubbleNavigator(props) {
     const chatBubbleSocket = useSelector(state => state.socket.socket);
     const [userList, setUserList] = useState([]);
@@ -57,14 +58,16 @@ function ChatBubbleNavigator(props) {
         method: "get",
         });
         if (response.type === RESPONSE_TYPE) {
-        // console.log('Danh sách chat tới người log in hiện tại')
-        // console.log(response.data)
-        setIncomingMessage(response.data.data)
+            // console.log('Danh sách chat tới người log in hiện tại')
+            // console.log(response.data)
+            setIncomingMessage(response.data.data)
         }
     }
 
     // Eliminate user that has been navigated
     useEffect(()=>{
+        console.log("props.selectedChatPartner")
+        console.log(props.selectedChatPartner)
         if(userList.length > 0 && props.selectedChatPartner !== undefined){
             setUserList((prev) => {
                 props.getChatsCount(prev.filter((object) => object.id !== props.selectedChatPartner).reduce((total, obj) => total + obj.unreadCount, 0))
@@ -92,18 +95,20 @@ function ChatBubbleNavigator(props) {
 
             // Cheeck userlist if user (which is partner) already exist, if already there, plus, unread Count
             tempCustomUserList.map((item) => {
-                if(!findIdExistById(userList, item.id)){
+                if(!findIdExistById(userList, item.id) && item.id !== props.selectedChatPartner){
                     // FinalUserList.push(QueryUserByID(item.id))
                     QueryUserByID(item.id, item.unreadCount)
                 }else if(item.id === partnerJustSent) {
                     setUserList((prev) => {
                         return prev.map((object) => {
-                            if (object.id === partnerJustSent) {
-                              // Cập nhật thuộc tính của object có id là
-                              return { ...object, unreadCount: object.unreadCount + 1 };
+                            if (object.id === partnerJustSent && object.id === props.selectedChatPartner) {
+                                return null;
+                            } else if (object.id === partnerJustSent) {
+                                // Cập nhật thuộc tính của object có id là
+                                return { ...object, unreadCount: object.unreadCount + 1 };
                             }
                             return object;
-                        });
+                        }).filter(Boolean);
                         // [...prev , prev[prev.findIndex((object) => object.id === item.id)].unreadCount++];
                     })
                 }
@@ -123,9 +128,9 @@ function ChatBubbleNavigator(props) {
         setUserList((prev) => [ ...prev, data])
     }
 
-    useEffect(() => { 
-        console.log(userList)
-    },[userList])
+    // useEffect(() => { 
+    //     console.log(userList)
+    // },[userList])
 
     return ( 
     <Box>
@@ -143,7 +148,6 @@ function ChatBubbleNavigator(props) {
                         <Badge
                             overlap="circular"
                             anchorOrigin={{ vertical: 'top', horizontal: 'left' }}
-                            ChatBubbleIcon
                             badgeContent={
                                 <ForumIcon sx={{ fontSize: '30px' }} />
                             }
@@ -154,6 +158,8 @@ function ChatBubbleNavigator(props) {
                     </Box>
                 </Tooltip>
             </Link>
+            {console.log("userList")}
+            {console.log(userList)}
             {userList.map((item) => (
                 <Tooltip title={item.username} placement="right">
                     <Badge badgeContent={item.unreadCount} max={99} color="error" overlap="circular">

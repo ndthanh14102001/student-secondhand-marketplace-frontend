@@ -153,7 +153,6 @@ function ChatFrame(props) {
     if(partner !== undefined && chats !== undefined){
       const updateRecords = async () => {
         const promises = chats.map((item) => {
-          console.log("tin nhắn id: " + item.id + "/ read: " + item.attributes.read)
           if(item.attributes.from.data.id === partner.id && item.attributes.read === false) { 
             console.log('tin nhắn dc set true là: ' + item.id)
             return axios.put(`${process.env.REACT_APP_API_ENDPOINT}/chats/${item.id}`, {data: { read: true }} );
@@ -487,6 +486,7 @@ function ChatFrame(props) {
           multiline
           maxRows={6}
           variant="filled"
+          disabled={props.sellerData === undefined ? true : false}
           sx={{
             padding: '4px 16px',
             borderRadius: '24px',

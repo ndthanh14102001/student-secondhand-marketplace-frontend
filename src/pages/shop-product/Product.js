@@ -44,7 +44,7 @@ const Product = ({ location, match }) => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Product Page</title>
+        <title>{product?.attributes?.name} - {product?.id}</title>
         <meta
           name="description"
           content="Product page of flone react minimalist eCommerce template."
