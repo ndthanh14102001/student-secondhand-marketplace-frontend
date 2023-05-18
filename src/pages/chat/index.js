@@ -28,6 +28,7 @@ function ChatsFrame(props) {
   const [user, setUser] = useState();
 
   // Mảng tin nhắn từ mọi người tới người đăng nhập hiện tại
+  const [incomingFromSocket, setincomingFromSocket] = useState()
   const [isNotCalledYet, setIsNotCalledYet] = useState(true)
   const [inComingMessage, setIncomingMessage] = useState();
 
@@ -60,6 +61,7 @@ function ChatsFrame(props) {
 
   //Update new message to IncomingMessage
   const onUpdateUnreadChat = (input) => {
+    setincomingFromSocket(input)
     setIncomingMessage((prev) => [...prev, input])
   }
   
@@ -83,6 +85,7 @@ function ChatsFrame(props) {
         setUser(response.data);
       }
     }
+
     if(match !== undefined){
       getUserInfo();
     }
@@ -142,6 +145,8 @@ function ChatsFrame(props) {
                     handleChangeSeller={handleChangeSeller} 
                     userLoginData={userLoginData}
                     inComingMessage={inComingMessage}
+                    incomingFromSocket={incomingFromSocket}
+                    sellerData={user}
                   />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>
