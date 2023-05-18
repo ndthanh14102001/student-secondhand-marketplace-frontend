@@ -10,6 +10,9 @@ import { ddmmyyhhmm } from "../../utils/DateFormat";
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import { getProductImages } from "../../utils/handleData";
 import { getUniversityById } from "../../utils/data/university";
+import wishlistApi from "../../api/wishlist-api";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import { useSelector } from "react-redux";
 
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
@@ -29,7 +32,8 @@ const ProductGridListSingle = ({
   sliderClassName,
   spaceBottomClass
 }) => {
-
+  const wishlistData = useSelector(state => state.wishlistData);
+  console.log("wishlistData", wishlistData);
   const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
@@ -43,7 +47,16 @@ const ProductGridListSingle = ({
   const images = getProductImages(attributes) || product?.images;
   const user = attributes?.userId?.data?.attributes || product?.userId;
   const avatar = user?.avatar?.data?.attributes?.url || user?.avatar?.url;
-
+  const handleAddToWishlist = async (product) => {
+    const wishlistNew = Array.isArray(wishlistData) ?
+      wishlistData.map((item) => item?.id)
+      : []
+    wishlistNew.push(product?.id);
+    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
+    if (response.type === RESPONSE_TYPE) {
+      addToWishlist(product, addToast)
+    }
+  };
   return (
     <Fragment>
       <div
@@ -81,7 +94,7 @@ const ProductGridListSingle = ({
                       ? "Added to wishlist"
                       : "Add to wishlist"
                   }
-                  onClick={() => addToWishlist(product, addToast)}
+                  onClick={async () => await handleAddToWishlist(product)}
                 >
                   <i className="pe-7s-like" />
                 </button>

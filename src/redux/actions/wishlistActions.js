@@ -1,7 +1,11 @@
+export const SET_WISHLIST = "SET_WISHLIST";
 export const ADD_TO_WISHLIST = "ADD_TO_WISHLIST";
 export const DELETE_FROM_WISHLIST = "DELETE_FROM_WISHLIST";
 export const DELETE_ALL_FROM_WISHLIST = "DELETE_ALL_FROM_WISHLIST";
 
+export const setWishlist = (wishlist) => {
+  return { type: SET_WISHLIST, payload: wishlist }
+};
 // add to wishlist
 export const addToWishlist = (item, addToast) => {
   return dispatch => {

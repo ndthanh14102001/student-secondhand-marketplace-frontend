@@ -1,7 +1,8 @@
 import {
   ADD_TO_WISHLIST,
   DELETE_FROM_WISHLIST,
-  DELETE_ALL_FROM_WISHLIST
+  DELETE_ALL_FROM_WISHLIST,
+  SET_WISHLIST
 } from "../actions/wishlistActions";
 
 const initState = [];
@@ -32,7 +33,9 @@ const wishlistReducer = (state = initState, action) => {
       return false;
     });
   }
-
+  if (action.type === SET_WISHLIST) {
+    return product
+  }
   return wishlistItems;
 };
 

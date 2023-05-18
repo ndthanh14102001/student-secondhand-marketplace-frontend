@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
@@ -16,6 +16,11 @@ import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
+import { useSelector } from "react-redux";
+import wishlistApi from "../../api/wishlist-api";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
+import { useDispatch } from "react-redux";
 const Wishlist = ({
   location,
   cartItems,
@@ -27,6 +32,22 @@ const Wishlist = ({
 }) => {
   const { addToast } = useToasts();
   const { pathname } = location;
+  const handleDeleteFormWishList = async (wishlistItem) => {
+    const response = await wishlistApi.updateWishlist({
+      wishlist: wishlistItems.filter(item => item.id !== wishlistItem.id).map((item) => item.id)
+    });
+    if (response.type === RESPONSE_TYPE) {
+      deleteFromWishlist(wishlistItem, addToast);
+    }
+  }
+  const handleDeleteAllWishlist = async () => {
+    const response = await wishlistApi.updateWishlist({
+      wishlist: []
+    });
+    if (response.type === RESPONSE_TYPE) {
+      deleteAllFromWishlist(addToast)
+    }
+  }
   return (
     <Fragment>
       <MetaTags>
@@ -79,7 +100,6 @@ const Wishlist = ({
                             //   item => item.id === wishlistItem.id
                             // )[0];
                             const wishlistItemImages = getProductImages(wishlistItemAtrributes) || wishlistItemAtrributes?.images;
-                            console.log("wishlistItemImages", wishlistItemImages)
                             return (
                               <tr key={key}>
                                 <td className="product-thumbnail">
@@ -176,9 +196,7 @@ const Wishlist = ({
 
                                 <td className="product-remove">
                                   <button
-                                    onClick={() =>
-                                      deleteFromWishlist(wishlistItem, addToast)
-                                    }
+                                    onClick={async () => await handleDeleteFormWishList(wishlistItem)}
                                   >
                                     <i className="fa fa-times"></i>
                                   </button>
@@ -203,7 +221,7 @@ const Wishlist = ({
                         </Link>
                       </div>
                       <div className="cart-clear">
-                        <button onClick={() => deleteAllFromWishlist(addToast)}>
+                        <button onClick={async () => await handleDeleteAllWishlist()}>
                           Làm trống sản phẩm yêu thích
                         </button>
                       </div>

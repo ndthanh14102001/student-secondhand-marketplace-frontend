@@ -446,14 +446,14 @@ const IconGroup = ({
           </div>
         </ClickAwayListener>
       }
-      <div className="same-style header-wishlist">
+      {isLogin &&<div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
           <span className="count-style">
             {wishlistData && wishlistData.length ? wishlistData.length : 0}
           </span>
         </Link>
-      </div>
+      </div>}
       {isLogin && <div className="same-style">
         <Button
           onClick={() => history.push(process.env.PUBLIC_URL + "/product-post")}
