@@ -14,6 +14,7 @@ import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
 import { login, logout } from "./redux/actions/userStorageActions"
 const DistanceCalculator = lazy(() => import("./test-google"));
+const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 // Get user data
 // const user = getUserLogin();
 
@@ -84,7 +85,7 @@ const App = (props) => {
       })
     );
   });
-
+  console.log("modalLoading.open", modalLoading);
   return (
     <ThemeProvider>
       <Popup
@@ -257,9 +258,13 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
-                  <Route
+                  {/* <Route
                     path={process.env.PUBLIC_URL + "/test"}
                     component={DistanceCalculator}
+                  /> */}
+                  <Route
+                    path={process.env.PUBLIC_URL + "/test"}
+                    component={SwipeableTextMobileStepper}
                   />
                   <Route exact component={NotFound} />
                 </Switch>
