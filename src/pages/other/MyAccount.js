@@ -44,7 +44,7 @@ const MyAccount = ({ location }) => {
     email: user?.user?.email,
     address: user?.user?.address,
     phone: user?.user?.phone,
-    university: user?.user?.university
+    universityId: user?.user?.universityId
   });
 
   const [inputPassword, setInputPassword] = useState({
@@ -324,6 +324,8 @@ const MyAccount = ({ location }) => {
       setIsChangeList(prev => !prev);
     } 
   }
+
+  console.log("input", inputValue);
 
   return (
     <Fragment>

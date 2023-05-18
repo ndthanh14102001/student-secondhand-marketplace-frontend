@@ -113,23 +113,27 @@ const ProductGridSingle = ({
             <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt))} </Typography>
             <BoxInfo>
               <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
-              <Box sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "flex-start",
-                marginLeft: "1rem",
-                width: "100%"
-              }}>
+              <Box
+                className="capitalizeText"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  marginLeft: "1rem",
+                  width: "100%"
+                }}>
                 <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
-                <Tooltip title={getUniversityById(user?.universityId)?.teN_DON_VI || ""}>
+                <Tooltip PopperProps={{
+                  className: "capitalizeText"
+                }} title={getUniversityById(user?.universityId)?.teN_DON_VI.toLocaleLowerCase() || ""}>
                   <Typography component={"span"}
-                    className="ellipsisText"
+                    className="ellipsisText "
                     sx={{
                       fontSize: "0.8rem",
-                      width: "60%"
+                      width: "80%"
                     }}
-                  >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
+                  >{getUniversityById(user?.universityId)?.teN_DON_VI?.toLocaleLowerCase() || ""}</Typography>
                 </Tooltip>
               </Box>
             </BoxInfo>

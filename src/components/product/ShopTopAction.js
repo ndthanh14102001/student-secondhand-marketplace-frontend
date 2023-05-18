@@ -12,7 +12,7 @@ const ShopTopAction = ({
   valueFilter
 }) => {
   return (
-    <div className="shop-top-bar mb-35">
+    <div className="shop-top-bar mb-20">
       <div className="select-shoing-wrap">
         <div className="shop-select">
           <select
