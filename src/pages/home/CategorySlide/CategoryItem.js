@@ -11,9 +11,11 @@ const CategoryItem = ({ name, image }) => {
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        padding: "1rem",
-        margin: "1rem",
-        height: "100px"
+        padding: "2rem",
+        width: "100%",
+        ":hover": {
+          boxShadow: "0 0 8px #ccc"
+        }
       }}
     >
       <Avatar variant='rounded' src={image} />
