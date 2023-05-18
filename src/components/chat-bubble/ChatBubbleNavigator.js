@@ -64,11 +64,11 @@ function ChatBubbleNavigator(props) {
         }
     }
 
-    // useEffect(()=>{
-    //     if(userList.length > 0 && props.selectedChatPartner !== undefined){
-    //         setUserList((prev) => prev.filter((object) => object.id !== props.selectedChatPartner))
-    //     }
-    // },[props.selectedChatPartner])
+    useEffect(()=>{
+        if(userList.length > 0 && props.selectedChatPartner !== undefined){
+            setUserList((prev) => prev.filter((object) => object.id !== props.selectedChatPartner))
+        }
+    },[props.selectedChatPartner])
 
     useEffect(() => {
         if(incomingMessage.length !== 0){
