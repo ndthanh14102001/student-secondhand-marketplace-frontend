@@ -9,7 +9,7 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, Typography, Stack, Box} from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -17,11 +17,14 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import InfoIcon from '@mui/icons-material/Info';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import InsertLinkSharpIcon from '@mui/icons-material/InsertLinkSharp';
 
 // import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import axios from "axios";
 import { getUserLogin } from "../../utils/userLoginStorage";
+import Like from "../social-plugin/Like";
+import ShareMessage from "../social-plugin/ShareMessage";
 
 const ProductDescriptionInfo = ({
   product,
@@ -136,6 +139,28 @@ const ProductDescriptionInfo = ({
       });
       handleCloseConfirmReport();
     })
+  }
+
+  let shareURL = process.env.REACT_APP_IS_LOCALHOST == 1 ? "https://chosinhvien.vercel.app/product/80" : window.location.href;
+
+  const handleCopyURL = () => {
+    const currentURL = window.location.href;
+
+    const tempInput = document.createElement('input');
+    tempInput.value = currentURL;
+    document.body.appendChild(tempInput);
+
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999);
+
+    document.execCommand('copy');
+
+    document.body.removeChild(tempInput);
+
+    addToast(" Đã copy link trang web", {
+      appearance: "success",
+      autoDismiss: true
+    });
   }
 
   return (
@@ -448,6 +473,28 @@ const ProductDescriptionInfo = ({
       </div> */}
       <div>
         <ProductOwnerInfo user={user} check={1} />
+      </div>
+      <div>
+        <Typography>Chia sẻ tin đăng này cho bạn bè:</Typography>
+        <Stack direction="row" spacing={2} sx={{ borderTop: '1px solid #e0e0e0', borderBottom: '1px solid #e0e0e0', padding: '5px'}} >
+          <Like dataHref={shareURL}/>
+          <ShareMessage dataHref={shareURL}/>
+          <Box
+          sx={{ 
+            backgroundColor: '#e0e0e0', 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '100px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            cursor: 'pointer'
+          }}
+          onClick={handleCopyURL}
+          >
+            <InsertLinkSharpIcon sx={{ transform: 'rotate(125deg)'}} />
+          </Box>
+        </Stack>
       </div>
     </div >
   );
