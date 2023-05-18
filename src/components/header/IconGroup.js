@@ -132,7 +132,7 @@ const IconGroup = ({
   }
 
   function connectSocket() {
-    const SERVER_URL = "http://35.240.158.158";
+    const SERVER_URL = process.env.REACT_APP_SERVER_ENDPOINT;
     const setupSocket = io(SERVER_URL, {
       autoConnect: false
     });
