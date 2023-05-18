@@ -85,7 +85,6 @@ const App = (props) => {
       })
     );
   });
-  console.log("modalLoading.open", modalLoading);
   return (
     <ThemeProvider>
       <Popup
