@@ -42,3 +42,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.capitalizeText{
+  text-transform: capitalize;
+}
+.icon-button-hover{
+  background-color: rgba(0, 0, 0, 0.04) !important;
+}

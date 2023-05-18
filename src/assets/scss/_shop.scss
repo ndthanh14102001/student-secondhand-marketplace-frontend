@@ -4,6 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: #f0efef;
+  padding: 1rem;
+  border-radius: $border-radius-base;
   @media #{$xs-layout} {
     display: block;
   }
@@ -12,6 +15,7 @@
   }
   .select-shoing-wrap {
     display: flex;
+    align-items: center;
     @media #{$xs-layout} {
       display: block;
     }
@@ -25,9 +29,10 @@
 
         min-width: 143px;
         padding: 5px;
-
         color: #606060;
         border: 1px solid #e6e6e6;
+        background-color: white;
+        border-radius: $border-radius-base;
       }
     }
     p {

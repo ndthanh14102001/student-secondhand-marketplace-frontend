@@ -306,7 +306,7 @@ const ProductGrid = ({
             addToCart={addToCart}
             addToWishlist={addToWishlist}
             addToCompare={addToCompare}
-            cartItem={
+            cartItem={ 
               cartItems.filter(cartItem => cartItem.id === product.id)[0]
             }
             wishlistItem={

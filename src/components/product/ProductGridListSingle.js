@@ -114,19 +114,28 @@ const ProductGridListSingle = ({
             <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))} </Typography>
             <BoxInfo>
               <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
-              <Box sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "flex-start",
-                marginLeft: "1rem"
-              }}>
+              <Box
+                className="capitalizeText"
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "flex-start",
+                  marginLeft: "1rem",
+                  width: "100%"
+                }}>
                 <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
-                <Typography component={"span"}
-                  sx={{
-                    fontSize: "0.8rem",
-                  }}
-                >{getUniversityById(user?.universityId)?.teN_DON_VI || ""}</Typography>
+                <Tooltip PopperProps={{
+                  className: "capitalizeText"
+                }} title={getUniversityById(user?.universityId)?.teN_DON_VI.toLocaleLowerCase() || ""}>
+                  <Typography component={"span"}
+                    className="ellipsisText "
+                    sx={{
+                      fontSize: "0.8rem",
+                      width: "80%"
+                    }}
+                  >{getUniversityById(user?.universityId)?.teN_DON_VI?.toLocaleLowerCase() || ""}</Typography>
+                </Tooltip>
               </Box>
             </BoxInfo>
           </div>
