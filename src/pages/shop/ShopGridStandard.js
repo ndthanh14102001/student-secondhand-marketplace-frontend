@@ -18,6 +18,7 @@ import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/mod
 
 const ShopGridStandard = ({ location, products }) => {
     const dispatch = useDispatch();
+    const [isLoadingCategoryQuery, setIsLoadingCategoryQuery] = useState(true);
     const categoriesFilter = useSelector(state => state.filter.category);
     const universityFilter = useSelector(state => state.filter.university);
     const nameFilter = useSelector(state => state.filter.name);
@@ -71,6 +72,7 @@ const ShopGridStandard = ({ location, products }) => {
     }, [priceFilter])
     useEffect(() => {
         const filterProduct = async () => {
+            setIsLoadingCategoryQuery(true);
             dispatch(onOpenModalLoading())
             const categoriesQuery = [{
                 category: {
@@ -128,6 +130,7 @@ const ShopGridStandard = ({ location, products }) => {
             setProductList(response.data?.data)
             setTotalProduct(response?.data?.meta?.pagination?.total);
             dispatch(onCloseModalLoading())
+            setIsLoadingCategoryQuery(false);
         }
         if (categoriesFilter) {
             filterProduct();
@@ -166,8 +169,11 @@ const ShopGridStandard = ({ location, products }) => {
                                 {/* shop page content default */}
                                 {/* <ShopProducts layout={layout} products={currentData} /> */}
                                 <ShopProducts layout={layout} products={productList} />
-                                {productList.length === 0 && <div>
+                                {productList.length === 0 && !isLoadingCategoryQuery && <div>
                                     Không có kết quả
+                                </div>}
+                                {isLoadingCategoryQuery && <div>
+                                    Đang tải...
                                 </div>}
                                 {/* shop product pagination */}
                                 <div className="pro-pagination-style text-center mt-30">

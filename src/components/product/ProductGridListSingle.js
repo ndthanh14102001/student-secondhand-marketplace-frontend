@@ -33,7 +33,6 @@ const ProductGridListSingle = ({
   spaceBottomClass
 }) => {
   const wishlistData = useSelector(state => state.wishlistData);
-  console.log("wishlistData", wishlistData);
   const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
