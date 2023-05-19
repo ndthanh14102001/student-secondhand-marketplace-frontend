@@ -163,18 +163,18 @@ const ProductDescriptionInfo = ({
       autoDismiss: true
     });
   }
-
+  console.log("product aa", product)
   return (
     <>
     <Helmet>
-
-      <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
       <meta property="og:url" content={window.location.href} />
+      <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
       <meta property="og:description" content={product?.attributes?.description} />
       <meta property="og:price:amount" content={product?.attributes?.price} />
       <meta property="og:price:currency" content='VND' />
       <meta property="og:availability" content='instock' />
       <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+      <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
     </Helmet>
     <div className="product-details-content ml-70">
       <h2>{attributes?.name}</h2>

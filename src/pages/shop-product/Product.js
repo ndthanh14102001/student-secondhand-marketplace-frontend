@@ -47,8 +47,6 @@ const Product = ({ location, match }) => {
       <HelmetProvider>
       <Helmet>
         <meta property="og:type" content="product" />
-        <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
-        
         <meta
           name="description"
           content={`${product?.attributes?.name} - ${product?.id}`}
