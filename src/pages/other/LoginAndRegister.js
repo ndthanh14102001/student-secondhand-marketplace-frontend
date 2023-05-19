@@ -280,7 +280,7 @@ const LoginRegister = ({ location }) => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Flone | Login</title>
+        <title>Chợ Sinh Viên - Website mua bán, trao đổi đồ dùng cho sinh viên</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."

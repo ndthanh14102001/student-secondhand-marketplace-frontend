@@ -10,6 +10,7 @@ import ProductDescriptionTab from "../../wrappers/product/ProductDescriptionTab"
 import ProductImageDescription from "../../wrappers/product/ProductImageDescription";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
+import { HelmetProvider, Helmet } from 'react-helmet-async';
 
 const Product = ({ location, match }) => {
   const dispatch = useDispatch();
@@ -43,12 +44,19 @@ const Product = ({ location, match }) => {
   }, [productId,dispatch])
   return (
     <Fragment>
-      <MetaTags>
-        <title>Flone | Product Page</title>
+      <HelmetProvider>
+      <Helmet>
+        <meta property="og:type" content="product" />
+        <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
+        
         <meta
           name="description"
-          content="Product page of flone react minimalist eCommerce template."
+          content={`${product?.attributes?.name} - ${product?.id}`}
         />
+      </Helmet>
+    
+      <MetaTags>
+         <title>{product?.attributes?.name} - {product?.id}</title> 
       </MetaTags>
 
       <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
@@ -80,6 +88,7 @@ const Product = ({ location, match }) => {
           category={product.category[0]}
         /> */}
       </LayoutOne>
+      </HelmetProvider>
     </Fragment>
   );
 };
