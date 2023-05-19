@@ -173,7 +173,8 @@ const ProductDescriptionInfo = ({
       <meta property="og:price:amount" content={product?.attributes?.price} />
       <meta property="og:price:currency" content='VND' />
       <meta property="og:availability" content='instock' />
-      <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+      {/* <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
+      <meta property="og:image:secure" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
       <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
     </Helmet>
     <div className="product-details-content ml-70">
