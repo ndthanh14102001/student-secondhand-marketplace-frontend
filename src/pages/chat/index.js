@@ -110,7 +110,24 @@ function ChatsFrame(props) {
     if (response.type === RESPONSE_TYPE) {
       // console.log('Danh sách chat tới người log in hiện tại')
       // console.log(response.data)
-      setIncomingMessage(response.data.data)
+      if(match.params.id !== undefined) {
+        setIncomingMessage(
+          response.data.data.map((item) => {
+            if (item.attributes.from.data.id === match.params.id) {
+              return {
+                ...item,
+                attributes: {
+                  ...item.attributes,
+                  read: true
+                }
+              };
+            }
+            return item
+          })
+        )
+      } else {
+        setIncomingMessage(response.data.data)
+      }
     }
   }
 

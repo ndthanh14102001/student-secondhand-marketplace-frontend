@@ -73,12 +73,29 @@ function ChatsNavigator(props) {
       let tempCustomUserList = [];
       console.log("Chat page: inComingMessage array: ")
       console.log(inComingMessage)
+      console.log("Chat page: props.sellerData")
+      console.log(props.sellerData)
       const uniqueUserIDsList = [...new Set(inComingMessage.map((object) => object.attributes.from.data.id))];
+      
 
-      tempCustomUserList = uniqueUserIDsList.map((id) => ({
+      if(props.sellerData !== undefined){
+        tempCustomUserList = uniqueUserIDsList.map((id) => {
+          if(id === props.sellerData.id) {
+            return {
+            id: id,
+            unreadCount: 0
+          }}
+          return {
+            id: id,
+            unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false).length
+          }
+        }); 
+      } else {
+        tempCustomUserList = uniqueUserIDsList.map((id) => ({
           id: id,
           unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false).length
-      }));
+        })); 
+      }
 
       console.log("Chat page: tempCustomUserList: ")
       console.log(tempCustomUserList)
