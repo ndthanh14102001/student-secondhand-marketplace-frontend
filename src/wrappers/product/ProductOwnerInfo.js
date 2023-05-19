@@ -16,7 +16,8 @@ import { onClosePopup } from '../../redux/actions/popupActions';
 import { getUniversityById } from '../../utils/data/university'
 
 const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) => {
-  const userAttributes = user?.attributes
+  const userAttributes = user?.attributes || []
+  console.log("user", user);
   const account = getUserLogin()?.user;
   const { addToast } = useToasts();
   const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
 
   useEffect(() => {
     if (check === 1) {
+      console.log("userAttributes", userAttributes);
       let list = userAttributes?.followers?.data
       list.map((follower) => {
         setListIdFollow(listIdFollow.concat(follower.id))

@@ -27,7 +27,7 @@ import { RESPONSE_TYPE } from "../../utils/callApi";
 function ProductModal(props) {
   const wishlistData = useSelector(state => state.wishlistData);
   const { product, onHide } = props;
-
+  console.log("product", product);
   const userLoginData = getUserLogin()?.user;
   const attributes = product?.attributes;
   const images = getProductImages(attributes) || product?.images;
@@ -58,7 +58,7 @@ function ProductModal(props) {
   ]
 
   const handleClickOpenConfirmReport = () => {
-    if(userLoginData === undefined) {
+    if (userLoginData === undefined) {
       setOpenNeedLoginDialog(true);
     } else {
       setOpenConfirmReport(true);
@@ -87,39 +87,39 @@ function ProductModal(props) {
 
   const handleReport = () => {
     let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
-    if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+    if (checkedReportCriteria.indexOf("Lý do khác") > 0) {
       descriptionInput += " và lý do khác"
     }
-    if(reportDetailInput !== ''){
+    if (reportDetailInput !== '') {
       descriptionInput += ", mô tả chi tiết: " + reportDetailInput
     }
 
     axios
-    .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
-      {
-        data: {
-          type: 'product',
-          product: product?.id,
-          reporter: userLoginData.id,
-          accused: null,
-          description: descriptionInput,
-        }
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
+        {
+          data: {
+            type: 'product',
+            product: product?.id,
+            reporter: userLoginData.id,
+            accused: null,
+            description: descriptionInput,
+          }
+        })
+      .then((response) => {
+        console.log(response)
+        addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
+          appearance: "success",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
       })
-    .then((response) => {
-      console.log(response)
-      addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
-        appearance: "success",
-        autoDismiss: true
-      });
-      handleCloseConfirmReport();
-    })
-    .catch((error) => {
-      addToast(" Đã có lỗi !, báo cáo thất bại", {
-        appearance: "error",
-        autoDismiss: true
-      });
-      handleCloseConfirmReport();
-    })
+      .catch((error) => {
+        addToast(" Đã có lỗi !, báo cáo thất bại", {
+          appearance: "error",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
+      })
   }
 
   useEffect(() => {
@@ -259,11 +259,11 @@ function ProductModal(props) {
                       {user?.phone || user?.attributes?.phone}
                     </button>
                   </div>
-                  <Link 
+                  <Link
                     to={
-                      (userLoginData !== undefined && user.id !== undefined) && 
-                        ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)} 
-                    onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+                      (userLoginData !== undefined && user.id !== undefined) &&
+                      ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
+                    onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
                     <div className="pro-details-cart btn-hover">
                       <button
                         onClick={() => { }
@@ -295,7 +295,7 @@ function ProductModal(props) {
                           : "Add to wishlist"
                       }
                       disabled={wishlistItem !== undefined}
-                    >{wishlistItem ? 'Đã thích' : 'Yêu thích' }
+                    >{wishlistItem ? 'Đã thích' : 'Yêu thích'}
                     </Button>
                     <Button
                       startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
