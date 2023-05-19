@@ -493,7 +493,7 @@ const MyAccount = ({ location }) => {
                         <Card.Body>
                           {
                             follower.length === 0 ? 
-                            <Typography> abc</Typography> :
+                            <Typography> Bạn chưa theo dõi người dùng nào</Typography> :
                             follower.map((fl,index) => (
                               <ProductOwnerInfo key={index} user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
                             ))
