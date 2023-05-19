@@ -116,7 +116,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
         dispatch(onShowPopup({
           type: POPUP_TYPE_ERROR,
           title: "Đăng nhập",
-          content: "Hãy quay lại đăng nhập để bình luận",
+          content: "Hãy quay lại đăng nhập để theo dõi",
           showButtonCancel: false,
           closeAction: () => dispatch(onClosePopup()),
           clickOkeAction: () => dispatch(onClosePopup()),
