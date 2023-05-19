@@ -46,7 +46,6 @@ const ProductGrid = ({
 
   useEffect(() => {
     const getDistancesUniversityHasUser = async () => {
-
       if (userLogin) {
         const users = await userApi.getAllUserHasProduct((response) => dispatch(onShowPopupErrorBase(response)));
         const distances = [];
@@ -306,7 +305,7 @@ const ProductGrid = ({
             addToCart={addToCart}
             addToWishlist={addToWishlist}
             addToCompare={addToCompare}
-            cartItem={ 
+            cartItem={
               cartItems.filter(cartItem => cartItem.id === product.id)[0]
             }
             wishlistItem={
