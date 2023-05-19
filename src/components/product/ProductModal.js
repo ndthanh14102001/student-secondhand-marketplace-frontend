@@ -3,6 +3,7 @@ import React, { Fragment, useState, useEffect } from "react";
 import Swiper from "react-id-swiper";
 import { getProductCartQuantity } from "../../helpers/product";
 import { Modal } from "react-bootstrap";
+import { Link } from "react-router-dom";
 import Rating from "./sub-components/ProductRating";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
@@ -10,6 +11,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import { connect } from "react-redux";
 import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField } from "@mui/material";
 import { getUserLogin } from "../../utils/userLoginStorage";
@@ -33,6 +35,7 @@ function ProductModal(props) {
   const [thumbnailSwiper, getThumbnailSwiper] = useState(null);
 
   const wishlistItem = props.wishlistitem;
+  const sendReport = props.sendReport;
 
   const addToWishlist = props.addtowishlist;
 
@@ -243,19 +246,35 @@ function ProductModal(props) {
                       {user?.phone || user?.attributes?.phone}
                     </button>
                   </div>
-                  <div className="pro-details-cart btn-hover">
-                    <button
-                    >
-                      <ChatIcon />
-                      {" "}
-                      {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
-                    </button>
-                  </div>
+                  <Link 
+                    to={
+                      (userLoginData !== undefined && user.id !== undefined) && 
+                        ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)} 
+                    onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+                    <div className="pro-details-cart btn-hover">
+                      <button
+                        onClick={() => { }
+                          // addToCart(
+                          //   product,
+                          //   addToast,
+                          //   quantityCount,
+                          //   selectedProductColor,
+                          //   selectedProductSize
+                          // )
+                        }
+                        disabled={props.productCartQty >= props.productStock}
+                      >
+                        <ChatIcon />
+                        {" "}
+                        {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
+                      </button>
+                    </div>
+                  </Link>
 
                   <div className="pro-details-wishlist">
                     <Button
                       className={wishlistItem !== undefined ? "active" : ""}
-                      startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
+                      startIcon={wishlistItem ? <FavoriteIcon /> : <FavoriteBorderIcon />}
                       onClick={() => addToWishlist(product, addToast)}
                       title={
                         wishlistItem !== undefined
@@ -263,13 +282,13 @@ function ProductModal(props) {
                           : "Add to wishlist"
                       }
                       disabled={wishlistItem !== undefined}
-                    >Yêu thích
+                    >{wishlistItem ? 'Đã thích' : 'Yêu thích' }
                     </Button>
                     <Button
-                      startIcon={<ReportProblemOutlinedIcon />}
-                      // onClick={() => addToWishlist(product, addToast)}
+                      startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
                       title={"sent report"}
-                      sx={{ color: 'red' }}
+                      disabled={sendReport !== undefined}
+                      sx={{ color: 'red!important' }}
                       onClick={handleClickOpenConfirmReport}
                     >Báo cáo
                     </Button>
@@ -319,7 +338,9 @@ function ProductModal(props) {
                           id="outlined-start-adornment"
                           sx={{ padding: 0, mt: '12px' }}
                           value={reportDetailInput}
-                          onChange={(event) => {setReportDetailInput(event.target.value)}}
+                          onChange={(event) => {
+                            setReportDetailInput(event.target.value)
+                          }}
                           InputProps={{
                             startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
                           }}
