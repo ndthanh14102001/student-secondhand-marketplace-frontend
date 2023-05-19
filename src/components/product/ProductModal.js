@@ -27,7 +27,6 @@ import { RESPONSE_TYPE } from "../../utils/callApi";
 function ProductModal(props) {
   const wishlistData = useSelector(state => state.wishlistData);
   const { product, onHide } = props;
-  console.log("product", product);
   const userLoginData = getUserLogin()?.user;
   const attributes = product?.attributes;
   const images = getProductImages(attributes) || product?.images;
