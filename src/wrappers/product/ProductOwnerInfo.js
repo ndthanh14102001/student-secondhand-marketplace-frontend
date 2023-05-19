@@ -16,7 +16,7 @@ import { onClosePopup } from '../../redux/actions/popupActions';
 import { getUniversityById } from '../../utils/data/university'
 
 const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) => {
-  const userAttributes = user?.attributes
+  const userAttributes = user?.attributes || user
   const account = getUserLogin()?.user;
   const { addToast } = useToasts();
   const dispatch = useDispatch();
@@ -27,12 +27,15 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
 
   useEffect(() => {
     if (check === 1) {
-      let list = userAttributes?.followers?.data
-      list.map((follower) => {
-        setListIdFollow(listIdFollow.concat(follower.id))
-        if (account?.id === follower.id)
-          setIsFollow(true)
-      })
+      let list = userAttributes?.followers || userAttributes?.followers?.data
+      if (Array.isArray(list)) {
+        list.forEach((follower) => {
+          setListIdFollow(listIdFollow.concat(follower.id))
+          if (account?.id === follower.id)
+            setIsFollow(true)
+        })
+      }
+
     }
     else if (check === 2) {
       setListIdFollow(listFollow)
@@ -116,7 +119,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
         dispatch(onShowPopup({
           type: POPUP_TYPE_ERROR,
           title: "Đăng nhập",
-          content: "Hãy quay lại đăng nhập để bình luận",
+          content: "Hãy quay lại đăng nhập để theo dõi",
           showButtonCancel: false,
           closeAction: () => dispatch(onClosePopup()),
           clickOkeAction: () => dispatch(onClosePopup()),

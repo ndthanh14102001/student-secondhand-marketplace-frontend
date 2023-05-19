@@ -19,6 +19,7 @@ import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import { setNameFilter } from "../../redux/actions/filterActions";
 
 function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
@@ -50,6 +51,7 @@ const IconGroup = ({
     open: false,
   });
   const { open } = state;
+  const [searchValue, setSearchValue] = useState("");
   // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
@@ -161,62 +163,62 @@ const IconGroup = ({
 
   useEffect(() => {
     if (socket) {
-      socket.on("notification",(message) => {
-        setMessageSender(message);  
+      socket.on("notification", (message) => {
+        setMessageSender(message);
       });
     }
   }, [socket]);
 
   useEffect(() => {
     const updateMessage = async () => {
-        const response2 = await callApi({
-          url: `${process.env.REACT_APP_API_ENDPOINT}/users/${messageSender?.from?.id}`,
-          method: "get",
-          params: {
-            populate: {
-              avatar: true,
-            }
+      const response2 = await callApi({
+        url: `${process.env.REACT_APP_API_ENDPOINT}/users/${messageSender?.from?.id}`,
+        method: "get",
+        params: {
+          populate: {
+            avatar: true,
           }
-        });
-  
-        if (response2.type === RESPONSE_TYPE) {
-          const sender = {
-            data: {
-              id: response2?.data?.id,
-              attributes: {
-                fullName: response2?.data?.fullName,
-                avatar: {
-                  data: {
-                    attributes: {
-                      url: response2?.data?.avatar?.url ? response2?.data?.avatar?.url : "",
-                    }
+        }
+      });
+
+      if (response2.type === RESPONSE_TYPE) {
+        const sender = {
+          data: {
+            id: response2?.data?.id,
+            attributes: {
+              fullName: response2?.data?.fullName,
+              avatar: {
+                data: {
+                  attributes: {
+                    url: response2?.data?.avatar?.url ? response2?.data?.avatar?.url : "",
                   }
                 }
               }
             }
-          };
-  
-          const data = {
-            id: messageSender?.id,
-            attributes: {
-              content: messageSender?.content,
-              createdAt: messageSender?.createdAt,
-              from: sender,
-            }
-          };
-  
-          setNoti(prevNoti => [data, ...prevNoti]);
-          setState({ open: true });
-          setTransition(() => TransitionUp);
-  
-          const messagesender = `${response2.data.fullName} vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
-          setMessageInfo(messagesender);
-        }
+          }
+        };
+
+        const data = {
+          id: messageSender?.id,
+          attributes: {
+            content: messageSender?.content,
+            createdAt: messageSender?.createdAt,
+            from: sender,
+          }
+        };
+
+        setNoti(prevNoti => [data, ...prevNoti]);
+        setState({ open: true });
+        setTransition(() => TransitionUp);
+
+        const messagesender = `${response2.data.fullName} vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
+        setMessageInfo(messagesender);
+      }
     };
 
     updateMessage();
   }, [messageSender]);
-  
+
 
   const handleClose = () => {
     setState({ ...state, open: false });
@@ -326,6 +328,11 @@ const IconGroup = ({
     history.push(process.env.PUBLIC_URL + "/product/" + getProduct(messageSender.content, 1));
   }
 
+  const handleClickSearch = (e) => {
+    e.preventDefault()
+    history.push(process.env.PUBLIC_URL + "/category")
+    dispatch(setNameFilter(searchValue.trim()));
+  }
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
@@ -336,9 +343,9 @@ const IconGroup = ({
             <i className="pe-7s-search" />
           </button>
           <div className="search-content" ref={searchRef}>
-            <form action="#">
-              <input type="text" placeholder="Search" />
-              <button className="button-search">
+            <form onSubmit={handleClickSearch}>
+              <input type="text" placeholder="Tìm kiếm..." onChange={e => setSearchValue(e.target.value)} />
+              <button className="button-search" onClick={handleClickSearch}>
                 <i className="pe-7s-search" />
               </button>
             </form>
@@ -410,43 +417,43 @@ const IconGroup = ({
               </div>
               <ul>
                 {
-                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>):
-                  noti.map((item, index) => (
-                    <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content,1))}>
-                      
-                      <div className="notify_avatar">
-                        <Avatar 
-                          alt="avatar" 
-                          src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ? 
-                            (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url) 
-                            : "abc"
-                          } 
-                        />  
-                      </div>
-                      <div className="notify_data">
-                        <div className="data">
-                          <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content,2)}</b> 
+                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
+                    noti.map((item, index) => (
+                      <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content, 1))}>
+
+                        <div className="notify_avatar">
+                          <Avatar
+                            alt="avatar"
+                            src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ?
+                              (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url)
+                              : "abc"
+                            }
+                          />
                         </div>
-                        <div className="date">
-                          {handleDate(item?.attributes?.updatedAt)}
+                        <div className="notify_data">
+                          <div className="data">
+                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content, 2)}</b>
+                          </div>
+                          <div className="date">
+                            {handleDate(item?.attributes?.updatedAt)}
+                          </div>
                         </div>
-                      </div>
-                      { 
-                        isIdRead(item?.id) ? 
-                        "" : 
-                        <div className="notify_icon-read">
-                          <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
-                        </div>
-                      }
-                    </li>
-                  ))
+                        {
+                          isIdRead(item?.id) ?
+                            "" :
+                            <div className="notify_icon-read">
+                              <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
+                            </div>
+                        }
+                      </li>
+                    ))
                 }
               </ul>
             </div>
           </div>
         </ClickAwayListener>
       }
-      {isLogin &&<div className="same-style header-wishlist">
+      {isLogin && <div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
           <span className="count-style">
@@ -503,29 +510,29 @@ const IconGroup = ({
         }}
       >
         <Card sx={{ minWidth: '275px', display: 'flex', p: 2 }}>
-          <Box 
-          onClick={handleClickDirect} 
-          sx={{ 
-            width: '275px', 
-            cursor: 'pointer',
-            '&:hover': {
-              '& .MuiTypography-root': {
-                color: '#A749FF', 
+          <Box
+            onClick={handleClickDirect}
+            sx={{
+              width: '275px',
+              cursor: 'pointer',
+              '&:hover': {
+                '& .MuiTypography-root': {
+                  color: '#A749FF',
+                },
               },
-            }, 
-          }} 
+            }}
           >
             <Typography>
               {messageInfo ? messageInfo : undefined}
             </Typography>
           </Box>
           <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleClose}
-            >
-              <CloseIcon />
+            aria-label="close"
+            color="inherit"
+            sx={{ p: 0.5 }}
+            onClick={handleClose}
+          >
+            <CloseIcon />
           </IconButton>
         </Card>
       </Snackbar>

@@ -4,6 +4,8 @@ import { Avatar, Box, Grid, IconButton, Typography } from '@mui/material'
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
+import { useDispatch } from 'react-redux';
+import { onShowPopupErrorBaseCustom } from '../../redux/actions/popupErrorBaseActions';
 
 const ImageUploadBoxStyle = {
   display: "flex",
@@ -16,26 +18,54 @@ const ImageUploadBoxStyle = {
   padding: "1rem",
   border: (theme) => "2px dashed " + theme.palette.primary.main
 }
+const IMAGE_FILE_TYPE = ["jpg", "jpeg", "webp", "png"]
 const ImageUpload = ({ productInfo, setProductInfo }) => {
+  const dispatch = useDispatch()
   const inputFileRef = useRef();
   const inputFileAddRef = useRef();
   const [resetValueInput, setResetValueInput] = useState(false);
+  const checkValidFileType = (files) => {
+    if (Array.isArray(Object.values(files))) {
+      for (let indexFiles = 0; indexFiles < files.length; indexFiles++) {
+        const file = files[indexFiles];
+        const extension = file.name.split('.').pop().toLowerCase();
+        if (!IMAGE_FILE_TYPE.includes(extension)) {
+          return false
+        }
+      }
+    }
+    return true;
+  }
   const handleUploadImages = (e) => {
-
-    setProductInfo(prev => ({
-      ...prev,
-      images: Object.values(e.target.files),
-      isValidImages: true
-    }));
+    if (checkValidFileType(e.target.files)) {
+      setProductInfo(prev => ({
+        ...prev,
+        images: Object.values(e.target.files),
+        isValidImages: true
+      }));
+    } else {
+      dispatch(onShowPopupErrorBaseCustom({
+        title: "Loại file không hợp lệ",
+        content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", ")
+      }))
+    }
     setResetValueInput(prev => !prev)
   }
   const handleAddImage = (e) => {
     // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
-    setProductInfo(prev => ({
-      ...prev,
-      images: [...prev.images, ...Object.values(e.target.files)],
-      isValidImages: true
-    }));
+    if (checkValidFileType(e.target.files)) {
+      setProductInfo(prev => ({
+        ...prev,
+        images: [...prev.images, ...Object.values(e.target.files)],
+        isValidImages: true
+      }));
+    } else {
+      dispatch(onShowPopupErrorBaseCustom({
+        title: "Loại file không hợp lệ",
+        content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", ")
+      }))
+    }
+    setResetValueInput(prev => !prev)
   }
   const handleRemoveImage = (index) => {
     // setFiles(prev => {
@@ -63,6 +93,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
     <>
       <input
         ref={inputFileAddRef}
+        key={resetValueInput || ''}
         onChange={handleAddImage}
         hidden
         accept='image/*'

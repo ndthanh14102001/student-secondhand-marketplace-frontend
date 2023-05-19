@@ -68,6 +68,7 @@ function ChatBubbleNavigator(props) {
     useEffect(()=>{
         console.log("props.selectedChatPartner")
         console.log(props.selectedChatPartner)
+        console.log(window.location.pathname.indexOf("/chat") !== -1)
         if(userList.length > 0 && props.selectedChatPartner !== undefined){
             setUserList((prev) => {
                 props.getChatsCount(prev.filter((object) => object.id !== props.selectedChatPartner).reduce((total, obj) => total + obj.unreadCount, 0))
@@ -88,20 +89,24 @@ function ChatBubbleNavigator(props) {
                 unreadCount: incomingMessage.filter((object) => object.attributes.from.data.id === id).length
             }));
 
-            props.getChatsCount(tempCustomUserList.reduce((total, obj) => total + obj.unreadCount, 0))
+            if( props.selectedChatPartner !== undefined && window.location.pathname.indexOf("/chat") !== -1) {
+                props.getChatsCount(tempCustomUserList.filter((object) => object.id !== props.selectedChatPartner).reduce((total, obj) => total + obj.unreadCount, 0))
+            } else {
+                props.getChatsCount(tempCustomUserList.reduce((total, obj) => total + obj.unreadCount, 0))
+            }
 
             console.log("tempCustomUserList: ")
             console.log(tempCustomUserList)
 
             // Cheeck userlist if user (which is partner) already exist, if already there, plus, unread Count
             tempCustomUserList.map((item) => {
-                if(!findIdExistById(userList, item.id) && item.id !== props.selectedChatPartner){
+                if(!findIdExistById(userList, item.id) && (item.id !== props.selectedChatPartner || window.location.pathname.indexOf("/chat") === -1)){
                     // FinalUserList.push(QueryUserByID(item.id))
                     QueryUserByID(item.id, item.unreadCount)
                 }else if(item.id === partnerJustSent) {
                     setUserList((prev) => {
                         return prev.map((object) => {
-                            if (object.id === partnerJustSent && object.id === props.selectedChatPartner) {
+                            if (object.id === partnerJustSent && object.id === props.selectedChatPartner && window.location.pathname.indexOf("/chat") !== -1) {
                                 return null;
                             } else if (object.id === partnerJustSent) {
                                 // Cập nhật thuộc tính của object có id là
@@ -160,18 +165,20 @@ function ChatBubbleNavigator(props) {
             </Link>
             {console.log("userList")}
             {console.log(userList)}
-            {userList.map((item) => (
-                <Tooltip title={item.username} placement="right">
+            {userList.map((item, index) => (
+                <Tooltip key={index} title={item.username} placement="right">
                     <Badge badgeContent={item.unreadCount} max={99} color="error" overlap="circular">
-                        <Link to={process.env.PUBLIC_URL + "/chat/" + item.id}>
-                            <Avatar alt={item.username} src={`${process.env.REACT_APP_SERVER_ENDPOINT}${item.avatar?.url}`} 
-                                sx={{ 
-                                    width: '56px', 
-                                    height: '56px', 
-                                    boxShadow: 3 
-                                }}
-                            />
-                        </Link>
+                        <Box onClick={() => setUserList(prev => prev.splice(index, 1))}>
+                            <Link to={process.env.PUBLIC_URL + "/chat/" + item.id}>
+                                <Avatar alt={item.username} src={`${process.env.REACT_APP_SERVER_ENDPOINT}${item.avatar?.url}`} 
+                                    sx={{ 
+                                        width: '56px', 
+                                        height: '56px', 
+                                        boxShadow: 3 
+                                    }}
+                                />
+                            </Link>
+                        </Box>
                     </Badge>
                 </Tooltip>
             ))}

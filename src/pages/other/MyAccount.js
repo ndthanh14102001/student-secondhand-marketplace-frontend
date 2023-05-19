@@ -312,7 +312,10 @@ const MyAccount = ({ location }) => {
         }
         else {
           if (response.status === STATUS_BAD_REQUEST) {
-            setMessageError("mật khẩu không chính xác!")
+            addToast("mật khẩu không chính xác", {
+              appearance: "error",
+              autoDismiss: true
+            });
           }
         }
       }
@@ -493,7 +496,7 @@ const MyAccount = ({ location }) => {
                         <Card.Body>
                           {
                             follower.length === 0 ? 
-                            <Typography> abc</Typography> :
+                            <Typography> Bạn chưa theo dõi người dùng nào</Typography> :
                             follower.map((fl,index) => (
                               <ProductOwnerInfo key={index} user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
                             ))
