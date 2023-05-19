@@ -1,8 +1,31 @@
+import wishlistApi from "../../api/wishlist-api";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import { getUserLogin } from "../../utils/userLoginStorage";
+
 export const SET_WISHLIST = "SET_WISHLIST";
 export const ADD_TO_WISHLIST = "ADD_TO_WISHLIST";
 export const DELETE_FROM_WISHLIST = "DELETE_FROM_WISHLIST";
 export const DELETE_ALL_FROM_WISHLIST = "DELETE_ALL_FROM_WISHLIST";
 
+export const handleAddToWishlist = async (product, wishlistData, addToast, addToWishlist, history) => {
+  console.log("abc",history)
+  const user = getUserLogin();
+  if (user) {
+    const wishlistNew = Array.isArray(wishlistData) ?
+      wishlistData.map((item) => item?.id)
+      : []
+    wishlistNew.push(product?.id);
+    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
+    if (response.type === RESPONSE_TYPE) {
+      addToWishlist(product, addToast)
+    }
+  } else {
+    if (history) {
+      history.push(process.env.PUBLIC_URL + "/login-register")
+    }
+  }
+
+};
 export const setWishlist = (wishlist) => {
   return { type: SET_WISHLIST, payload: wishlist }
 };
