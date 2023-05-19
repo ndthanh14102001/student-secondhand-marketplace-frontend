@@ -36,20 +36,16 @@ const FooterOne = ({
 
   return (
     <footer
-      className={`footer-area ${
-        backgroundColorClass ? backgroundColorClass : ""
-      } ${spaceTopClass ? spaceTopClass : ""} ${
-        spaceBottomClass ? spaceBottomClass : ""
-      } ${extraFooterClass ? extraFooterClass : ""} ${
-        spaceLeftClass ? spaceLeftClass : ""
-      } ${spaceRightClass ? spaceRightClass : ""}`}
+      className={`footer-area ${backgroundColorClass ? backgroundColorClass : ""
+        } ${spaceTopClass ? spaceTopClass : ""} ${spaceBottomClass ? spaceBottomClass : ""
+        } ${extraFooterClass ? extraFooterClass : ""} ${spaceLeftClass ? spaceLeftClass : ""
+        } ${spaceRightClass ? spaceRightClass : ""}`}
     >
       <div className={`${containerClass ? containerClass : "container"}`}>
         <div className="row">
           <div
-            className={`${
-              sideMenu ? "col-xl-2 col-sm-4" : "col-lg-2 col-sm-4"
-            }`}
+            className={`${sideMenu ? "col-xl-3 col-sm-4" : "col-lg-3 col-sm-4"
+              }`}
           >
             {/* footer copyright */}
             <FooterCopyright
@@ -58,32 +54,26 @@ const FooterOne = ({
             />
           </div>
           <div
-            className={`${
-              sideMenu ? "col-xl-2 col-sm-4" : "col-lg-2 col-sm-4"
-            }`}
+            className={`${sideMenu ? "col-xl-3 col-sm-4" : "col-lg-3 col-sm-4"
+              }`}
           >
             <div className="footer-widget mb-30 ml-30">
               <div className="footer-title">
-                <h3>ABOUT US</h3>
+                <h3>Về chợ sinh viên</h3>
               </div>
               <div className="footer-list">
                 <ul>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "/about"}>About us</Link>
+                    <Link to={process.env.PUBLIC_URL + "#"}>Giới thiệu</Link>
                   </li>
                   <li>
                     <Link to={process.env.PUBLIC_URL + "#/"}>
-                      Store location
+                      Chính sách bảo mật
                     </Link>
                   </li>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "/contact"}>
-                      Contact
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to={process.env.PUBLIC_URL + "#/"}>
-                      Orders tracking
+                    <Link to={process.env.PUBLIC_URL + "#"}>
+                      Blog
                     </Link>
                   </li>
                 </ul>
@@ -91,64 +81,62 @@ const FooterOne = ({
             </div>
           </div>
           <div
-            className={`${
-              sideMenu ? "col-xl-2 col-sm-4" : "col-lg-2 col-sm-4"
-            }`}
+            className={`${sideMenu ? "col-xl-3 col-sm-4" : "col-lg-3 col-sm-4"
+              }`}
           >
             <div
-              className={`${
-                sideMenu
-                  ? "footer-widget mb-30 ml-95"
-                  : "footer-widget mb-30 ml-50"
-              }`}
+              className={`${sideMenu
+                ? "footer-widget mb-30 ml-95"
+                : "footer-widget mb-30 ml-50"
+                }`}
             >
               <div className="footer-title">
-                <h3>USEFUL LINKS</h3>
+                <h3>Hỗ trợ khách hàng</h3>
               </div>
               <div className="footer-list">
                 <ul>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "#/"}>Returns</Link>
+                    <Link to={process.env.PUBLIC_URL + "#/"}>Trung tâm trợ giúp</Link>
                   </li>
                   <li>
                     <Link to={process.env.PUBLIC_URL + "#/"}>
-                      Support Policy
+                      An toàn mua bán
                     </Link>
                   </li>
                   <li>
-                    <Link to={process.env.PUBLIC_URL + "#/"}>Size guide</Link>
-                  </li>
-                  <li>
-                    <Link to={process.env.PUBLIC_URL + "#/"}>FAQs</Link>
+                    <Link to={process.env.PUBLIC_URL + "#/"}>Liên hệ hỗ trợ</Link>
                   </li>
                 </ul>
               </div>
             </div>
           </div>
           <div
-            className={`${
-              sideMenu ? "col-xl-3 col-sm-4" : "col-lg-2 col-sm-6"
-            }`}
+            className={`${sideMenu ? "col-xl-3 col-sm-4" : "col-lg-2 col-sm-6"
+              }`}
           >
             <div
-              className={`${
-                sideMenu
-                  ? "footer-widget mb-30 ml-145"
-                  : "footer-widget mb-30 ml-75"
-              }`}
+              className={`${sideMenu
+                ? "footer-widget mb-30 ml-145"
+                : "footer-widget mb-30 ml-75"
+                }`}
             >
               <div className="footer-title">
-                <h3>FOLLOW US</h3>
+                <h3>Liên kết</h3>
               </div>
               <div className="footer-list">
-                <ul>
+                <ul style={{
+                  display: "flex",
+                  justifyContent:"space-between",
+                  fontSize:"1.4rem"
+                }}>
                   <li>
                     <a
                       href="//www.facebook.com"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Facebook
+                      {/* Facebook */}
+                      <i className="fa fa-facebook" />
                     </a>
                   </li>
                   <li>
@@ -157,7 +145,7 @@ const FooterOne = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Twitter
+                      <i className="fa fa-twitter" />
                     </a>
                   </li>
                   <li>
@@ -166,7 +154,7 @@ const FooterOne = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Instagram
+                      <i className="fa fa-instagram" />
                     </a>
                   </li>
                   <li>
@@ -175,7 +163,7 @@ const FooterOne = ({
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      Youtube
+                      <i className="fa fa-youtube" />
                     </a>
                   </li>
                 </ul>
@@ -183,16 +171,15 @@ const FooterOne = ({
             </div>
           </div>
           <div
-            className={`${
-              sideMenu ? "col-xl-3 col-sm-8" : "col-lg-4 col-sm-6"
-            }`}
+            className={`${sideMenu ? "col-xl-3 col-sm-8" : "col-lg-4 col-sm-6"
+              }`}
           >
             {/* footer newsletter */}
-            <FooterNewsletter
+            {/* <FooterNewsletter
               spaceBottomClass="mb-30"
               spaceLeftClass="ml-70"
               sideMenu={sideMenu}
-            />
+            /> */}
           </div>
         </div>
       </div>
