@@ -13,6 +13,7 @@ import React, { useEffect, useState } from 'react'
 import validator from 'validator';
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
+import TextEditor from '../../components/TextEditor';
 export function MyListSubheader(
   props
 ) {
@@ -155,17 +156,24 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
         </Select>
         {!productInfo.isValidCategoryChoose && <FormHelperText>Hãy chọn Danh mục</FormHelperText>}
       </FormControl>
-
-      <InputProductInfo
-        error={!productInfo.isValidDescription}
-        helperText={!productInfo.isValidDescription && "Mô tả phải lớn hơn hoặc bằng 10 từ"}
-        required
-        label="Mô tả"
-        multiline
-        rows={4}
-        value={productInfo.description}
-        onChange={handleChangeDescription}
-      />
+      <Box mb="1rem">
+        <TextEditor
+          value={productInfo.description}
+          setValue={value => {
+            setProductInfo(prev => ({
+              ...prev,
+              description: value,
+              isValidDescription: true
+            }));
+          }}
+          placeholder="Enter your text here"
+          toolbarTextHoverColor="#000000"
+          toolbarBackgroundColor="#D3D3D3"
+          contentEditorBackgroundColor="#FFFFFF"
+          contentEditorTextColor="#000000"
+        />
+         {!productInfo?.isValidDescription && <FormHelperText error>Mô tả phải lớn hơn hoặc bằng 10 từ</FormHelperText>}
+      </Box>
       <FormControl required
         sx={{
           marginBottom: "1rem"

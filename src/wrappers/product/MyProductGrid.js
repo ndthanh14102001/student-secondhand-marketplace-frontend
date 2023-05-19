@@ -13,6 +13,7 @@ import { onShowPopupErrorBase } from "../../redux/actions/popupErrorBaseActions"
 import { useMemo } from "react";
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from "../../constants";
 import { PRODUCT_ON_SALE_KEY } from "../../pages/other/my-products/constants";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
 const MyProductGrid = ({
   // products,
@@ -42,6 +43,7 @@ const MyProductGrid = ({
   const dispatch = useDispatch();
   useEffect(() => {
     const getAllMyProduct = async () => {
+      dispatch(onOpenModalLoading())
       const user = getUserLogin()?.user;
       if (user) {
         const response = await callApi({
@@ -74,6 +76,7 @@ const MyProductGrid = ({
           dispatch(onShowPopupErrorBase(response));
         }
       }
+      dispatch(onCloseModalLoading())
     }
     getAllMyProduct();
   }, [dispatch])
