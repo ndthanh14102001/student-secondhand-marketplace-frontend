@@ -24,7 +24,10 @@ import axios from "axios";
 import { useSelector } from "react-redux";
 import wishlistApi from "../../api/wishlist-api";
 import { RESPONSE_TYPE } from "../../utils/callApi";
+import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 function ProductModal(props) {
+  const history = useHistory();
   const wishlistData = useSelector(state => state.wishlistData);
   const { product, onHide } = props;
   const userLoginData = getUserLogin()?.user;
@@ -164,16 +167,6 @@ function ProductModal(props) {
       </button>
     )
   };
-  const handleAddToWishlist = async (product) => {
-    const wishlistNew = Array.isArray(wishlistData) ?
-      wishlistData.map((item) => item?.id)
-      : []
-    wishlistNew.push(product?.id);
-    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
-    if (response.type === RESPONSE_TYPE) {
-      addToWishlist(product, addToast)
-    }
-  };
   return (
     <Fragment>
       <Modal
@@ -287,7 +280,7 @@ function ProductModal(props) {
                     <Button
                       className={wishlistItem !== undefined ? "active" : ""}
                       startIcon={wishlistItem ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      onClick={async () => await handleAddToWishlist(product)}
+                      onClick={async () => await handleAddToWishlist(product, wishlistData, addToast,addToWishlist, history)}
                       title={
                         wishlistItem !== undefined
                           ? "Added to wishlist"
