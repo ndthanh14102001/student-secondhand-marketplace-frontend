@@ -13,8 +13,11 @@ import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
-import { login, logout } from "./redux/actions/userStorageActions"
-const DistanceCalculator = lazy(() => import("./test-google"));
+import { login, logout } from "./redux/actions/userStorageActions";
+import wishlistApi from "./api/wishlist-api";
+import { RESPONSE_TYPE } from "./utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "./redux/actions/modalLoadingActions";
+import { setWishlist } from "./redux/actions/wishlistActions";
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 // Get user data
 // const user = getUserLogin();
@@ -74,7 +77,20 @@ const App = (props) => {
     setSelectedChatPartner(partnerID)
   }
 
-
+  useEffect(() => {
+    const getWishlist = async () => {
+      dispatch(onOpenModalLoading())
+      const response = await wishlistApi.getWishlistPopulateAll();
+      if (response.type === RESPONSE_TYPE) {
+        console.log(response.data?.product_likes)
+        dispatch(setWishlist(response.data?.product_likes || []))
+      }
+      dispatch(onCloseModalLoading())
+    }
+    if (user) {
+      getWishlist()
+    }
+  }, [])
   useEffect(() => {
     if (user) {
       dispatch(login())
@@ -134,7 +150,7 @@ const App = (props) => {
                   </div>
                 }
               >
-                <ChatBubble selectedChatPartner={selectedChatPartner}/>
+                <ChatBubble selectedChatPartner={selectedChatPartner} />
                 <Switch>
                   <Route
                     exact
@@ -160,9 +176,9 @@ const App = (props) => {
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
-                        <Chat 
-                          {...routeProps} 
-                          key={routeProps.match.params.id} 
+                        <Chat
+                          {...routeProps}
+                          key={routeProps.match.params.id}
                           parentHandleNavigateChats={handleNavigateChats} />
                       )}
                     />
@@ -176,9 +192,9 @@ const App = (props) => {
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       render={(routeProps) => (
-                        <Chat 
-                          {...routeProps} 
-                          key={routeProps.match.params.id} 
+                        <Chat
+                          {...routeProps}
+                          key={routeProps.match.params.id}
                           parentHandleNavigateChats={handleNavigateChats} />
                       )}
                     />}

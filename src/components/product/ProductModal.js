@@ -17,7 +17,11 @@ import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from "../../constants";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
 import { getProductImages } from "../../utils/handleData";
+import { useSelector } from "react-redux";
+import wishlistApi from "../../api/wishlist-api";
+import { RESPONSE_TYPE } from "../../utils/callApi";
 function ProductModal(props) {
+  const wishlistData = useSelector(state => state.wishlistData);
   const { product, onHide } = props;
 
   const attributes = product?.attributes;
@@ -78,7 +82,16 @@ function ProductModal(props) {
       </button>
     )
   };
-
+  const handleAddToWishlist = async (product) => {
+    const wishlistNew = Array.isArray(wishlistData) ?
+      wishlistData.map((item) => item?.id)
+      : []
+    wishlistNew.push(product?.id);
+    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
+    if (response.type === RESPONSE_TYPE) {
+      addToWishlist(product, addToast)
+    }
+  };
   return (
     <Fragment>
       <Modal
@@ -176,7 +189,7 @@ function ProductModal(props) {
                     <Button
                       className={wishlistItem !== undefined ? "active" : ""}
                       startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-                      onClick={() => addToWishlist(product, addToast)}
+                      onClick={async () => await handleAddToWishlist(product)}
                       title={
                         wishlistItem !== undefined
                           ? "Added to wishlist"
