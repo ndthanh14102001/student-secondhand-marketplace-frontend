@@ -287,7 +287,7 @@ function ProductModal(props) {
                     <Button
                       className={wishlistItem !== undefined ? "active" : ""}
                       startIcon={wishlistItem ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      onClick={() => addToWishlist(product, addToast)}
+                      onClick={async () => await handleAddToWishlist(product)}
                       title={
                         wishlistItem !== undefined
                           ? "Added to wishlist"

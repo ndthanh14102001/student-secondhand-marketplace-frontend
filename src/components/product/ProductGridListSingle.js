@@ -230,7 +230,7 @@ const ProductGridListSingle = ({
                           ? "Added to wishlist"
                           : "Add to wishlist"
                       }
-                      onClick={() => addToWishlist(product, addToast)}
+                      onClick={async () => await handleAddToWishlist(product)}
                     >
                       <i className="pe-7s-like" />
                     </button>
