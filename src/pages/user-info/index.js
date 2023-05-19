@@ -98,6 +98,9 @@ const UserInfo = ({ match }) => {
                     },
                     product: {
                       populate: "*"
+                    },
+                    followers: {
+                      populate: "*"
                     }
                   }
                 }

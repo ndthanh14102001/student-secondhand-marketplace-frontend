@@ -1,12 +1,14 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { getProductCartQuantity } from "../../helpers/product";
 import { addToCart } from "../../redux/actions/cartActions";
 import { addToWishlist } from "../../redux/actions/wishlistActions";
 import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import wishlistApi from "../../api/wishlist-api";
 
 const ProductDescriptionInfoSlider = ({
   product,
@@ -22,6 +24,7 @@ const ProductDescriptionInfoSlider = ({
   addToWishlist,
   addToCompare
 }) => {
+  const wishlistData = useSelector(state => state.wishlistData);
   const [selectedProductColor, setSelectedProductColor] = useState(
     product.variation ? product.variation[0].color : ""
   );
@@ -39,7 +42,16 @@ const ProductDescriptionInfoSlider = ({
     selectedProductColor,
     selectedProductSize
   );
-
+  const handleAddToWishlist = async (product) => {
+    const wishlistNew = Array.isArray(wishlistData) ?
+      wishlistData.map((item) => item?.id)
+      : []
+    wishlistNew.push(product?.id);
+    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
+    if (response.type === RESPONSE_TYPE) {
+      addToWishlist(product, addToast)
+    }
+  };
   return (
     <div className="product-details-content pro-details-slider-content">
       <h2>{product.name}</h2>
@@ -106,29 +118,29 @@ const ProductDescriptionInfoSlider = ({
                 product.variation.map(single => {
                   return single.color === selectedProductColor
                     ? single.size.map((singleSize, key) => {
-                        return (
-                          <label
-                            className={`pro-details-size-content--single`}
-                            key={key}
-                          >
-                            <input
-                              type="radio"
-                              value={singleSize.name}
-                              checked={
-                                singleSize.name === selectedProductSize
-                                  ? "checked"
-                                  : ""
-                              }
-                              onChange={() => {
-                                setSelectedProductSize(singleSize.name);
-                                setProductStock(singleSize.stock);
-                                setQuantityCount(1);
-                              }}
-                            />
-                            <span className="size-name">{singleSize.name}</span>
-                          </label>
-                        );
-                      })
+                      return (
+                        <label
+                          className={`pro-details-size-content--single`}
+                          key={key}
+                        >
+                          <input
+                            type="radio"
+                            value={singleSize.name}
+                            checked={
+                              singleSize.name === selectedProductSize
+                                ? "checked"
+                                : ""
+                            }
+                            onChange={() => {
+                              setSelectedProductSize(singleSize.name);
+                              setProductStock(singleSize.stock);
+                              setQuantityCount(1);
+                            }}
+                          />
+                          <span className="size-name">{singleSize.name}</span>
+                        </label>
+                      );
+                    })
                     : "";
                 })}
             </div>
@@ -209,7 +221,7 @@ const ProductDescriptionInfoSlider = ({
                   ? "Added to wishlist"
                   : "Add to wishlist"
               }
-              onClick={() => addToWishlist(product, addToast)}
+              onClick={async () => await handleAddToWishlist(product)}
             >
               <i className="pe-7s-like" />
             </button>

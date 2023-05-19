@@ -9,7 +9,7 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, Typography, Stack, Box} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, Typography, Stack, Box } from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -200,10 +200,10 @@ const ProductDescriptionInfo = ({
         <span>Đã bán</span>
       </div>}
 
-      <div className="product-details-price">
-        <span>{finalProductPrice} </span>
-      </div>
-      {/* {product.rating && product.rating > 0 ? (
+        <div className="product-details-price">
+          <span>{finalProductPrice} </span>
+        </div>
+        {/* {product.rating && product.rating > 0 ? (
         <div className="pro-details-rating-wrap">
           <div className="pro-details-rating">
             <Rating ratingValue={product.rating} />
@@ -213,7 +213,7 @@ const ProductDescriptionInfo = ({
         ""
       )} */}
 
-      {/* {product.variation ? (
+        {/* {product.variation ? (
         <div className="pro-details-size-color">
           <div className="pro-details-color-wrap">
             <span>Color</span>
@@ -282,177 +282,177 @@ const ProductDescriptionInfo = ({
       ) : (
         ""
       )} */}
-      <div className="pro-details-quality">
-        <div className="pro-details-cart btn-hover">
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText("0123456789");
-              addToast("Đã copy số điện thoại", {
-                appearance: "success",
-                autoDismiss: true
-              });
-            }}
-            disabled={productCartQty >= productStock}
-          >
-            <PhoneInTalkIcon />
-            {" "}
-            {user?.attributes?.phone}
-          </button>
-        </div>
-        <Link
-          to={
-            (userLoginData !== undefined && user.id !== undefined) &&
-            ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
-          onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
+        <div className="pro-details-quality">
           <div className="pro-details-cart btn-hover">
             <button
-              onClick={() => { }
-                // addToCart(
-                //   product,
-                //   addToast,
-                //   quantityCount,
-                //   selectedProductColor,
-                //   selectedProductSize
-                // )
-              }
+              onClick={() => {
+                navigator.clipboard.writeText("0123456789");
+                addToast("Đã copy số điện thoại", {
+                  appearance: "success",
+                  autoDismiss: true
+                });
+              }}
               disabled={productCartQty >= productStock}
             >
-              <ChatIcon />
+              <PhoneInTalkIcon />
               {" "}
-              {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
+              {user?.attributes?.phone}
             </button>
           </div>
-        </Link>
-      </div>
-      <Button
-        startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-        onClick={async () => await handleAddToWishlist(product)}
-        title={
-          wishlistItem !== undefined
-            ? "Added to wishlist"
-            : "Add to wishlist"
-        }
-        disabled={wishlistItem !== undefined}
-      >Yêu thích
-      </Button>
-      <Button
-        startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
-        // onClick={() => addToWishlist(product, addToast)}
-        title={
-          sendReport !== undefined
-            ? "sent report"
-            : "sent report"
-        }
-        disabled={sendReport !== undefined}
-        sx={{ color: 'red' }}
-        onClick={handleClickOpenConfirmReport}
-      >Báo cáo
-      </Button>
+          <Link
+            to={
+              (userLoginData !== undefined && user.id !== undefined) &&
+              ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
+            onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
+            <div className="pro-details-cart btn-hover">
+              <button
+                onClick={() => { }
+                  // addToCart(
+                  //   product,
+                  //   addToast,
+                  //   quantityCount,
+                  //   selectedProductColor,
+                  //   selectedProductSize
+                  // )
+                }
+                disabled={productCartQty >= productStock}
+              >
+                <ChatIcon />
+                {" "}
+                {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
+              </button>
+            </div>
+          </Link>
+        </div>
+        <Button
+          startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
+          onClick={async () => await handleAddToWishlist(product)}
+          title={
+            wishlistItem !== undefined
+              ? "Added to wishlist"
+              : "Add to wishlist"
+          }
+          disabled={wishlistItem !== undefined}
+        >Yêu thích
+        </Button>
+        <Button
+          startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
+          // onClick={() => addToWishlist(product, addToast)}
+          title={
+            sendReport !== undefined
+              ? "sent report"
+              : "sent report"
+          }
+          disabled={sendReport !== undefined}
+          sx={{ color: 'red' }}
+          onClick={handleClickOpenConfirmReport}
+        >Báo cáo
+        </Button>
 
-      {/* Dialog confirm report product */}
-      <Dialog
-        open={openConfirmReport}
-        onClose={handleCloseConfirmReport}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Xác nhận report sản phẩm
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
-          </DialogContentText>
-          <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-            {reportCriteria.map((value) => {
-              const labelId = `checkbox-list-label-${value}`;
+        {/* Dialog confirm report product */}
+        <Dialog
+          open={openConfirmReport}
+          onClose={handleCloseConfirmReport}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            Xác nhận report sản phẩm
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
+            </DialogContentText>
+            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+              {reportCriteria.map((value) => {
+                const labelId = `checkbox-list-label-${value}`;
 
-              return (
-                <ListItem
-                  key={value}
-                  disablePadding
-                >
-                  <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
-                    <ListItemIcon>
-                      <Checkbox
-                        edge="start"
-                        checked={checkedReportCriteria.indexOf(value) !== -1}
-                        tabIndex={-1}
-                        disableRipple
-                        inputProps={{ 'aria-labelledby': labelId }}
-                      />
-                    </ListItemIcon>
-                    <ListItemText id={labelId} primary={value} />
-                  </ListItemButton>
-                </ListItem>
-              );
-            })}
-          </List>
-          <TextField
-            fullWidth
-            label="Mô tả chi tiết"
-            id="outlined-start-adornment"
-            sx={{ padding: 0, mt: '12px' }}
-            value={reportDetailInput}
-            onChange={(event) => { setReportDetailInput(event.target.value) }}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
-            }}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
-          <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
-            Xác nhận
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Dialog if user haven't log in yet ! */}
-      <Dialog
-        open={openNeedLoginDialog}
-        onClose={handleCloseConfirmReport}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          Hello bạn ơi
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Bạn cần phải đăng nhập để thực hiện hành động này
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
-          <a href={process.env.PUBLIC_URL + "/login-register"}>
-            <Button sx={{ textTransform: 'none' }}>
-              Đăng nhập
-            </Button>
-          </a>
-        </DialogActions>
-      </Dialog>
-      {
-        product.category ? (
-          <div className="pro-details-meta">
-            <span>Danh mục :</span>
-            <ul>
-              {product.category.map((single, key) => {
                 return (
-                  <li key={key}>
-                    <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                      {single}
-                    </Link>
-                  </li>
+                  <ListItem
+                    key={value}
+                    disablePadding
+                  >
+                    <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                      <ListItemIcon>
+                        <Checkbox
+                          edge="start"
+                          checked={checkedReportCriteria.indexOf(value) !== -1}
+                          tabIndex={-1}
+                          disableRipple
+                          inputProps={{ 'aria-labelledby': labelId }}
+                        />
+                      </ListItemIcon>
+                      <ListItemText id={labelId} primary={value} />
+                    </ListItemButton>
+                  </ListItem>
                 );
               })}
-            </ul>
-          </div>
-        ) : (
-          ""
-        )
-      }
-      {/* {product.tag ? (
+            </List>
+            <TextField
+              fullWidth
+              label="Mô tả chi tiết"
+              id="outlined-start-adornment"
+              sx={{ padding: 0, mt: '12px' }}
+              value={reportDetailInput}
+              onChange={(event) => { setReportDetailInput(event.target.value) }}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
+            <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+              Xác nhận
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* Dialog if user haven't log in yet ! */}
+        <Dialog
+          open={openNeedLoginDialog}
+          onClose={handleCloseConfirmReport}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            Hello bạn ơi
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Bạn cần phải đăng nhập để thực hiện hành động này
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+            <a href={process.env.PUBLIC_URL + "/login-register"}>
+              <Button sx={{ textTransform: 'none' }}>
+                Đăng nhập
+              </Button>
+            </a>
+          </DialogActions>
+        </Dialog>
+        {
+          product.category ? (
+            <div className="pro-details-meta">
+              <span>Danh mục :</span>
+              <ul>
+                {product.category.map((single, key) => {
+                  return (
+                    <li key={key}>
+                      <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
+                        {single}
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : (
+            ""
+          )
+        }
+        {/* {product.tag ? (
         <div className="pro-details-meta">
           <span>Tags :</span>
           <ul>
@@ -471,7 +471,7 @@ const ProductDescriptionInfo = ({
         ""
       )} */}
 
-      {/* <div className="pro-details-social">
+        {/* <div className="pro-details-social">
         <ul>
           <li>
             <a href="//facebook.com">
@@ -500,32 +500,32 @@ const ProductDescriptionInfo = ({
           </li>
         </ul>
       </div> */}
-      <div>
-        <ProductOwnerInfo user={user} check={1} />
-      </div>
-      <div>
-        <Typography>Chia sẻ tin đăng này cho bạn bè:</Typography>
-        <Stack direction="row" spacing={2} sx={{ borderTop: '1px solid #e0e0e0', borderBottom: '1px solid #e0e0e0', padding: '5px'}} >
-          <Like dataHref={shareURL}/>
-          <ShareMessage dataHref={shareURL}/>
-          <Box
-          sx={{ 
-            backgroundColor: '#e0e0e0', 
-            width: '40px', 
-            height: '40px', 
-            borderRadius: '100px', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            cursor: 'pointer'
-          }}
-          onClick={handleCopyURL}
-          >
-            <InsertLinkSharpIcon sx={{ transform: 'rotate(125deg)'}} />
-          </Box>
-        </Stack>
-      </div>
-    </div >
+        <div>
+          <ProductOwnerInfo user={user} check={1} />
+        </div>
+        <div>
+          <Typography>Chia sẻ tin đăng này cho bạn bè:</Typography>
+          <Stack direction="row" spacing={2} sx={{ borderTop: '1px solid #e0e0e0', borderBottom: '1px solid #e0e0e0', padding: '5px' }} >
+            <Like dataHref={shareURL} />
+            <ShareMessage dataHref={shareURL} />
+            <Box
+              sx={{
+                backgroundColor: '#e0e0e0',
+                width: '40px',
+                height: '40px',
+                borderRadius: '100px',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer'
+              }}
+              onClick={handleCopyURL}
+            >
+              <InsertLinkSharpIcon sx={{ transform: 'rotate(125deg)' }} />
+            </Box>
+          </Stack>
+        </div>
+      </div >
     </>
   );
 };
