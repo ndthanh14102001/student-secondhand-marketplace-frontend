@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { useEffect, Suspense, lazy } from "react";
+import React, { useEffect, Suspense, lazy, useState } from "react";
 import ScrollToTop from "./helpers/scroll-top";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
@@ -7,13 +7,17 @@ import { multilanguage, loadLanguages } from "redux-multilanguage";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
+import ChatBubble from "./components/chat-bubble";
 // import ModalLoading from "./components/modal-loading";
 import Popup from "./components/Popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
-import { login, logout } from "./redux/actions/userStorageActions"
-const DistanceCalculator = lazy(() => import("./test-google"));
+import { login, logout } from "./redux/actions/userStorageActions";
+import wishlistApi from "./api/wishlist-api";
+import { RESPONSE_TYPE } from "./utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "./redux/actions/modalLoadingActions";
+import { setWishlist } from "./redux/actions/wishlistActions";
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 // Get user data
 // const user = getUserLogin();
@@ -64,11 +68,29 @@ const App = (props) => {
   const modalLoading = useSelector(state => state.modalLoading);
   const popupErrorBase = useSelector(state => state.popupErrorBase);
 
-
   // [DON'T DELETE THIS] This line exist to check if user is logged in yet
   const user = getUserLogin()?.user;
 
+  //UseState NavigateUserInChat
+  const [selectedChatPartner, setSelectedChatPartner] = useState();
+  const handleNavigateChats = (partnerID) => {
+    setSelectedChatPartner(partnerID)
+  }
 
+  useEffect(() => {
+    const getWishlist = async () => {
+      dispatch(onOpenModalLoading())
+      const response = await wishlistApi.getWishlistPopulateAll();
+      if (response.type === RESPONSE_TYPE) {
+        console.log(response.data?.product_likes)
+        dispatch(setWishlist(response.data?.product_likes || []))
+      }
+      dispatch(onCloseModalLoading())
+    }
+    if (user) {
+      getWishlist()
+    }
+  }, [])
   useEffect(() => {
     if (user) {
       dispatch(login())
@@ -128,6 +150,7 @@ const App = (props) => {
                   </div>
                 }
               >
+                <ChatBubble selectedChatPartner={selectedChatPartner} />
                 <Switch>
                   <Route
                     exact
@@ -153,7 +176,10 @@ const App = (props) => {
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
-                        <Chat {...routeProps} key={routeProps.match.params.id} />
+                        <Chat
+                          {...routeProps}
+                          key={routeProps.match.params.id}
+                          parentHandleNavigateChats={handleNavigateChats} />
                       )}
                     />
                     :
@@ -165,7 +191,12 @@ const App = (props) => {
                   {user !== undefined &&
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
-                      component={Chat}
+                      render={(routeProps) => (
+                        <Chat
+                          {...routeProps}
+                          key={routeProps.match.params.id}
+                          parentHandleNavigateChats={handleNavigateChats} />
+                      )}
                     />}
 
 

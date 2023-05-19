@@ -113,12 +113,12 @@ function ChatFrame(props) {
     let ChatArray = [];
     const getChats = async () => {
       await axios
-        .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${currentUser?.id}&filters[$and][1][to][id][$eq]=${partner?.id}&populate=*`)
+        .get(process.env.REACT_APP_API_ENDPOINT + `/chats?pagination[page]=1&pagination[pageSize]=100&filters[$and][0][from][id][$eq]=${currentUser?.id}&filters[$and][1][to][id][$eq]=${partner?.id}&populate=*`)
         .then((response) => {
           // setChats(prev => [...prev, ...response.data])
           ChatArray = ChatArray.concat(response.data?.data)
           axios
-            .get(process.env.REACT_APP_API_ENDPOINT + `/chats?filters[$and][0][from][id][$eq]=${partner?.id}&filters[$and][1][to][id][$eq]=${currentUser?.id}&populate=*`)
+            .get(process.env.REACT_APP_API_ENDPOINT + `/chats?pagination[page]=1&pagination[pageSize]=100&filters[$and][0][from][id][$eq]=${partner?.id}&filters[$and][1][to][id][$eq]=${currentUser?.id}&populate=*`)
             .then((response) => {
               // setChats(prev => [...prev, ...response.data])
               ChatArray = ChatArray.concat(response.data?.data)
@@ -153,8 +153,7 @@ function ChatFrame(props) {
     if(partner !== undefined && chats !== undefined){
       const updateRecords = async () => {
         const promises = chats.map((item) => {
-          console.log("tin nhắn id: " + item.id + "/ read: " + item.attributes.read)
-          if(item.attributes.from.data.id === partner.id && !item.attributes.read) { 
+          if(item.attributes.from.data.id === partner.id && item.attributes.read === false) { 
             console.log('tin nhắn dc set true là: ' + item.id)
             return axios.put(`${process.env.REACT_APP_API_ENDPOINT}/chats/${item.id}`, {data: { read: true }} );
           }
@@ -225,8 +224,7 @@ function ChatFrame(props) {
   // Initiate Socket receive the message
   useEffect(()=>{
     // if(partner !== undefined) {
-      socket.removeAllListeners("private message")
-      socket.on("private message", (message) => {
+      const listener = (message) => {
         // console.log('socket emit from this partner: ')
         // console.log(partner)
         const dataPrototype = {
@@ -254,12 +252,18 @@ function ChatFrame(props) {
             }
           }
         }
-        console.log(dataPrototype)
+        console.log('Socket bên chatFrame')
         props.onUpdateUnreadChat(dataPrototype)
         if(partner?.id === message.from.id) {
           setChats((prev) => [dataPrototype, ...prev])
         }
-      })
+      }
+      
+      socket.on("private message", listener)
+
+      return () => {
+        socket.off("private message", listener);
+      };
     // }
   },[partner])
 
@@ -482,6 +486,7 @@ function ChatFrame(props) {
           multiline
           maxRows={6}
           variant="filled"
+          disabled={props.sellerData === undefined ? true : false}
           sx={{
             padding: '4px 16px',
             borderRadius: '24px',

@@ -287,7 +287,7 @@ const UserInfo = ({ match }) => {
   return (
     <Fragment>
       <MetaTags>
-        <title>Student Market | Thông tin người bán</title>
+        <title>Trang cá nhân của {userInfo?.fullName}</title>
         <meta
           name="description"
           content="Compare page of flone react minimalist eCommerce template."

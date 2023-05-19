@@ -9,7 +9,7 @@ import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment} from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, Typography, Stack, Box} from "@mui/material";
 import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
 import ChatIcon from '@mui/icons-material/Chat';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -17,11 +17,18 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import InfoIcon from '@mui/icons-material/Info';
 import ReportProblemIcon from '@mui/icons-material/ReportProblem';
 import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import InsertLinkSharpIcon from '@mui/icons-material/InsertLinkSharp';
+import { Helmet } from 'react-helmet';
 
 // import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import axios from "axios";
 import { getUserLogin } from "../../utils/userLoginStorage";
+import { useSelector } from "react-redux";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import wishlistApi from "../../api/wishlist-api";
+import Like from "../social-plugin/Like";
+import ShareMessage from "../social-plugin/ShareMessage";
 
 const ProductDescriptionInfo = ({
   product,
@@ -38,6 +45,7 @@ const ProductDescriptionInfo = ({
   sendReport,
   addToCompare
 }) => {
+  const wishlistData = useSelector(state => state.wishlistData);
   const attributes = product?.attributes;
   const user = attributes?.userId?.data;
   const userLoginData = getUserLogin()?.user;
@@ -74,11 +82,11 @@ const ProductDescriptionInfo = ({
   ]
 
   const handleClickOpenConfirmReport = () => {
-      if(userLoginData === undefined) {
-        setOpenNeedLoginDialog(true);
-      } else {
-        setOpenConfirmReport(true);
-      }
+    if (userLoginData === undefined) {
+      setOpenNeedLoginDialog(true);
+    } else {
+      setOpenConfirmReport(true);
+    }
   };
 
   const handleCloseConfirmReport = () => {
@@ -103,44 +111,86 @@ const ProductDescriptionInfo = ({
 
   const handleReport = () => {
     let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
-    if(checkedReportCriteria.indexOf("Lý do khác") > 0){
+    if (checkedReportCriteria.indexOf("Lý do khác") > 0) {
       descriptionInput += " và lý do khác"
     }
-    if(reportDetailInput !== ''){
+    if (reportDetailInput !== '') {
       descriptionInput += ", mô tả chi tiết: " + reportDetailInput
     }
 
     axios
-    .post(process.env.REACT_APP_API_ENDPOINT + '/reports', 
-      {
-        data: {
-          type: 'product',
-          product: product?.id,
-          reporter: userLoginData.id,
-          accused: null,
-          description: descriptionInput,
-        }
+      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
+        {
+          data: {
+            type: 'product',
+            product: product?.id,
+            reporter: userLoginData.id,
+            accused: null,
+            description: descriptionInput,
+          }
+        })
+      .then((response) => {
+        console.log(response)
+        addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
+          appearance: "success",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
       })
-    .then((response) => {
-      console.log(response)
-      addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
-        appearance: "success",
-        autoDismiss: true
-      });
-      handleCloseConfirmReport();
-    })
-    .catch((error) => {
-      addToast(" Đã có lỗi !, báo cáo thất bại", {
-        appearance: "error",
-        autoDismiss: true
-      });
-      handleCloseConfirmReport();
-    })
+      .catch((error) => {
+        addToast(" Đã có lỗi !, báo cáo thất bại", {
+          appearance: "error",
+          autoDismiss: true
+        });
+        handleCloseConfirmReport();
+      })
+  }
+  const handleAddToWishlist = async (product) => {
+    const wishlistNew = Array.isArray(wishlistData) ?
+      wishlistData.map((item) => item?.id)
+      : []
+    wishlistNew.push(product?.id);
+    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
+    if (response.type === RESPONSE_TYPE) {
+      addToWishlist(product, addToast)
+    }
+  };
+
+  let shareURL = process.env.REACT_APP_IS_LOCALHOST == 1 ? "https://chosinhvien.vercel.app/product/80" : window.location.href;
+
+  const handleCopyURL = () => {
+    const currentURL = window.location.href;
+
+    const tempInput = document.createElement('input');
+    tempInput.value = currentURL;
+    document.body.appendChild(tempInput);
+
+    tempInput.select();
+    tempInput.setSelectionRange(0, 99999);
+
+    document.execCommand('copy');
+
+    document.body.removeChild(tempInput);
+
+    addToast(" Đã copy link trang web", {
+      appearance: "success",
+      autoDismiss: true
+    });
   }
 
   return (
-    <div className="product-details-content ml-70">
+    <>
+    <Helmet>
 
+      <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
+      <meta property="og:url" content={window.location.href} />
+      <meta property="og:description" content={product?.attributes?.description} />
+      <meta property="og:price:amount" content={product?.attributes?.price} />
+      <meta property="og:price:currency" content='VND' />
+      <meta property="og:availability" content='instock' />
+      <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+    </Helmet>
+    <div className="product-details-content ml-70">
       <h2>{attributes?.name}</h2>
       {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
         <span>Đã bán</span>
@@ -245,11 +295,11 @@ const ProductDescriptionInfo = ({
             {user?.attributes?.phone}
           </button>
         </div>
-        <Link 
+        <Link
           to={
-            (userLoginData !== undefined && user.id !== undefined) && 
-              ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)} 
-          onClick={userLoginData === undefined ? ()=>{setOpenNeedLoginDialog(true)} : '' }>
+            (userLoginData !== undefined && user.id !== undefined) &&
+            ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
+          onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
           <div className="pro-details-cart btn-hover">
             <button
               onClick={() => { }
@@ -272,7 +322,7 @@ const ProductDescriptionInfo = ({
       </div>
       <Button
         startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-        onClick={() => addToWishlist(product, addToast)}
+        onClick={async () => await handleAddToWishlist(product)}
         title={
           wishlistItem !== undefined
             ? "Added to wishlist"
@@ -340,7 +390,7 @@ const ProductDescriptionInfo = ({
             id="outlined-start-adornment"
             sx={{ padding: 0, mt: '12px' }}
             value={reportDetailInput}
-            onChange={(event) => {setReportDetailInput(event.target.value)}}
+            onChange={(event) => { setReportDetailInput(event.target.value) }}
             InputProps={{
               startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
             }}
@@ -449,7 +499,30 @@ const ProductDescriptionInfo = ({
       <div>
         <ProductOwnerInfo user={user} check={1} />
       </div>
+      <div>
+        <Typography>Chia sẻ tin đăng này cho bạn bè:</Typography>
+        <Stack direction="row" spacing={2} sx={{ borderTop: '1px solid #e0e0e0', borderBottom: '1px solid #e0e0e0', padding: '5px'}} >
+          <Like dataHref={shareURL}/>
+          <ShareMessage dataHref={shareURL}/>
+          <Box
+          sx={{ 
+            backgroundColor: '#e0e0e0', 
+            width: '40px', 
+            height: '40px', 
+            borderRadius: '100px', 
+            display: 'flex', 
+            justifyContent: 'center', 
+            alignItems: 'center',
+            cursor: 'pointer'
+          }}
+          onClick={handleCopyURL}
+          >
+            <InsertLinkSharpIcon sx={{ transform: 'rotate(125deg)'}} />
+          </Box>
+        </Stack>
+      </div>
     </div >
+    </>
   );
 };
 

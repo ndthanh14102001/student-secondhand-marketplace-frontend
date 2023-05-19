@@ -94,7 +94,7 @@ const mapDispatchToProps = dispatch => {
         )
       );
     },
-    addToWishlist: (item, addToast) => {
+    addToWishlist: async (item, addToast) => {
       dispatch(addToWishlist(item, addToast));
     },
     addToCompare: (item, addToast) => {

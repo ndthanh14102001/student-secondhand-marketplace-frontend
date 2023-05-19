@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Box, Button, ClickAwayListener } from "@mui/material";
+import { Box, Button, Card, ClickAwayListener, Typography } from "@mui/material";
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
@@ -322,6 +322,10 @@ const IconGroup = ({
     return parts[1];
   }
 
+  const handleClickDirect = () => {
+    history.push(process.env.PUBLIC_URL + "/product/" + getProduct(messageSender.content, 1));
+  }
+
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
@@ -442,14 +446,14 @@ const IconGroup = ({
           </div>
         </ClickAwayListener>
       }
-      <div className="same-style header-wishlist">
+      {isLogin &&<div className="same-style header-wishlist">
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
           <span className="count-style">
             {wishlistData && wishlistData.length ? wishlistData.length : 0}
           </span>
         </Link>
-      </div>
+      </div>}
       {isLogin && <div className="same-style">
         <Button
           onClick={() => history.push(process.env.PUBLIC_URL + "/product-post")}
@@ -485,21 +489,9 @@ const IconGroup = ({
         open={open}
         onClose={handleClose}
         autoHideDuration={6000}
-        // message={messageInfo ? messageInfo : undefined}
+        message=" "
         TransitionComponent={transition}
         key={'bottom right'}
-        action={
-          <React.Fragment>
-            <IconButton
-              aria-label="close"
-              color="inherit"
-              sx={{ p: 0.5 }}
-              onClick={handleClose}
-            >
-              <CloseIcon />
-            </IconButton>
-          </React.Fragment>
-        }
         ContentProps={{
           sx: {
             backgroundColor: "white",
@@ -510,6 +502,32 @@ const IconGroup = ({
           }
         }}
       >
+        <Card sx={{ minWidth: '275px', display: 'flex', p: 2 }}>
+          <Box 
+          onClick={handleClickDirect} 
+          sx={{ 
+            width: '275px', 
+            cursor: 'pointer',
+            '&:hover': {
+              '& .MuiTypography-root': {
+                color: '#A749FF', 
+              },
+            }, 
+          }} 
+          >
+            <Typography>
+              {messageInfo ? messageInfo : undefined}
+            </Typography>
+          </Box>
+          <IconButton
+              aria-label="close"
+              color="inherit"
+              sx={{ p: 0.5 }}
+              onClick={handleClose}
+            >
+              <CloseIcon />
+          </IconButton>
+        </Card>
       </Snackbar>
     </div >
   );

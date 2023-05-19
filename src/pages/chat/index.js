@@ -14,8 +14,9 @@ import axios from 'axios'
 import { io } from "socket.io-client";
 import { onCloseModalLoading } from '../../redux/actions/modalLoadingActions'
 
-function ChatsFrame({ match }) {
+function ChatsFrame(props) {
 
+  const {parentHandleNavigateChats, match} = props
   const dispatch = useDispatch()
   const setupSocket = useSelector(state => state.socket.socket);
 
@@ -27,22 +28,20 @@ function ChatsFrame({ match }) {
   const [user, setUser] = useState();
 
   // Mảng tin nhắn từ mọi người tới người đăng nhập hiện tại
+  const [incomingFromSocket, setincomingFromSocket] = useState()
   const [isNotCalledYet, setIsNotCalledYet] = useState(true)
   const [inComingMessage, setIncomingMessage] = useState();
 
   const handleChangeSeller = (info) => {  
+    console.log("Thay đổi user từ chat navigator thành: ")
+    console.log(info)
     setUser(info)
-    console.log("Thay đổi user thành: " + info.username)
   }
 
   //After change partner, the unread messages become read
   const handleNavigateChats = (partnerID) => {
     if(inComingMessage !== undefined){
       setIncomingMessage((prev) => {
-        console.log("Incoming Chat")
-        console.log(prev)
-        console.log("Chat frame chats")
-        console.log(partnerID)
         return prev.map((item) => {
           if (item.attributes.from.data.id === partnerID && !item.attributes.read) {
             return {
@@ -56,11 +55,13 @@ function ChatsFrame({ match }) {
           return item;
         })
       });
+      parentHandleNavigateChats(partnerID)
     }
   };
 
   //Update new message to IncomingMessage
   const onUpdateUnreadChat = (input) => {
+    setincomingFromSocket(input)
     setIncomingMessage((prev) => [...prev, input])
   }
   
@@ -73,17 +74,22 @@ function ChatsFrame({ match }) {
   useEffect(() => {
     const getUserInfo = async () => {
       const userId = match.params.id;
+      console.log(match)
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
         method: "get",
       });
       if (response.type === RESPONSE_TYPE) {
+        console.log("thông tin người bán hiện tại được cập nhật lại theo ng bán: ")
+        console.log(response.data)
         setUser(response.data);
-        console.log("thông tin người bán hiện tại được cập nhật lại theo ng bán: " + response.data.username)
       }
     }
-    getUserInfo();
-  }, [match])
+
+    if(match !== undefined){
+      getUserInfo();
+    }
+  }, [])
 
   // các hàm phải chạy 1 lần khi khởi tạo component
   useEffect(()=>{
@@ -139,6 +145,8 @@ function ChatsFrame({ match }) {
                     handleChangeSeller={handleChangeSeller} 
                     userLoginData={userLoginData}
                     inComingMessage={inComingMessage}
+                    incomingFromSocket={incomingFromSocket}
+                    sellerData={user}
                   />
                 </div>
                 <div style={{ marginLeft: '8px', marginTop: '8px' }}>

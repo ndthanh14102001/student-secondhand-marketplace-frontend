@@ -2,7 +2,6 @@ import PropTypes from "prop-types";
 import React, { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import Swiper from "react-id-swiper";
 import { Box, Button, Grid, IconButton } from "@mui/material";
 import CategoryItem from "./CategoryItem";
 import axios from "axios";
