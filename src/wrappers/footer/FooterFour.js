@@ -65,7 +65,7 @@ const FooterFour = ({
           >
             <div className="footer-widget footer-widget-white mb-30 ml-30">
               <div className="footer-title">
-                <h3>ABOUT US</h3>
+                <h3>Về chợ sinh viên</h3>
               </div>
               <div className="footer-list">
                 <ul>
