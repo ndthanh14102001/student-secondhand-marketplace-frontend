@@ -312,7 +312,10 @@ const MyAccount = ({ location }) => {
         }
         else {
           if (response.status === STATUS_BAD_REQUEST) {
-            setMessageError("mật khẩu không chính xác!")
+            addToast("mật khẩu không chính xác", {
+              appearance: "error",
+              autoDismiss: true
+            });
           }
         }
       }

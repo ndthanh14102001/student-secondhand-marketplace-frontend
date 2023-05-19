@@ -167,6 +167,7 @@ const ProductDescriptionInfo = ({
   return (
     <>
     <Helmet>
+      <meta charSet="utf-8" />
       <meta property="og:url" content={window.location.href} />
       <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
       <meta property="og:description" content={product?.attributes?.description} />
