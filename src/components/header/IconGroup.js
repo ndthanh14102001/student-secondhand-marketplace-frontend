@@ -333,6 +333,12 @@ const IconGroup = ({
     history.push(process.env.PUBLIC_URL + "/category")
     dispatch(setNameFilter(searchValue.trim()));
   }
+  const truncateString = (str) => {
+    if (str.length > 20) {
+      return str.slice(0, 30) + "...";
+    }
+    return str;
+  }
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
@@ -432,7 +438,9 @@ const IconGroup = ({
                         </div>
                         <div className="notify_data">
                           <div className="data">
-                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> đăng bán <b>{getProduct(item?.attributes?.content, 2)}</b>
+                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> 
+                            đăng bán 
+                            <b> {truncateString(getProduct(item?.attributes?.content, 2))} </b>
                           </div>
                           <div className="date">
                             {handleDate(item?.attributes?.updatedAt)}

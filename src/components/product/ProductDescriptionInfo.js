@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { getProductCartQuantity } from "../../helpers/product";
 import { addToCart } from "../../redux/actions/cartActions";
-import { addToWishlist } from "../../redux/actions/wishlistActions";
+import { addToWishlist, handleAddToWishlist } from "../../redux/actions/wishlistActions";
 import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
@@ -29,6 +29,7 @@ import { RESPONSE_TYPE } from "../../utils/callApi";
 import wishlistApi from "../../api/wishlist-api";
 import Like from "../social-plugin/Like";
 import ShareMessage from "../social-plugin/ShareMessage";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 
 const ProductDescriptionInfo = ({
   product,
@@ -45,6 +46,7 @@ const ProductDescriptionInfo = ({
   sendReport,
   addToCompare
 }) => {
+  const history = useHistory()
   const wishlistData = useSelector(state => state.wishlistData);
   const attributes = product?.attributes;
   const user = attributes?.userId?.data;
@@ -145,16 +147,6 @@ const ProductDescriptionInfo = ({
         handleCloseConfirmReport();
       })
   }
-  const handleAddToWishlist = async (product) => {
-    const wishlistNew = Array.isArray(wishlistData) ?
-      wishlistData.map((item) => item?.id)
-      : []
-    wishlistNew.push(product?.id);
-    const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })
-    if (response.type === RESPONSE_TYPE) {
-      addToWishlist(product, addToast)
-    }
-  };
 
   let shareURL = process.env.REACT_APP_IS_LOCALHOST == 1 ? "https://chosinhvien.vercel.app/product/80" : window.location.href;
 
@@ -180,25 +172,25 @@ const ProductDescriptionInfo = ({
   console.log("product aa", product)
   return (
     <>
-    <Helmet>
-      <meta charSet="utf-8" />
-      <meta property="og:url" content={window.location.href} />
-      <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
-      <meta property="og:description" content={product?.attributes?.description} />
-      <meta property="og:price:amount" content={product?.attributes?.price} />
-      <meta property="og:price:currency" content='VND' />
-      <meta property="og:availability" content='instock' />
-      {/* <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
-      <meta property="og:image:secure_url" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
-      {/* <meta property="og:image:secure" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
-      <link rel="preload" as="image" href={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
-      <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
-    </Helmet>
-    <div className="product-details-content ml-70">
-      <h2>{attributes?.name}</h2>
-      {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
-        <span>Đã bán</span>
-      </div>}
+      <Helmet>
+        <meta charSet="utf-8" />
+        <meta property="og:url" content={window.location.href} />
+        <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
+        <meta property="og:description" content={product?.attributes?.description} />
+        <meta property="og:price:amount" content={product?.attributes?.price} />
+        <meta property="og:price:currency" content='VND' />
+        <meta property="og:availability" content='instock' />
+        {/* <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
+        <meta property="og:image:secure_url" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+        {/* <meta property="og:image:secure" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
+        <link rel="preload" as="image" href={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+        <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
+      </Helmet>
+      <div className="product-details-content ml-70">
+        <h2>{attributes?.name}</h2>
+        {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
+          <span>Đã bán</span>
+        </div>}
 
         <div className="product-details-price">
           <span>{finalProductPrice} </span>
@@ -326,7 +318,7 @@ const ProductDescriptionInfo = ({
         </div>
         <Button
           startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-          onClick={async () => await handleAddToWishlist(product)}
+          onClick={async () => await handleAddToWishlist(product, wishlistData, addToast, addToWishlist, history)}
           title={
             wishlistItem !== undefined
               ? "Added to wishlist"

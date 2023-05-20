@@ -8,6 +8,11 @@ import ProductModal from "./ProductModal";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
 import styled from "@emotion/styled";
 import { getUniversityById } from "../../utils/data/university";
+import { useSelector } from "react-redux";
+import wishlistApi from "../../api/wishlist-api";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
@@ -26,6 +31,8 @@ const ProductGridSingle = ({
   sliderClassName,
   spaceBottomClass
 }) => {
+  const history = useHistory()
+  const wishlistData = useSelector(state => state.wishlistData);
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
   const attributes = product?.attributes;
@@ -80,7 +87,7 @@ const ProductGridSingle = ({
                       ? "Added to wishlist"
                       : "Add to wishlist"
                   }
-                  onClick={() => addToWishlist(product, addToast)}
+                  onClick={async () => await handleAddToWishlist(product, wishlistData, addToast, addToWishlist, history)}
                 >
                   <i className="pe-7s-like" />
                 </button>
