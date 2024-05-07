@@ -1,5 +1,5 @@
 ## Introduction
-You can view the project details by checking the Introduction.pdf file.
+[You can view the project details by checking the Introduction.pdf file.](https://github.com/ndthanh14102001/student-secondhand-marketplace-frontend/blob/main/introduction.pdf)
 
 ## Node version
 14.21.0
