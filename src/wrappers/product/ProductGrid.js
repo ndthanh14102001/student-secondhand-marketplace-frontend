@@ -165,7 +165,7 @@ const ProductGrid = ({
     const getProductListHomeHasRecomender = async () => {
       const recomenderInfoCopy = { ...recomenderInfo };
 
-      if (recomenderInfo.distancesUniversityHasProduct.length > 0) {
+      if (recomenderInfo.distancesUniversityHasProduct?.length > 0) {
 
         console.log("recomenderInfoCopy", recomenderInfoCopy)
         while (true && recomenderInfoCopy.hasMore) {
@@ -225,10 +225,10 @@ const ProductGrid = ({
                 recomenderInfoCopy.page = recomenderInfoCopy.page + 1
                 recomenderInfoCopy.hasMore = true;
               }
-              if (Array.isArray(response.data?.data) && response.data?.data.length > 0) {
+              if (Array.isArray(response.data?.data) && response.data?.data?.length > 0) {
                 const metaPagination = response.data?.meta?.pagination;
-                recomenderInfoCopy.productRecomended = recomenderInfoCopy.productRecomended + response.data?.data.length;
-                recomenderInfoCopy.productRecommenderNext = recomenderInfoCopy.productRecommenderNext - response.data?.data.length;
+                recomenderInfoCopy.productRecomended = recomenderInfoCopy.productRecomended + response.data?.data?.length;
+                recomenderInfoCopy.productRecommenderNext = recomenderInfoCopy.productRecommenderNext - response.data?.data?.length;
 
                 setProductList(prev => [...prev, ...response.data?.data])
 
@@ -260,7 +260,7 @@ const ProductGrid = ({
       getProductListByCategory();
     }
 
-  }, [category, isLoadingData, recomenderInfo.distancesUniversityHasProduct.length]);
+  }, [category, isLoadingData, recomenderInfo.distancesUniversityHasProduct?.length]);
   const handleShowNextPage = () => {
     if (recomenderInfo.hasMore) {
       setIsLoadingData(true);
@@ -268,7 +268,7 @@ const ProductGrid = ({
   }
   return (
     <Fragment>
-      {/* {products.map(product => {
+      {/* {products?.map(product => {
         return (
           <ProductGridSingle
             sliderClassName={sliderClassName}
@@ -295,7 +295,7 @@ const ProductGrid = ({
           />
         );
       })} */}
-      {productList.map(product => {
+      {productList?.map(product => {
         return (
           <ProductGridSingle
             sliderClassName={sliderClassName}

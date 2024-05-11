@@ -7,7 +7,7 @@ const BannerEight = () => {
     <div className="col-lg-4 col-md-12">
       <div className="row">
         {bannerData &&
-          bannerData.map((single, key) => {
+          bannerData?.map((single, key) => {
             return (
               <BannerEightSingle
                 data={single}

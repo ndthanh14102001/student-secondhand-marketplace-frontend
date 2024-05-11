@@ -23,7 +23,7 @@ export function MyListSubheader(
 const renderSelectGroup = category => {
   const attributesCategory = category?.attributes;
   const childs = attributesCategory?.children?.data;
-  const childItems = childs.map(child => {
+  const childItems = childs?.map(child => {
     const attributesChild = child?.attributes;
     return <MenuItem
       sx={{ marginLeft: "1rem" }}
@@ -150,7 +150,7 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
           onChange={handleChangeCategoryChoose}
           value={productInfo.categoryChoose}
         >
-          {categories && categories.map((category) => {
+          {categories && categories?.map((category) => {
             return renderSelectGroup(category);
           })}
         </Select>

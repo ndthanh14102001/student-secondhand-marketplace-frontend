@@ -96,7 +96,7 @@ const ProductUpdate = ({ match }) => {
       result = false;
       isValidName = false
     }
-    if (productInfo.description.length > 0 && productInfo.description.split(" ").length < 10) {
+    if (productInfo.description?.length > 0 && productInfo.description.split(" ")?.length < 10) {
       result = false;
       isValidDescription = false
     }
@@ -104,7 +104,7 @@ const ProductUpdate = ({ match }) => {
       result = false;
       isValidCategoryChoose = false
     }
-    if (!(productInfo.images.length >= 4 && productInfo.images.length <= 6)) {
+    if (!(productInfo.images?.length >= 4 && productInfo.images?.length <= 6)) {
       result = false;
       isValidImages = false
       dispatch(onShowPopup({
@@ -129,7 +129,7 @@ const ProductUpdate = ({ match }) => {
     return result;
   }
   const handleDeleteFileInApi = async (productImagesDelete) => {
-    for (let indexProductImagesDelete = 0; indexProductImagesDelete < productImagesDelete.length; indexProductImagesDelete++) {
+    for (let indexProductImagesDelete = 0; indexProductImagesDelete < productImagesDelete?.length; indexProductImagesDelete++) {
       const imageProductDelete = productImagesDelete[indexProductImagesDelete];
       await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/upload/files/" + imageProductDelete?.id,
@@ -142,7 +142,7 @@ const ProductUpdate = ({ match }) => {
     const imagesOld = [];
     const imagesNew = [];
     let productImagesDelete = productInfo.imagesBeforeUpdate;
-    for (let indexImages = 0; indexImages < productInfo.images.length; indexImages++) {
+    for (let indexImages = 0; indexImages < productInfo.images?.length; indexImages++) {
       const image = productInfo.images[indexImages];
       if (image?.id) {
         imagesOld.push(image)
@@ -152,7 +152,7 @@ const ProductUpdate = ({ match }) => {
       }
     }
 
-    if (productImagesDelete.length > 0) {
+    if (productImagesDelete?.length > 0) {
       await handleDeleteFileInApi(productImagesDelete);
     }
     let response = await callApi({
@@ -165,14 +165,14 @@ const ProductUpdate = ({ match }) => {
           category: productInfo.categoryChoose,
           price: productInfo.price,
           description: productInfo.description,
-          images: imagesOld.map(image => image?.id),
+          images: imagesOld?.map(image => image?.id),
           status: productInfo.status
         }
       },
     })
 
     if (response.type === RESPONSE_TYPE) {
-      if (imagesNew.length > 0) {
+      if (imagesNew?.length > 0) {
         let formData = new FormData();
         imagesNew.forEach((image) => {
           formData.append('files', image);

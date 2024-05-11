@@ -9,7 +9,7 @@ const ShopTag = ({ tags, getSortParams }) => {
       <div className="sidebar-widget-tag mt-25">
         {tags ? (
           <ul>
-            {tags.map((tag, key) => {
+            {tags?.map((tag, key) => {
               return (
                 <li key={key}>
                   <button

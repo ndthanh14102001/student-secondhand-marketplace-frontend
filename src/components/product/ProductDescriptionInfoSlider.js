@@ -77,7 +77,7 @@ const ProductDescriptionInfoSlider = ({
           <div className="pro-details-color-wrap">
             <span>Color</span>
             <div className="pro-details-color-content">
-              {product.variation.map((single, key) => {
+              {product.variation?.map((single, key) => {
                 return (
                   <label
                     className={`pro-details-color-content--single ${single.color}`}
@@ -107,9 +107,9 @@ const ProductDescriptionInfoSlider = ({
             <span>Size</span>
             <div className="pro-details-size-content">
               {product.variation &&
-                product.variation.map(single => {
+                product.variation?.map(single => {
                   return single.color === selectedProductColor
-                    ? single.size.map((singleSize, key) => {
+                    ? single.size?.map((singleSize, key) => {
                       return (
                         <label
                           className={`pro-details-size-content--single`}
@@ -238,7 +238,7 @@ const ProductDescriptionInfoSlider = ({
         <div className="pro-details-meta justify-content-center">
           <span>Categories :</span>
           <ul>
-            {product.category.map((single, key) => {
+            {product.category?.map((single, key) => {
               return (
                 <li key={key}>
                   <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
@@ -256,7 +256,7 @@ const ProductDescriptionInfoSlider = ({
         <div className="pro-details-meta justify-content-center">
           <span>Tags :</span>
           <ul>
-            {product.tag.map((single, key) => {
+            {product.tag?.map((single, key) => {
               return (
                 <li key={key}>
                   <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>

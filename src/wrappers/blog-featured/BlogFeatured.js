@@ -18,7 +18,7 @@ const BlogFeatured = ({ spaceTopClass, spaceBottomClass }) => {
           spaceClass="mb-55"
         />
         <div className="row">
-          {blogFeaturedData.map(singlePost => {
+          {blogFeaturedData?.map(singlePost => {
             return (
               <BlogFeaturedSingle singlePost={singlePost} key={singlePost.id} />
             );

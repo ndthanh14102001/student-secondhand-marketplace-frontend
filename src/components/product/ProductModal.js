@@ -182,7 +182,7 @@ function ProductModal(props) {
               <div className="product-large-image-wrapper">
                 <Swiper {...gallerySwiperParams}>
                   {images && Array.isArray(images) &&
-                    images.map((single, key) => {
+                    images?.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
@@ -200,7 +200,7 @@ function ProductModal(props) {
               <div className="product-small-image-wrapper mt-15">
                 <Swiper {...thumbnailSwiperParams}>
                   {images && Array.isArray(images) &&
-                    images.map((single, key) => {
+                    images?.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
@@ -313,7 +313,7 @@ function ProductModal(props) {
                           Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
                         </DialogContentText>
                         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                          {reportCriteria.map((value) => {
+                          {reportCriteria?.map((value) => {
                             const labelId = `checkbox-list-label-${value}`;
 
                             return (

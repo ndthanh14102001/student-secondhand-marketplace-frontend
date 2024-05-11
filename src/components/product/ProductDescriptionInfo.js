@@ -210,7 +210,7 @@ const ProductDescriptionInfo = ({
           <div className="pro-details-color-wrap">
             <span>Color</span>
             <div className="pro-details-color-content">
-              {product.variation.map((single, key) => {
+              {product.variation?.map((single, key) => {
                 return (
                   <label
                     className={`pro-details-color-content--single ${single.color}`}
@@ -240,9 +240,9 @@ const ProductDescriptionInfo = ({
             <span>Size</span>
             <div className="pro-details-size-content">
               {product.variation &&
-                product.variation.map(single => {
+                product.variation?.map(single => {
                   return single.color === selectedProductColor
-                    ? single.size.map((singleSize, key) => {
+                    ? single.size?.map((singleSize, key) => {
                         return (
                           <label
                             className={`pro-details-size-content--single`}
@@ -356,7 +356,7 @@ const ProductDescriptionInfo = ({
               Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
             </DialogContentText>
             <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-              {reportCriteria.map((value) => {
+              {reportCriteria?.map((value) => {
                 const labelId = `checkbox-list-label-${value}`;
 
                 return (
@@ -429,7 +429,7 @@ const ProductDescriptionInfo = ({
             <div className="pro-details-meta">
               <span>Danh mục :</span>
               <ul>
-                {product.category.map((single, key) => {
+                {product.category?.map((single, key) => {
                   return (
                     <li key={key}>
                       <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
@@ -448,7 +448,7 @@ const ProductDescriptionInfo = ({
         <div className="pro-details-meta">
           <span>Tags :</span>
           <ul>
-            {product.tag.map((single, key) => {
+            {product.tag?.map((single, key) => {
               return (
                 <li key={key}>
                   <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>

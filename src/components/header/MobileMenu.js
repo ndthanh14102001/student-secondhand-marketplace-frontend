@@ -10,7 +10,7 @@ const MobileMenu = () => {
     const offCanvasNavSubMenu = offCanvasNav.querySelectorAll(".sub-menu");
     const anchorLinks = offCanvasNav.querySelectorAll("a");
 
-    for (let i = 0; i < offCanvasNavSubMenu.length; i++) {
+    for (let i = 0; i < offCanvasNavSubMenu?.length; i++) {
       offCanvasNavSubMenu[i].insertAdjacentHTML(
         "beforebegin",
         "<span class='menu-expand'><i></i></span>"
@@ -18,7 +18,7 @@ const MobileMenu = () => {
     }
 
     const menuExpand = offCanvasNav.querySelectorAll(".menu-expand");
-    const numMenuExpand = menuExpand.length;
+    const numMenuExpand = menuExpand?.length;
 
     for (let i = 0; i < numMenuExpand; i++) {
       menuExpand[i].addEventListener("click", e => {
@@ -26,7 +26,7 @@ const MobileMenu = () => {
       });
     }
 
-    for (let i = 0; i < anchorLinks.length; i++) {
+    for (let i = 0; i < anchorLinks?.length; i++) {
       anchorLinks[i].addEventListener("click", () => {
         closeMobileMenu();
       });

@@ -20,7 +20,7 @@ const BlogFeaturedFour = ({ spaceTopClass, spaceBottomClass }) => {
           borderClass="no-border"
         />
         <div className="row">
-          {blogFeaturedData.map((singlePost) => {
+          {blogFeaturedData?.map((singlePost) => {
             return (
               <BlogFeaturedSingle singlePost={singlePost} key={singlePost.id} />
             );

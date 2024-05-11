@@ -82,7 +82,7 @@ const MyProductGrid = ({
   }, [dispatch])
   return (
     <Fragment>
-      {productsShow.map((product) => {
+      {productsShow?.map((product) => {
         return (
           <ProductGridSingleTwo
             sliderClassName={sliderClassName}

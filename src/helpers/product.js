@@ -8,22 +8,22 @@ export const getProducts = (products, category, type, limit) => {
 
   if (type && type === "new") {
     const newProducts = finalProducts.filter(single => single.new);
-    return newProducts.slice(0, limit ? limit : newProducts.length);
+    return newProducts.slice(0, limit ? limit : newProducts?.length);
   }
   if (type && type === "bestSeller") {
     return finalProducts
       .sort((a, b) => {
         return b.saleCount - a.saleCount;
       })
-      .slice(0, limit ? limit : finalProducts.length);
+      .slice(0, limit ? limit : finalProducts?.length);
   }
   if (type && type === "saleItems") {
     const saleItems = finalProducts.filter(
       single => single.discount && single.discount > 0
     );
-    return saleItems.slice(0, limit ? limit : saleItems.length);
+    return saleItems.slice(0, limit ? limit : saleItems?.length);
   }
-  return finalProducts.slice(0, limit ? limit : finalProducts.length);
+  return finalProducts.slice(0, limit ? limit : finalProducts?.length);
 };
 
 // get product discount price
@@ -41,7 +41,7 @@ export const getProductCartQuantity = (cartItems, product, color, size) => {
         : true) &&
       (single.selectedProductSize ? single.selectedProductSize === size : true)
   )[0];
-  if (cartItems.length >= 1 && productInCart) {
+  if (cartItems?.length >= 1 && productInCart) {
     if (product.variation) {
       return cartItems.filter(
         single =>
@@ -118,10 +118,10 @@ const getIndividualItemArray = array => {
 export const getIndividualCategories = products => {
   let productCategories = [];
   products &&
-    products.map(product => {
+    products?.map(product => {
       return (
         product.category &&
-        product.category.map(single => {
+        product.category?.map(single => {
           return productCategories.push(single);
         })
       );
@@ -134,10 +134,10 @@ export const getIndividualCategories = products => {
 export const getIndividualTags = products => {
   let productTags = [];
   products &&
-    products.map(product => {
+    products?.map(product => {
       return (
         product.tag &&
-        product.tag.map(single => {
+        product.tag?.map(single => {
           return productTags.push(single);
         })
       );
@@ -150,10 +150,10 @@ export const getIndividualTags = products => {
 export const getIndividualColors = products => {
   let productColors = [];
   products &&
-    products.map(product => {
+    products?.map(product => {
       return (
         product.variation &&
-        product.variation.map(single => {
+        product.variation?.map(single => {
           return productColors.push(single.color);
         })
       );
@@ -166,11 +166,11 @@ export const getIndividualColors = products => {
 export const getProductsIndividualSizes = products => {
   let productSizes = [];
   products &&
-    products.map(product => {
+    products?.map(product => {
       return (
         product.variation &&
-        product.variation.map(single => {
-          return single.size.map(single => {
+        product.variation?.map(single => {
+          return single.size?.map(single => {
             return productSizes.push(single.name);
           });
         })
@@ -184,10 +184,10 @@ export const getProductsIndividualSizes = products => {
 export const getIndividualSizes = product => {
   let productSizes = [];
   product.variation &&
-    product.variation.map(singleVariation => {
+    product.variation?.map(singleVariation => {
       return (
         singleVariation.size &&
-        singleVariation.size.map(singleSize => {
+        singleVariation.size?.map(singleSize => {
           return productSizes.push(singleSize.name);
         })
       );

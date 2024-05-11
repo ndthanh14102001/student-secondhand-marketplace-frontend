@@ -17,7 +17,7 @@ const FeatureIconThree = ({
       <div className="container">
         <div className="row">
           {featureIconData &&
-            featureIconData.map((single, key) => {
+            featureIconData?.map((single, key) => {
               return (
                 <FeatureIconThreeSingle
                   data={single}

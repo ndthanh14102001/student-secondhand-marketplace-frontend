@@ -12,7 +12,7 @@ const CategoryFiveGrid = ({ spaceBottomClass }) => {
       <div className="container">
         <div className="row">
           {categoryData &&
-            categoryData.map((single, key) => {
+            categoryData?.map((single, key) => {
               return <CategoryFiveSingle data={single} key={key} />;
             })}
         </div>

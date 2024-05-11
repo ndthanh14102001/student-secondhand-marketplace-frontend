@@ -11,7 +11,7 @@ const FeatureIconEight = ({ spaceBottomClass }) => {
       <div className="container">
         <div className="row">
           {featureIconData &&
-            featureIconData.map((single, key) => {
+            featureIconData?.map((single, key) => {
               return (
                 <FeatureIconEightSingle
                   data={single}

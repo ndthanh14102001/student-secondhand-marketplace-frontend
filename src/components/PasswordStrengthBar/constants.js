@@ -24,7 +24,7 @@ const SUCCESS_COLOR = "success";
 const WARNING_COLOR = "warning";
 const checkStrengthPassword = (password) => {
   let strength = 0;
-  if (password.length >= 6) {
+  if (password?.length >= 6) {
     if (/[!@#$%^&*()_+\-=\\{};':"\\|,.<>/?]+/.test(password)) {
       strength++;
     }

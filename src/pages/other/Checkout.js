@@ -30,7 +30,7 @@ const Checkout = ({ location, cartItems, currency }) => {
         <Breadcrumb />
         <div className="checkout-area pt-95 pb-100">
           <div className="container">
-            {cartItems && cartItems.length >= 1 ? (
+            {cartItems && cartItems?.length >= 1 ? (
               <div className="row">
                 <div className="col-lg-7">
                   <div className="billing-info-wrap">
@@ -140,7 +140,7 @@ const Checkout = ({ location, cartItems, currency }) => {
                         </div>
                         <div className="your-order-middle">
                           <ul>
-                            {cartItems.map((cartItem, key) => {
+                            {cartItems?.map((cartItem, key) => {
                               const discountedPrice = getDiscountPrice(
                                 cartItem.price,
                                 cartItem.discount

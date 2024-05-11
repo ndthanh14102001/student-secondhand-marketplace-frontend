@@ -12,7 +12,7 @@ export const handleAddToWishlist = async (product, wishlistData, addToast, addTo
   const user = getUserLogin();
   if (user) {
     const wishlistNew = Array.isArray(wishlistData) ?
-      wishlistData.map((item) => item?.id)
+      wishlistData?.map((item) => item?.id)
       : []
     wishlistNew.push(product?.id);
     const response = await wishlistApi.updateWishlist({ wishlist: wishlistNew })

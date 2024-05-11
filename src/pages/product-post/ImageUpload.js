@@ -29,7 +29,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
   }
   const checkValidFileType = (files) => {
     if (Array.isArray(Object.values(files))) {
-      for (let indexFiles = 0; indexFiles < files.length; indexFiles++) {
+      for (let indexFiles = 0; indexFiles < files?.length; indexFiles++) {
         const file = files[indexFiles];
         const extension = file.name.split('.').pop().toLowerCase();
         if (!IMAGE_FILE_TYPE.includes(extension)) {
@@ -112,7 +112,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
         multiple
       />
       <Box height="100%">
-        {productInfo.images.length === 0 && <Box
+        {productInfo.images?.length === 0 && <Box
           onClick={() => inputFileRef.current.click()}
           sx={{
             height: "100%",
@@ -127,8 +127,8 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
           />
           <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
         </Box>}
-        {productInfo.images.length > 0}
-        {productInfo.images.length > 0 && <Grid container spacing={2}>
+        {productInfo.images?.length > 0}
+        {productInfo.images?.length > 0 && <Grid container spacing={2}>
           <Grid item xs={3}>
             <Box
               onClick={() => inputFileAddRef.current.click()}
@@ -143,7 +143,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
               }} />
             </Box>
           </Grid>
-          {productInfo.images.map((file, index) => {
+          {productInfo.images?.map((file, index) => {
             return <Grid item xs={3}>
               <Box sx={{ position: "relative" }}>
                 <IconButton

@@ -33,7 +33,7 @@ const HeroSliderSeven = () => {
       <div className="slider-active-3">
         <Swiper {...params}>
           {heroSliderData &&
-            heroSliderData.map((single, key) => {
+            heroSliderData?.map((single, key) => {
               return (
                 <HeroSliderSevenSingle
                   data={single}

@@ -45,7 +45,7 @@ const BrandLogoSliderThree = ({ spaceBottomClass, spaceTopClass }) => {
         <div className="brand-logo-active">
           <Swiper {...settings}>
             {brandLogoData &&
-              brandLogoData.map((single, key) => {
+              brandLogoData?.map((single, key) => {
                 return (
                   <BrandLogoOneSingle
                     data={single}

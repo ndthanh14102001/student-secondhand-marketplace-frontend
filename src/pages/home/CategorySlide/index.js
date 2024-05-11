@@ -102,7 +102,7 @@ const CategorySlide = () => {
   const getCategoriesItemScreen = (indexCat) => {
     let indexItem = 0;
     const carouselItem = [];
-    while (indexItem < CAT_ITEM_EACH_PAGE && indexCat < categories.length) {
+    while (indexItem < CAT_ITEM_EACH_PAGE && indexCat < categories?.length) {
       const category = categories[indexCat];
       const attributes = category?.attributes;
       const image = attributes?.image?.data?.attributes?.url;
@@ -123,7 +123,7 @@ const CategorySlide = () => {
     let indexCategories = 0;
     let numScreen = 0;
     const categoriesShow = [];
-    while (indexCategories < categories.length) {
+    while (indexCategories < categories?.length) {
       numScreen++;
       const { component: items, indexCat } = getCategoriesItemScreen(indexCategories)
       categoriesShow.push(<Grid container spacing={2} key={v4()}>
@@ -133,7 +133,7 @@ const CategorySlide = () => {
     }
     setNumScreenCarousel(numScreen);
     return categoriesShow;
-  }, [categories.length]);
+  }, [categories?.length]);
   console.log("activeCategorySlider", activeCategorySlider)
   const addClassHoverBtn = useCallback(() => {
     if (btnNextSlideRef.current) {

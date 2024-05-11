@@ -13,7 +13,7 @@ const TextGridOne = ({ spaceBottomClass }) => {
       <div className="container">
         <div className="row">
           {textGridData &&
-            textGridData.map((single, key) => {
+            textGridData?.map((single, key) => {
               return (
                 <TextGridOneSingle
                   data={single}

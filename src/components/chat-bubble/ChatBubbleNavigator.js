@@ -69,7 +69,7 @@ function ChatBubbleNavigator(props) {
         console.log("props.selectedChatPartner")
         console.log(props.selectedChatPartner)
         console.log(window.location.pathname.indexOf("/chat") !== -1)
-        if(userList.length > 0 && props.selectedChatPartner !== undefined){
+        if(userList?.length > 0 && props.selectedChatPartner !== undefined){
             setUserList((prev) => {
                 props.getChatsCount(prev.filter((object) => object.id !== props.selectedChatPartner).reduce((total, obj) => total + obj.unreadCount, 0))
                 return prev.filter((object) => object.id !== props.selectedChatPartner)
@@ -78,15 +78,15 @@ function ChatBubbleNavigator(props) {
     },[props.selectedChatPartner])
 
     useEffect(() => {
-        if(incomingMessage.length !== 0){
+        if(incomingMessage?.length !== 0){
             let tempCustomUserList = [];
             console.log("incomingMessage array: ")
             console.log(incomingMessage)
-            const uniqueUserIDsList = [...new Set(incomingMessage.map((object) => object.attributes.from.data.id))];
+            const uniqueUserIDsList = [...new Set(incomingMessage?.map((object) => object.attributes.from.data.id))];
 
-            tempCustomUserList = uniqueUserIDsList.map((id) => ({
+            tempCustomUserList = uniqueUserIDsList?.map((id) => ({
                 id: id,
-                unreadCount: incomingMessage.filter((object) => object.attributes.from.data.id === id).length
+                unreadCount: incomingMessage.filter((object) => object.attributes.from.data.id === id)?.length
             }));
 
             if( props.selectedChatPartner !== undefined && window.location.pathname.indexOf("/chat") !== -1) {
@@ -99,13 +99,13 @@ function ChatBubbleNavigator(props) {
             console.log(tempCustomUserList)
 
             // Cheeck userlist if user (which is partner) already exist, if already there, plus, unread Count
-            tempCustomUserList.map((item) => {
+            tempCustomUserList?.map((item) => {
                 if(!findIdExistById(userList, item.id) && (item.id !== props.selectedChatPartner || window.location.pathname.indexOf("/chat") === -1)){
                     // FinalUserList.push(QueryUserByID(item.id))
                     QueryUserByID(item.id, item.unreadCount)
                 }else if(item.id === partnerJustSent) {
                     setUserList((prev) => {
-                        return prev.map((object) => {
+                        return prev?.map((object) => {
                             if (object.id === partnerJustSent && object.id === props.selectedChatPartner && window.location.pathname.indexOf("/chat") !== -1) {
                                 return null;
                             } else if (object.id === partnerJustSent) {
@@ -165,7 +165,7 @@ function ChatBubbleNavigator(props) {
             </Link>
             {console.log("userList")}
             {console.log(userList)}
-            {userList.map((item, index) => (
+            {userList?.map((item, index) => (
                 <Tooltip key={index} title={item.username} placement="right">
                     <Badge badgeContent={item.unreadCount} max={99} color="error" overlap="circular">
                         <Box onClick={() => setUserList(prev => prev.splice(index, 1))}>

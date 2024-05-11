@@ -42,7 +42,7 @@ function ChatsFrame(props) {
   const handleNavigateChats = (partnerID) => {
     if(inComingMessage !== undefined){
       setIncomingMessage((prev) => {
-        return prev.map((item) => {
+        return prev?.map((item) => {
           if (item.attributes.from.data.id === partnerID && !item.attributes.read) {
             return {
               ...item,
@@ -112,7 +112,7 @@ function ChatsFrame(props) {
       // console.log(response.data)
       if(match.params.id !== undefined) {
         setIncomingMessage(
-          response.data.data.map((item) => {
+          response.data.data?.map((item) => {
             if (item.attributes.from.data.id === match.params.id) {
               return {
                 ...item,

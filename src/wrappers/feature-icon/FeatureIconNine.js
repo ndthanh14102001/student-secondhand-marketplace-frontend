@@ -32,7 +32,7 @@ const FeatureIconNine = ({
       >
         <div className="row">
           {featureIconData &&
-            featureIconData.map((single, key) => {
+            featureIconData?.map((single, key) => {
               return (
                 <FeatureIconNineSingle
                   data={single}

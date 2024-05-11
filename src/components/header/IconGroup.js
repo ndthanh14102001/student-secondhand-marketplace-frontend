@@ -99,11 +99,11 @@ const IconGroup = ({
     })
     if (response.type === RESPONSE_TYPE) {
       let fl = response.data?.followers;
-      fl.map((follower) => {
+      fl?.map((follower) => {
         list = list.concat(follower.id)
       })
       let reads = response.data?.notification_reads;
-      reads.map((read) => {
+      reads?.map((read) => {
         setRead(prev => prev.concat(read.id))
       })
       const response1 = await callApi({
@@ -257,7 +257,7 @@ const IconGroup = ({
       let list = []
       let listIdRead = []
       list = response?.data?.data?.attributes?.reads?.data;
-      list.map((item) => {
+      list?.map((item) => {
         listIdRead.push(item.id)
       })
       listIdRead.push(user?.id)
@@ -281,7 +281,7 @@ const IconGroup = ({
 
   const handleReadAll = async () => {
     let list = []
-    noti.map((item) => {
+    noti?.map((item) => {
       list.push(item?.id)
       setRead(prev => prev.concat(item?.id))
     })
@@ -298,7 +298,7 @@ const IconGroup = ({
     if (response.type === RESPONSE_TYPE) {
       let read = [];
       let read1 = response.data?.notification_reads
-      read1.map((item) => {
+      read1?.map((item) => {
         read.push(item.id)
       })
       let final = list.concat(read)
@@ -334,7 +334,7 @@ const IconGroup = ({
     dispatch(setNameFilter(searchValue.trim()));
   }
   const truncateString = (str) => {
-    if (str.length > 20) {
+    if (str?.length > 20) {
       return str.slice(0, 30) + "...";
     }
     return str;
@@ -399,7 +399,7 @@ const IconGroup = ({
         <Link to={process.env.PUBLIC_URL + "/compare"}>
           <i className="pe-7s-shuffle" />
           <span className="count-style">
-            {compareData && compareData.length ? compareData.length : 0}
+            {compareData && compareData?.length ? compareData?.length : 0}
           </span>
         </Link>
       </div> */}
@@ -413,18 +413,18 @@ const IconGroup = ({
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
               <i className="pe-7s-bell" />
               <span className="count-styles">
-                {unRead && unRead.length ? unRead.length : 0}
+                {unRead && unRead?.length ? unRead?.length : 0}
               </span>
             </button>
             <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
               <div className="notify_header">
                 <div className="title">Thông báo</div>
-                {noti.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
+                {noti?.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
               </div>
               <ul>
                 {
-                  noti.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
-                    noti.map((item, index) => (
+                  noti?.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
+                    noti?.map((item, index) => (
                       <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content, 1))}>
 
                         <div className="notify_avatar">
@@ -465,7 +465,7 @@ const IconGroup = ({
         <Link to={process.env.PUBLIC_URL + "/wishlist"}>
           <i className="pe-7s-like" />
           <span className="count-style">
-            {wishlistData && wishlistData.length ? wishlistData.length : 0}
+            {wishlistData && wishlistData?.length ? wishlistData?.length : 0}
           </span>
         </Link>
       </div>}
@@ -487,7 +487,7 @@ const IconGroup = ({
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />
           <span className="count-style">
-            {cartData && cartData.length ? cartData.length : 0}
+            {cartData && cartData?.length ? cartData?.length : 0}
           </span>
         </Link>
       </div> */}

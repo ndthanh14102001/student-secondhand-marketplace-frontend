@@ -38,7 +38,7 @@ const images = [
 function SwipeableTextMobileStepper() {
   const theme = useTheme();
   const [activeStep, setActiveStep] = React.useState(0);
-  const maxSteps = images.length;
+  const maxSteps = images?.length;
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -60,7 +60,7 @@ function SwipeableTextMobileStepper() {
         onChangeIndex={handleStepChange}
         enableMouseEvents
       >
-        {images.map((step, index) => (
+        {images?.map((step, index) => (
           <div key={step.label}>
             <Box
               component="img"

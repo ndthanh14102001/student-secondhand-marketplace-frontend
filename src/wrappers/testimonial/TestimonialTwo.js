@@ -41,7 +41,7 @@ const TestimonialTwo = ({
             <div className="testimonial-active nav-style-1 nav-testi-style">
               <Swiper {...settings}>
                 {testimonialData &&
-                  testimonialData.map((single, key) => {
+                  testimonialData?.map((single, key) => {
                     return (
                       <TestimonialTwoSingle
                         data={single}

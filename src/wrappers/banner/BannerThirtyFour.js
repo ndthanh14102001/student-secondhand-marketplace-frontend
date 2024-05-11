@@ -17,7 +17,7 @@ const BannerThirtyFour = ({
       <div className="container">
         <div className="row">
           {bannerData &&
-            bannerData.map((single, key) => {
+            bannerData?.map((single, key) => {
               return (
                 <BannerThirtyFourSingle
                   data={single}

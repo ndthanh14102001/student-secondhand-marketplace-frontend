@@ -13,7 +13,7 @@ const FeatureIconSeven = ({ spaceTopClass, spaceBottomClass }) => {
       <div className="container">
         <div className="row feature-icon-two-wrap">
           {featureIconData &&
-            featureIconData.map((single, key) => {
+            featureIconData?.map((single, key) => {
               return (
                 <FeatureIconSevenSingle
                   data={single}

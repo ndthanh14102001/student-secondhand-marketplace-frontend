@@ -129,7 +129,7 @@ const ProductOwnerInfo = ({ user, onHideModal, check, listFollow, changeList }) 
   }
 
   const truncateString = (str) => {
-    if (str.length > 20) {
+    if (str?.length > 20) {
       return str.slice(0, 15) + "...";
     }
     return str;

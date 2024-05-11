@@ -139,7 +139,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 <Nav.Link eventKey="productDescription">Mô tả</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="productReviews">Bình luận({listComments.length})</Nav.Link>
+                <Nav.Link eventKey="productReviews">Bình luận({listComments?.length})</Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content className="description-review-bottom">
@@ -167,7 +167,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
               </Tab.Pane>
               <Tab.Pane eventKey="productReviews">
                 <div className="review">
-                {listComments.slice(0, 5).map((row, index) => (
+                {listComments.slice(0, 5)?.map((row, index) => (
                   <div key={index}>
                    <div className="row">
                    <div className="col-lg-7">

@@ -152,7 +152,7 @@ function ChatFrame(props) {
   useEffect(() => {
     if(partner !== undefined && chats !== undefined){
       const updateRecords = async () => {
-        const promises = chats.map((item) => {
+        const promises = chats?.map((item) => {
           if(item.attributes.from.data.id === partner.id && item.attributes.read === false) { 
             console.log('tin nhắn dc set true là: ' + item.id)
             return axios.put(`${process.env.REACT_APP_API_ENDPOINT}/chats/${item.id}`, {data: { read: true }} );
@@ -171,7 +171,7 @@ function ChatFrame(props) {
     console.log("socket emit to this man: ")
     console.log(partner)
     const targetMessBox = document.getElementById('MessageEditorBox');
-    if(targetMessBox.value.length < 1){
+    if(targetMessBox.value?.length < 1){
       return;
     } else {
       console.log("proceed sending message")
@@ -269,7 +269,7 @@ function ChatFrame(props) {
 
   // Message Content
   const MessageContent = () => {
-      return chats.map((item, index) => {
+      return chats?.map((item, index) => {
       if (item.attributes.from.data.id === partner.id) {
         return (
 
@@ -462,7 +462,7 @@ function ChatFrame(props) {
                 <CircularProgress />
               </Box> )
               : 
-              (chats.length === 0 ? <NoChatYetPanel /> : <MessageContent />)
+              (chats?.length === 0 ? <NoChatYetPanel /> : <MessageContent />)
             ):(
             <WelcomeToChatPanel />
             )

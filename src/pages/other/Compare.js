@@ -41,7 +41,7 @@ const Compare = ({
         <Breadcrumb />
         <div className="compare-main-area pt-90 pb-100">
           <div className="container">
-            {compareItems && compareItems.length >= 1 ? (
+            {compareItems && compareItems?.length >= 1 ? (
               <div className="row">
                 <div className="col-lg-12">
                   <div className="compare-page-content">
@@ -50,7 +50,7 @@ const Compare = ({
                         <tbody>
                           <tr>
                             <th className="title-column">Product Info</th>
-                            {compareItems.map((compareItem, key) => {
+                            {compareItems?.map((compareItem, key) => {
                               const cartItem = cartItems.filter(
                                 item => item.id === compareItem.id
                               )[0];
@@ -104,7 +104,7 @@ const Compare = ({
                                         Buy now{" "}
                                       </a>
                                     ) : compareItem.variation &&
-                                      compareItem.variation.length >= 1 ? (
+                                      compareItem.variation?.length >= 1 ? (
                                       <Link
                                         to={`${process.env.PUBLIC_URL}/product/${compareItem.id}`}
                                       >
@@ -149,7 +149,7 @@ const Compare = ({
                           </tr>
                           <tr>
                             <th className="title-column">Price</th>
-                            {compareItems.map((compareItem, key) => {
+                            {compareItems?.map((compareItem, key) => {
                               const discountedPrice = getDiscountPrice(
                                 compareItem.price,
                                 compareItem.discount
@@ -186,7 +186,7 @@ const Compare = ({
 
                           <tr>
                             <th className="title-column">Description</th>
-                            {compareItems.map((compareItem, key) => {
+                            {compareItems?.map((compareItem, key) => {
                               return (
                                 <td className="product-desc" key={key}>
                                   <p>
@@ -201,7 +201,7 @@ const Compare = ({
 
                           <tr>
                             <th className="title-column">Rating</th>
-                            {compareItems.map((compareItem, key) => {
+                            {compareItems?.map((compareItem, key) => {
                               return (
                                 <td className="product-rating" key={key}>
                                   <Rating ratingValue={compareItem.rating} />

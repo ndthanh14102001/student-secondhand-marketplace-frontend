@@ -119,7 +119,7 @@ const UserInfo = ({ match }) => {
         const responseData = response.data;
         setUserInfo(responseData);
         if (user) {
-          responseData.followers.map((follower) => {
+          responseData.followers?.map((follower) => {
             setListIdFollow(prevList => prevList.concat(follower.id));
             if (follower.id === user?.id) {
               setIsFollow(true);
@@ -339,7 +339,7 @@ const UserInfo = ({ match }) => {
                         Người dùng "{userInfo?.fullName}" có vấn đề gì ?
                       </DialogContentText>
                       <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                        {reportCriteria.map((value) => {
+                        {reportCriteria?.map((value) => {
                           const labelId = `checkbox-list-label-${value}`;
 
                           return (

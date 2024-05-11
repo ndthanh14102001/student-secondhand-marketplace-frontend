@@ -86,7 +86,7 @@ const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
             <LightgalleryProvider>
               <Swiper {...gallerySwiperParams}>
                 {product.image &&
-                  product.image.map((single, key) => {
+                  product.image?.map((single, key) => {
                     return (
                       <div key={key}>
                         <LightgalleryItem
@@ -120,7 +120,7 @@ const ProductImageGalleryLeftThumb = ({ product, thumbPosition }) => {
           <div className="product-small-image-wrapper product-small-image-wrapper--side-thumb">
             <Swiper {...thumbnailSwiperParams}>
               {product.image &&
-                product.image.map((single, key) => {
+                product.image?.map((single, key) => {
                   return (
                     <div key={key}>
                       <div className="single-image">

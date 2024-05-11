@@ -13,7 +13,7 @@ const BannerTwentyTwo = ({ spaceTopClass, spaceBottomClass }) => {
       <div className="container">
         <div className="row">
           {bannerData &&
-            bannerData.map((single, key) => {
+            bannerData?.map((single, key) => {
               return <BannerTwentyTwoSingle data={single} key={key} />;
             })}
         </div>

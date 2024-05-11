@@ -49,11 +49,11 @@ const ProductPost = () => {
       result = false;
       isValidPrice = false
     }
-    if (productInfo.name.trim().length < 6) {
+    if (productInfo.name.trim()?.length < 6) {
       result = false;
       isValidName = false
     }
-    if (productInfo.description.length > 0 && productInfo.description.split(" ").length < 10) {
+    if (productInfo.description?.length > 0 && productInfo.description.split(" ")?.length < 10) {
       result = false;
       isValidDescription = false
     }
@@ -61,7 +61,7 @@ const ProductPost = () => {
       result = false;
       isValidCategoryChoose = false
     }
-    if (!(productInfo.images.length >= 4 && productInfo.images.length <= 6)) {
+    if (!(productInfo.images?.length >= 4 && productInfo.images?.length <= 6)) {
       result = false;
       isValidImages = false
       dispatch(onShowPopup({

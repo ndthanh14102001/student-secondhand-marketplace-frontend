@@ -24,7 +24,7 @@ const PageCreateNewPassword = ({ code, infoCreateNewPassword, setInfoCreateNewPa
   const { addToast } = useToasts();
 
   const colorValidStrengthPassword = useMemo(() => {
-    if (infoCreateNewPassword.password.length > 0) {
+    if (infoCreateNewPassword.password?.length > 0) {
       return getColorToPasswordStrength(infoCreateNewPassword.password);
     }
     return "primary";

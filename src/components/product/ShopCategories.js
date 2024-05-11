@@ -65,7 +65,7 @@ const ShopCategories = ({ categories, getSortParams }) => {
                 </button>
               </div>
             </li>
-            {categories.map((category, key) => {
+            {categories?.map((category, key) => {
               const attributes = category?.attributes;
               const childsCategories = attributes?.children?.data;
               if (categoriesFilter?.id === category?.id && firstLoad) {
@@ -90,7 +90,7 @@ const ShopCategories = ({ categories, getSortParams }) => {
 
                   </li>
                   {/* <ChildsCategoires attributes={attributes} /> */}
-                  {childsCategories && childsCategories.map((child) => {
+                  {childsCategories && childsCategories?.map((child) => {
                     if (categoriesFilter?.id === child?.id && firstLoad) {
                       setFirsLoad(false)
                     }

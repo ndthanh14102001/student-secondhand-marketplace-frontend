@@ -13,7 +13,7 @@ const BlogFeaturedFiveSingle = ({ singlePost }) => {
         </div>
         <div className="blog-content-wrap">
           <div className="blog-category-names blog-category-names--style2">
-            {singlePost.category.map((singleCategory, key) => {
+            {singlePost.category?.map((singleCategory, key) => {
               return (
                 <span className="red" key={key}>
                   {(key ? ", " : "") + singleCategory}

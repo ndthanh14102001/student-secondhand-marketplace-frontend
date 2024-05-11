@@ -26,7 +26,7 @@ const cartReducer = (state = initState, action) => {
           }
         ];
       } else {
-        return cartItems.map(item =>
+        return cartItems?.map(item =>
           item.cartItemId === cartItem.cartItemId
             ? {
                 ...item,
@@ -72,7 +72,7 @@ const cartReducer = (state = initState, action) => {
           }
         ];
       } else {
-        return cartItems.map(item =>
+        return cartItems?.map(item =>
           item.cartItemId === cartItem.cartItemId
             ? {
                 ...item,
@@ -96,7 +96,7 @@ const cartReducer = (state = initState, action) => {
         );
       return remainingItems(cartItems, product);
     } else {
-      return cartItems.map(item =>
+      return cartItems?.map(item =>
         item.cartItemId === product.cartItemId
           ? { ...item, quantity: item.quantity - 1 }
           : item

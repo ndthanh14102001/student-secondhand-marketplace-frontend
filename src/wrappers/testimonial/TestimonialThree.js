@@ -29,7 +29,7 @@ const TestimonialThree = () => {
             <div className="testimonial-active-2">
               <Swiper {...settings}>
                 {testimonialData &&
-                  testimonialData.map((single, key) => {
+                  testimonialData?.map((single, key) => {
                     return (
                       <TestimonialThreeSingle
                         data={single}

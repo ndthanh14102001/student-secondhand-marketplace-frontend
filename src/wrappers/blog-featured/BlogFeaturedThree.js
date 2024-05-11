@@ -20,7 +20,7 @@ const BlogFeaturedThree = ({ spaceTopClass, spaceBottomClass }) => {
           borderClass="no-border"
         />
         <div className="row">
-          {blogFeaturedThreeData.map(singlePost => {
+          {blogFeaturedThreeData?.map(singlePost => {
             return (
               <BlogFeaturedThreeSingle
                 singlePost={singlePost}

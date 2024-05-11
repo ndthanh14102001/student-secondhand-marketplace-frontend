@@ -72,7 +72,7 @@ const ProductImageGallery = ({ product }) => {
         <LightgalleryProvider>
           <Swiper {...gallerySwiperParams}>
             {imagesPorduct && Array.isArray(imagesPorduct) &&
-              imagesPorduct.map((single, key) => {
+              imagesPorduct?.map((single, key) => {
                 const singleUrl = single?.attributes?.url;
                 return (
                   <div key={key}>
@@ -100,7 +100,7 @@ const ProductImageGallery = ({ product }) => {
       <div className="product-small-image-wrapper mt-15">
         <Swiper {...thumbnailSwiperParams}>
           {imagesPorduct && Array.isArray(imagesPorduct) &&
-            imagesPorduct.map((single, key) => {
+            imagesPorduct?.map((single, key) => {
               const singleUrl = single?.attributes?.url;
               return (
                 <div key={key}>

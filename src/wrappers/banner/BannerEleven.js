@@ -8,7 +8,7 @@ const BannerEleven = ({ spaceBottomClass }) => {
     <div className={`banner-area ${spaceBottomClass ? spaceBottomClass : ""}`}>
       <div className="row no-gutters">
         {bannerData &&
-          bannerData.map((single, key) => {
+          bannerData?.map((single, key) => {
             return <BannerElevenSingle data={single} key={key} />;
           })}
       </div>

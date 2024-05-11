@@ -12,11 +12,11 @@ const DistanceCalculator = () => {
   useEffect(() => {
     const getDistance = async () => {
       let distances = {}
-      for (let indexUniversityOrigin = 0; indexUniversityOrigin < universityArray.length; indexUniversityOrigin++) {
+      for (let indexUniversityOrigin = 0; indexUniversityOrigin < universityArray?.length; indexUniversityOrigin++) {
         const universityOrigin = universityArray[indexUniversityOrigin];
         console.log("1");
         let distancestp = [];
-        for (let indexUniversityDes = 0; indexUniversityDes < universityArray.length; indexUniversityDes++) {
+        for (let indexUniversityDes = 0; indexUniversityDes < universityArray?.length; indexUniversityDes++) {
           const universityDes = universityArray[indexUniversityDes];
           console.log("2");
           const originAddress = getFullAddressUniversity(universityOrigin);
@@ -53,7 +53,7 @@ const DistanceCalculator = () => {
       const keys = Object.keys(distances);
       const value = Object.values(distances);
       let formated = {}
-      for (let indexKey = 0; indexKey < keys.length; indexKey++) {
+      for (let indexKey = 0; indexKey < keys?.length; indexKey++) {
         formated[keys[indexKey]] = value[indexKey].sort((a, b) => Number(a.distance) - Number(b.distance))
       }
       console.log("formated", formated);

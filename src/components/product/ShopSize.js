@@ -21,7 +21,7 @@ const ShopSize = ({ sizes, getSortParams }) => {
                 </button>
               </div>
             </li>
-            {sizes.map((size, key) => {
+            {sizes?.map((size, key) => {
               return (
                 <li key={key}>
                   <div className="sidebar-widget-list-left">

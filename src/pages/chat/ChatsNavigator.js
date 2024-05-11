@@ -68,18 +68,18 @@ function ChatsNavigator(props) {
 
   // Customize & update user object array as incoming message received
   useEffect(() => {
-    if(props.inComingMessage != undefined && (props.inComingMessage.length !== 0 || props.sellerData !== undefined)){
+    if(props.inComingMessage != undefined && (props.inComingMessage?.length !== 0 || props.sellerData !== undefined)){
       let inComingMessage = props.inComingMessage
       let tempCustomUserList = [];
       console.log("Chat page: inComingMessage array: ")
       console.log(inComingMessage)
       console.log("Chat page: props.sellerData")
       console.log(props.sellerData)
-      const uniqueUserIDsList = [...new Set(inComingMessage.map((object) => object.attributes.from.data.id))];
+      const uniqueUserIDsList = [...new Set(inComingMessage?.map((object) => object.attributes.from.data.id))];
       
 
       if(props.sellerData !== undefined){
-        tempCustomUserList = uniqueUserIDsList.map((id) => {
+        tempCustomUserList = uniqueUserIDsList?.map((id) => {
           if(id === props.sellerData.id) {
             return {
             id: id,
@@ -87,13 +87,13 @@ function ChatsNavigator(props) {
           }}
           return {
             id: id,
-            unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false).length
+            unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false)?.length
           }
         }); 
       } else {
-        tempCustomUserList = uniqueUserIDsList.map((id) => ({
+        tempCustomUserList = uniqueUserIDsList?.map((id) => ({
           id: id,
-          unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false).length
+          unreadCount: inComingMessage.filter((object) => object.attributes.from.data.id === id && object.attributes.read === false)?.length
         })); 
       }
 
@@ -110,7 +110,7 @@ function ChatsNavigator(props) {
       console.log("Chat page: tempCustomUserList after insert seller data: ")
       console.log(tempCustomUserList)
       
-      tempCustomUserList.map((item) => {
+      tempCustomUserList?.map((item) => {
           if(!findIdExistById(UniqueUser, item.id)){
               console.log('Chat page: find above mentioned user')
               // FinalUserList.push(QueryUserByID(item.id))
@@ -119,7 +119,7 @@ function ChatsNavigator(props) {
           }else if(props.incomingFromSocket !== undefined && item.id === props.incomingFromSocket.attributes.from.data.id) {
               console.log("người dùng username +1 unread: " + props.incomingFromSocket.attributes.from.data.id)
               setUserList((prev) => {
-                  return prev.map((object) => {
+                  return prev?.map((object) => {
                       if (object.id === props.incomingFromSocket.attributes.from.data.id) {
                         // Cập nhật thuộc tính của object có id là
                         return { ...object, unreadCount: item.unreadCount };
@@ -136,7 +136,7 @@ function ChatsNavigator(props) {
   // If a user id is called in chat, we set index selected Item to it
   useEffect(() => { 
       if(props.sellerData !== undefined) {
-        userList.map((item, index)=>{
+        userList?.map((item, index)=>{
           if(item.id === props.sellerData.id){
             setSelectedIndex(index)
           }
@@ -183,7 +183,7 @@ function ChatsNavigator(props) {
         setSearchUserList(response.data)
       }
     }
-    if(searchKey.length > 0){
+    if(searchKey?.length > 0){
       getSellerInfo();
     } else {
       setSearchUserList([]);
@@ -194,7 +194,7 @@ function ChatsNavigator(props) {
   // Just in case data from server delay which result to display users even when search key leave blank
   // IMPORTANT BE CAREFUL OF USEFFECT LOOP
   useEffect(()=>{
-    if(searchKey.length === 0 && searchUserList.length > 0){
+    if(searchKey?.length === 0 && searchUserList?.length > 0){
       setSearchUserList([]);
     }
   },[searchUserList])
@@ -231,7 +231,7 @@ function ChatsNavigator(props) {
           sx={{ overflowY: 'auto', overflowX: 'hidden' }}
         >
           <Box>
-            {userList.length > 0 ? userList.map((item, index) => (
+            {userList?.length > 0 ? userList?.map((item, index) => (
               <Box
                 key={index}
                 sx={{
@@ -280,7 +280,7 @@ function ChatsNavigator(props) {
     return (
       <Box>
         <Box sx={{ fontSize: '14px', color: 'grey', textAlign: 'center', mb: '8px' }}>
-          {searchKey.length > 0 ? (<span>Kết quả tìm kiếm &#40;Có {searchUserList.length} kết quả&#41;</span>) : "bắt đầu nhập để tìm kiếm"}
+          {searchKey?.length > 0 ? (<span>Kết quả tìm kiếm &#40;Có {searchUserList?.length} kết quả&#41;</span>) : "bắt đầu nhập để tìm kiếm"}
         </Box>
         <Stack
           direction="column"
@@ -288,7 +288,7 @@ function ChatsNavigator(props) {
           sx={{ overflowY: 'auto', overflowX: 'hidden' }}
         >
           <Box>
-            {searchUserList.length > 0 ? searchUserList?.map((item, index) => (
+            {searchUserList?.length > 0 ? searchUserList?.map((item, index) => (
               <Box
                 key={index}
                 sx={{
@@ -309,7 +309,7 @@ function ChatsNavigator(props) {
                   props.handleChangeSeller(item)
                   setUserList((prev) => {
                     if(prev.findIndex(obj => obj.id === item.id) === -1){
-                      setSelectedIndex(prev.length)
+                      setSelectedIndex(prev?.length)
                       setUniqueUser((subPrev) => [...subPrev, {id: item.id, unreadCount: 0}])
                       return [...prev, {...item, unreadCount: 0}]
                     } else {

@@ -272,7 +272,7 @@ const LoginRegister = ({ location }) => {
     })
   }
   const colorValidStrengthPassword = useMemo(() => {
-    if (registerInfo.password.length > 0) {
+    if (registerInfo.password?.length > 0) {
       return getColorToPasswordStrength(registerInfo.password);
     }
     return "primary";
@@ -428,7 +428,7 @@ const LoginRegister = ({ location }) => {
                                     label="Trường đại học"
                                     onChange={handleChangeUniversity}
                                   >
-                                    {Object.values(getAllUniversity()).map((university, indexUniversity) => {
+                                    {Object.values(getAllUniversity())?.map((university, indexUniversity) => {
                                       return <MenuItem value={university?.id} key={university?.id}>{university?.teN_DON_VI}</MenuItem>
                                     })}
                                   </Select>

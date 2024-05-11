@@ -21,7 +21,7 @@ const ShopColor = ({ colors, getSortParams }) => {
                 </button>
               </div>
             </li>
-            {colors.map((color, key) => {
+            {colors?.map((color, key) => {
               return (
                 <li key={key}>
                   <div className="sidebar-widget-list-left">

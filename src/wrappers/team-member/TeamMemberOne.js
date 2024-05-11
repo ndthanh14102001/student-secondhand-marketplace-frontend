@@ -22,7 +22,7 @@ const TeamMemberOne = ({ spaceTopClass, spaceBottomClass }) => {
 
         <div className="row">
           {teamMemberData &&
-            teamMemberData.map((single, key) => {
+            teamMemberData?.map((single, key) => {
               return (
                 <TeamMemberOneSingle
                   data={single}

@@ -26,7 +26,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
   const [resetValueInput, setResetValueInput] = useState(false);
   const checkValidFileType = (files) => {
     if (Array.isArray(Object.values(files))) {
-      for (let indexFiles = 0; indexFiles < files.length; indexFiles++) {
+      for (let indexFiles = 0; indexFiles < files?.length; indexFiles++) {
         const file = files[indexFiles];
         const extension = file.name.split('.').pop().toLowerCase();
         if (!IMAGE_FILE_TYPE.includes(extension)) {
@@ -141,7 +141,7 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
                 }} />
               </Box>
             </Grid>
-            {productInfo.images.map((file, index) => {
+            {productInfo.images?.map((file, index) => {
               return <Grid item xs={3} key={index}>
                 <Box sx={{ position: "relative" }}>
                   <IconButton

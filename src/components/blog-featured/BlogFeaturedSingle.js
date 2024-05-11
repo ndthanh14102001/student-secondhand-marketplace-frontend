@@ -11,7 +11,7 @@ const BlogFeaturedSingle = ({ singlePost }) => {
             <img src={process.env.PUBLIC_URL + singlePost.image} alt="" />
           </Link>
           <div className="blog-category-names">
-            {singlePost.category.map((singleCategory, key) => {
+            {singlePost.category?.map((singleCategory, key) => {
               return (
                 <span className="purple" key={key}>
                   {singleCategory}

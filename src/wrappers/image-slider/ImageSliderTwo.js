@@ -28,7 +28,7 @@ const ImageSliderTwo = () => {
       <div className="image-slider-active">
         <Swiper {...settings}>
           {imageData &&
-            imageData.map((single, key) => {
+            imageData?.map((single, key) => {
               return (
                 <ImageSliderOneSingle
                   data={single}

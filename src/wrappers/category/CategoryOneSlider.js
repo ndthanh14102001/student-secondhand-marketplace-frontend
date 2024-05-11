@@ -30,7 +30,7 @@ const CategoryOneSlider = ({ spaceBottomClass }) => {
           <div className="collection-active-2">
             <Swiper {...settings}>
               {categoryData &&
-                categoryData.map((single, key) => {
+                categoryData?.map((single, key) => {
                   return (
                     <CategoryOneSingle
                       data={single}

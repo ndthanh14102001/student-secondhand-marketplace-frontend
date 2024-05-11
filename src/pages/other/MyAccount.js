@@ -81,7 +81,7 @@ const MyAccount = ({ location }) => {
       setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data?.avatar?.url);
       const arr = response.data?.user_followed;
       setFollower(arr);
-      arr.map((userFollow) => {
+      arr?.map((userFollow) => {
         setListId(prevList => prevList.concat(userFollow.id))
       })
     }
@@ -118,7 +118,7 @@ const MyAccount = ({ location }) => {
         }))
         count++;
       }
-      else if(inputValue.username.trim().length < 6){
+      else if(inputValue.username.trim()?.length < 6){
         setMessageError((prev) => ({
           ...prev,
           username: "bạn phải nhập tên tài khoản ít nhất 6 kí tự"
@@ -160,7 +160,7 @@ const MyAccount = ({ location }) => {
         }))
         count++;
       }
-      else if(inputValue.phone.trim().length > 11 || inputValue.phone.trim().length < 10){
+      else if(inputValue.phone.trim()?.length > 11 || inputValue.phone.trim()?.length < 10){
         setMessageError((prev) => ({
           ...prev,
           phone: "bạn nhập sai số điện thoại"
@@ -419,7 +419,7 @@ const MyAccount = ({ location }) => {
                                   <label>Trường đại học</label>
                                   <select id="universityId" name="universityId"  value={inputValue?.universityId} disabled={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"}>
                                     <option value="">--Chọn trường đại học của bạn--</option>
-                                    {universityData.map((list,index)=>(
+                                    {universityData?.map((list,index)=>(
                                       <option key={index} value={list.id} >{list?.teN_DON_VI}</option>
                                     ))}
                                   </select>
@@ -495,9 +495,9 @@ const MyAccount = ({ location }) => {
                       <Accordion.Collapse eventKey="2">
                         <Card.Body>
                           {
-                            follower.length === 0 ? 
+                            follower?.length === 0 ? 
                             <Typography> Bạn chưa theo dõi người dùng nào</Typography> :
-                            follower.map((fl,index) => (
+                            follower?.map((fl,index) => (
                               <ProductOwnerInfo key={index} user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
                             ))
                           }

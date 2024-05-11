@@ -14,7 +14,7 @@ const FeatureIconSix = ({ spaceTopClass, spaceBottomClass }) => {
         <div className="border-bottom">
           <div className="row feature-icon-two-wrap">
             {featureIconData &&
-              featureIconData.map((single, key) => {
+              featureIconData?.map((single, key) => {
                 return (
                   <FeatureIconSixSingle
                     data={single}

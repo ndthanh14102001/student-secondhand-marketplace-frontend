@@ -13,7 +13,7 @@ const FunFactOne = ({ spaceTopClass, spaceBottomClass, bgClass }) => {
       <div className="container">
         <div className="row">
           {funFactData &&
-            funFactData.map((single, key) => {
+            funFactData?.map((single, key) => {
               return (
                 <FunFactOneSingle
                   data={single}

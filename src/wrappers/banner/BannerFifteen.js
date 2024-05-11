@@ -13,7 +13,7 @@ const BannerFifteen = ({ spaceTopClass, spaceBottomClass }) => {
       <div className="container-fluid">
         <div className="custom-row-2">
           {bannerData &&
-            bannerData.map((single, key) => {
+            bannerData?.map((single, key) => {
               return (
                 <BannerFifteenSingle
                   spaceBottomClass="mb-10"

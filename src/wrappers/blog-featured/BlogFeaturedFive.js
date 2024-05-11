@@ -20,7 +20,7 @@ const BlogFeaturedFive = ({ spaceTopClass, spaceBottomClass }) => {
           spaceClass="mb-55"
         />
         <div className="row">
-          {blogFeaturedFiveData.map((singlePost) => {
+          {blogFeaturedFiveData?.map((singlePost) => {
             return (
               <BlogFeaturedFiveSingle
                 singlePost={singlePost}

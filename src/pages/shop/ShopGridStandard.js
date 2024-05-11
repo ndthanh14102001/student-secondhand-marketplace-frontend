@@ -169,7 +169,7 @@ const ShopGridStandard = ({ location, products }) => {
                                 {/* shop page content default */}
                                 {/* <ShopProducts layout={layout} products={currentData} /> */}
                                 <ShopProducts layout={layout} products={productList} />
-                                {productList.length === 0 && !isLoadingCategoryQuery && <div>
+                                {productList?.length === 0 && !isLoadingCategoryQuery && <div>
                                     Không có kết quả
                                 </div>}
                                 {isLoadingCategoryQuery && <div>
@@ -178,7 +178,7 @@ const ShopGridStandard = ({ location, products }) => {
                                 {/* shop product pagination */}
                                 <div className="pro-pagination-style text-center mt-30">
                                     {/* <Paginator
-                                        totalRecords={sortedProducts.length}
+                                        totalRecords={sortedProducts?.length}
                                         pageLimit={pageLimit}
                                         pageNeighbours={2}
                                         setOffset={setOffset}

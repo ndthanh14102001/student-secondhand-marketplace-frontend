@@ -34,7 +34,7 @@ const Wishlist = ({
   const { pathname } = location;
   const handleDeleteFormWishList = async (wishlistItem) => {
     const response = await wishlistApi.updateWishlist({
-      wishlist: wishlistItems.filter(item => item.id !== wishlistItem.id).map((item) => item.id)
+      wishlist: wishlistItems.filter(item => item.id !== wishlistItem.id)?.map((item) => item.id)
     });
     if (response.type === RESPONSE_TYPE) {
       deleteFromWishlist(wishlistItem, addToast);
@@ -68,7 +68,7 @@ const Wishlist = ({
         <Breadcrumb />
         <div className="cart-main-area pt-90 pb-100">
           <div className="container">
-            {wishlistItems && wishlistItems.length >= 1 ? (
+            {wishlistItems && wishlistItems?.length >= 1 ? (
               <Fragment>
                 <h3 className="cart-page-title">Danh sách sản phẩm yêu thích của bạn</h3>
                 <div className="row">
@@ -85,7 +85,7 @@ const Wishlist = ({
                           </tr>
                         </thead>
                         <tbody>
-                          {wishlistItems.map((wishlistItem, key) => {
+                          {wishlistItems?.map((wishlistItem, key) => {
                             const wishlistItemAtrributes = wishlistItem?.attributes || wishlistItem;
                             console.log("wishlistItemAtrributes", wishlistItemAtrributes)
                             // const discountedPrice = getDiscountPrice(
@@ -154,7 +154,7 @@ const Wishlist = ({
                                       Buy now{" "}
                                     </a>
                                   ) : wishlistItem.variation &&
-                                    wishlistItem.variation.length >= 1 ? (
+                                    wishlistItem.variation?.length >= 1 ? (
                                     <Link
                                       to={`${process.env.PUBLIC_URL}/product/${wishlistItem.id}`}
                                     >

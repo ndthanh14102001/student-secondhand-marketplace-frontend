@@ -24,7 +24,7 @@ const ShopTopFilter = ({ products, getSortParams }) => {
               <h5>Categories</h5>
               {uniqueCategories ? (
                 <ul>
-                  {uniqueCategories.map((category, key) => {
+                  {uniqueCategories?.map((category, key) => {
                     return (
                       <li key={key}>
                         <button
@@ -51,7 +51,7 @@ const ShopTopFilter = ({ products, getSortParams }) => {
               <h5>Color</h5>
               {uniqueColors ? (
                 <ul>
-                  {uniqueColors.map((color, key) => {
+                  {uniqueColors?.map((color, key) => {
                     return (
                       <li key={key}>
                         <button
@@ -77,7 +77,7 @@ const ShopTopFilter = ({ products, getSortParams }) => {
               <h5>Size</h5>
               {uniqueSizes ? (
                 <ul>
-                  {uniqueSizes.map((size, key) => {
+                  {uniqueSizes?.map((size, key) => {
                     return (
                       <li key={key}>
                         <button
@@ -104,7 +104,7 @@ const ShopTopFilter = ({ products, getSortParams }) => {
               <h5>Tag</h5>
               {uniqueTags ? (
                 <ul>
-                  {uniqueTags.map((tag, key) => {
+                  {uniqueTags?.map((tag, key) => {
                     return (
                       <li key={key}>
                         <button

@@ -12,7 +12,7 @@ const BannerSixteen = ({ spaceBottomClass, spaceTopClass }) => {
     >
       <div className="row no-gutters">
         {bannerData &&
-          bannerData.map((single, key) => {
+          bannerData?.map((single, key) => {
             return (
               <BannerSixteenSingle
                 data={single}
