@@ -14,11 +14,11 @@ const DistanceCalculator = () => {
       let distances = {}
       for (let indexUniversityOrigin = 0; indexUniversityOrigin < universityArray?.length; indexUniversityOrigin++) {
         const universityOrigin = universityArray[indexUniversityOrigin];
-        console.log("1");
+        
         let distancestp = [];
         for (let indexUniversityDes = 0; indexUniversityDes < universityArray?.length; indexUniversityDes++) {
           const universityDes = universityArray[indexUniversityDes];
-          console.log("2");
+          
           const originAddress = getFullAddressUniversity(universityOrigin);
           const destinationAddress = getFullAddressUniversity(universityDes);
           const result = await calculateDistance(
@@ -56,7 +56,7 @@ const DistanceCalculator = () => {
       for (let indexKey = 0; indexKey < keys?.length; indexKey++) {
         formated[keys[indexKey]] = value[indexKey].sort((a, b) => Number(a.distance) - Number(b.distance))
       }
-      console.log("formated", formated);
+      
       formated = JSON.stringify(formated, null, 2);
       const filename = 'distance-university-data-sorted.json';
 

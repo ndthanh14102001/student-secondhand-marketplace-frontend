@@ -3,22 +3,26 @@ import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Box, Button, Card, ClickAwayListener, Typography } from "@mui/material";
-import PostAddIcon from '@mui/icons-material/PostAdd';
+import {
+  Box,
+  Button,
+  Card,
+  ClickAwayListener,
+  Typography,
+} from "@mui/material";
+import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
 import { logout } from "../../redux/actions/userStorageActions";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
-import Avatar from '@mui/material/Avatar';
+import Avatar from "@mui/material/Avatar";
 import { useEffect } from "react";
-import Brightness1Icon from '@mui/icons-material/Brightness1';
-import { io } from "socket.io-client";
-import { setSocket as setSocketRedux } from "../../redux/actions/socketActions";
-import Snackbar from '@mui/material/Snackbar';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Slide from '@mui/material/Slide';
+import Brightness1Icon from "@mui/icons-material/Brightness1";
+import Snackbar from "@mui/material/Snackbar";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Slide from "@mui/material/Slide";
 import { setNameFilter } from "../../redux/actions/filterActions";
 
 function TransitionUp(props) {
@@ -34,7 +38,8 @@ const IconGroup = ({
   iconWhiteClass,
 }) => {
   const dispatch = useDispatch();
-  const isLogin = useSelector(state => state.userStorage.isLogin);
+  const isLogin = useSelector((state) => state.userStorage.isLogin);
+  const socket = useSelector((state) => state?.socket?.socket);
   const accountDropRef = useRef();
   const searchRef = useRef();
   const notificationRef = useRef();
@@ -43,7 +48,6 @@ const IconGroup = ({
 
   const [noti, setNoti] = useState([]);
   const [read, setRead] = useState([]);
-  const [socket, setSocket] = useState(null);
   const [transition, setTransition] = React.useState(undefined);
   const [messageInfo, setMessageInfo] = React.useState(undefined);
   const [messageSender, setMessageSender] = React.useState("");
@@ -55,18 +59,18 @@ const IconGroup = ({
   // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
-  const handleClick = e => {
+  const handleClick = (e) => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
   const handleCloseAvatarDrop = () => {
     accountDropRef.current.classList.remove("active");
   };
-  const handleCloseSearch = e => {
+  const handleCloseSearch = (e) => {
     searchRef.current.classList.remove("active");
   };
   const handleCloseBell = () => {
     notificationRef.current.classList.remove("active");
-  }
+  };
   // const triggerMobileMenu = () => {
   //   const offcanvasMobileMenu = document.querySelector(
   //     "#offcanvas-mobile-menu"
@@ -74,15 +78,15 @@ const IconGroup = ({
   //   offcanvasMobileMenu.classList.add("active");
   // };
   const handleLogout = () => {
-    history.push(process.env.PUBLIC_URL)
+    history.push(process.env.PUBLIC_URL);
     clearUserLogin();
     addToast("Đăng xuất thành công", {
       appearance: "success",
-      autoDismiss: true
+      autoDismiss: true,
     });
     dispatch(logout());
     handleCloseAvatarDrop();
-  }
+  };
 
   // const handleFetchData = async() => {
   async function handleFetchData() {
@@ -93,19 +97,19 @@ const IconGroup = ({
       params: {
         populate: {
           followers: true,
-          notification_reads: true
-        }
-      }
-    })
+          notification_reads: true,
+        },
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
       let fl = response.data?.followers;
       fl?.map((follower) => {
-        list = list.concat(follower.id)
-      })
+        list = list.concat(follower.id);
+      });
       let reads = response.data?.notification_reads;
       reads?.map((read) => {
-        setRead(prev => prev.concat(read.id))
-      })
+        setRead((prev) => prev.concat(read.id));
+      });
       const response1 = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/notifications",
         method: "get",
@@ -113,52 +117,32 @@ const IconGroup = ({
           populate: {
             from: {
               populate: {
-                avatar: true
-              }
+                avatar: true,
+              },
             },
-            reads: true
+            reads: true,
           },
           sort: {
             createdAt: "desc",
           },
           pagination: {
-            limit: "10"
-          }
+            limit: "10",
+          },
         },
-      })
+      });
       if (response1.type === RESPONSE_TYPE) {
         let listNoti = response1.data.data;
-        setNoti(listNoti.filter((noti) => list.includes(noti.attributes?.from?.data?.id)))
+        setNoti(
+          listNoti.filter((noti) =>
+            list.includes(noti.attributes?.from?.data?.id)
+          )
+        );
       }
     }
   }
 
-  function connectSocket() {
-    const SERVER_URL = process.env.REACT_APP_SERVER_ENDPOINT;
-    const setupSocket = io(SERVER_URL, {
-      autoConnect: false
-    });
-
-    let tokenArr = getUserLogin().token.split(" ")
-    setupSocket.auth = { token: tokenArr[1] }
-
-    setupSocket.connect();
-
-    setupSocket.on("disconnect", () => {
-      console.log(socket.connected); // false
-    });
-    dispatch(setSocketRedux(setupSocket))
-    setupSocket.on("connect", () => {
-      setSocket(setupSocket)
-    });
-
-  }
-
   useEffect(() => {
     handleFetchData();
-    if (user) {
-      connectSocket();
-    }
   }, []);
 
   useEffect(() => {
@@ -177,8 +161,8 @@ const IconGroup = ({
         params: {
           populate: {
             avatar: true,
-          }
-        }
+          },
+        },
       });
 
       if (response2.type === RESPONSE_TYPE) {
@@ -190,12 +174,14 @@ const IconGroup = ({
               avatar: {
                 data: {
                   attributes: {
-                    url: response2?.data?.avatar?.url ? response2?.data?.avatar?.url : "",
-                  }
-                }
-              }
-            }
-          }
+                    url: response2?.data?.avatar?.url
+                      ? response2?.data?.avatar?.url
+                      : "",
+                  },
+                },
+              },
+            },
+          },
         };
 
         const data = {
@@ -204,21 +190,22 @@ const IconGroup = ({
             content: messageSender?.content,
             createdAt: messageSender?.createdAt,
             from: sender,
-          }
+          },
         };
 
-        setNoti(prevNoti => [data, ...prevNoti]);
+        setNoti((prevNoti) => [data, ...prevNoti]);
         setState({ open: true });
         setTransition(() => TransitionUp);
 
-        const messagesender = `${response2.data.fullName} vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
+        const messagesender = `${
+          response2.data.fullName
+        } vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
         setMessageInfo(messagesender);
       }
     };
 
     updateMessage();
   }, [messageSender]);
-
 
   const handleClose = () => {
     setState({ ...state, open: false });
@@ -229,62 +216,64 @@ const IconGroup = ({
     const now = new Date();
     const oneDayInMs = 1000 * 60 * 60 * 24;
     const oneHourInMs = 1000 * 60 * 60;
-    const oneMinuteInMs = 1000 * 60
-    const diffInDays = Math.floor((now.getTime() - inputDate.getTime()) / oneDayInMs);
-    const diffInHours = Math.floor((now.getTime() - inputDate.getTime()) / oneHourInMs);
-    const diffInMinutes = Math.floor((now.getTime() - inputDate.getTime()) / oneMinuteInMs);
-    if (diffInDays > 0)
-      return `${diffInDays} ngày trước`;
-    if (diffInHours > 0)
-      return `${diffInHours} giờ trước`;
-    if (diffInMinutes > 0)
-      return `${diffInMinutes} phút trước`;
-    return 'ngay bây giờ';
-  }
+    const oneMinuteInMs = 1000 * 60;
+    const diffInDays = Math.floor(
+      (now.getTime() - inputDate.getTime()) / oneDayInMs
+    );
+    const diffInHours = Math.floor(
+      (now.getTime() - inputDate.getTime()) / oneHourInMs
+    );
+    const diffInMinutes = Math.floor(
+      (now.getTime() - inputDate.getTime()) / oneMinuteInMs
+    );
+    if (diffInDays > 0) return `${diffInDays} ngày trước`;
+    if (diffInHours > 0) return `${diffInHours} giờ trước`;
+    if (diffInMinutes > 0) return `${diffInMinutes} phút trước`;
+    return "ngay bây giờ";
+  };
 
   const handleReadNotification = async (id, link) => {
-
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
       method: "get",
       params: {
         populate: {
           reads: true,
-        }
-      }
-    })
+        },
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
-      let list = []
-      let listIdRead = []
+      let list = [];
+      let listIdRead = [];
       list = response?.data?.data?.attributes?.reads?.data;
       list?.map((item) => {
-        listIdRead.push(item.id)
-      })
-      listIdRead.push(user?.id)
+        listIdRead.push(item.id);
+      });
+      listIdRead.push(user?.id);
       const response1 = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
         method: "put",
         data: {
           data: {
             reads: listIdRead,
-          }
+          },
         },
-      })
+      });
       if (response1.type === RESPONSE_TYPE) {
-        history.push(process.env.PUBLIC_URL + "/product/" + link)
+        history.push(process.env.PUBLIC_URL + "/product/" + link);
       }
     }
-  }
+  };
 
   const isIdRead = (id) => read.includes(id);
   const unRead = noti.filter((item) => !read.includes(item.id));
 
   const handleReadAll = async () => {
-    let list = []
+    let list = [];
     noti?.map((item) => {
-      list.push(item?.id)
-      setRead(prev => prev.concat(item?.id))
-    })
+      list.push(item?.id);
+      setRead((prev) => prev.concat(item?.id));
+    });
 
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
@@ -292,65 +281,72 @@ const IconGroup = ({
       params: {
         populate: {
           notification_reads: true,
-        }
-      }
-    })
+        },
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
       let read = [];
-      let read1 = response.data?.notification_reads
+      let read1 = response.data?.notification_reads;
       read1?.map((item) => {
-        read.push(item.id)
-      })
-      let final = list.concat(read)
+        read.push(item.id);
+      });
+      let final = list.concat(read);
       const response1 = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
         method: "put",
         data: {
           notification_reads: final,
-        }
-      })
+        },
+      });
       if (response1.type === RESPONSE_TYPE) {
         addToast("đã đọc tất cả thông báo", {
           appearance: "success",
-          autoDismiss: true
+          autoDismiss: true,
         });
       }
     }
-  }
+  };
   const getProduct = (item, status) => {
-    const parts = item.split(';');
-    if (status === 1)
-      return parts[0];
+    const parts = item.split(";");
+    if (status === 1) return parts[0];
     return parts[1];
-  }
+  };
 
   const handleClickDirect = () => {
-    history.push(process.env.PUBLIC_URL + "/product/" + getProduct(messageSender.content, 1));
-  }
+    history.push(
+      process.env.PUBLIC_URL +
+        "/product/" +
+        getProduct(messageSender.content, 1)
+    );
+  };
 
   const handleClickSearch = (e) => {
-    e.preventDefault()
-    history.push(process.env.PUBLIC_URL + "/category")
+    e.preventDefault();
+    history.push(process.env.PUBLIC_URL + "/category");
     dispatch(setNameFilter(searchValue.trim()));
-  }
+  };
   const truncateString = (str) => {
     if (str?.length > 20) {
       return str.slice(0, 30) + "...";
     }
     return str;
-  }
+  };
   return (
     <div
       className={`header-right-wrap ${iconWhiteClass ? iconWhiteClass : ""}`}
     >
       <ClickAwayListener onClickAway={handleCloseSearch}>
         <div className="same-style header-search d-none d-lg-block">
-          <button className="search-active" onClick={e => handleClick(e)}>
+          <button className="search-active" onClick={(e) => handleClick(e)}>
             <i className="pe-7s-search" />
           </button>
           <div className="search-content" ref={searchRef}>
             <form onSubmit={handleClickSearch}>
-              <input type="text" placeholder="Tìm kiếm..." onChange={e => setSearchValue(e.target.value)} />
+              <input
+                type="text"
+                placeholder="Tìm kiếm..."
+                onChange={(e) => setSearchValue(e.target.value)}
+              />
               <button className="button-search" onClick={handleClickSearch}>
                 <i className="pe-7s-search" />
               </button>
@@ -360,39 +356,49 @@ const IconGroup = ({
       </ClickAwayListener>
       <ClickAwayListener onClickAway={handleCloseAvatarDrop}>
         <div className="same-style account-setting d-none d-lg-block">
-          <button
-            className="account-setting-active"
-            onClick={handleClick}
-          >
+          <button className="account-setting-active" onClick={handleClick}>
             <i className="pe-7s-user-female" />
           </button>
 
           <div className="account-dropdown" ref={accountDropRef}>
             <ul>
-              {!isLogin && <li>
-                <Link to={process.env.PUBLIC_URL + "/login-register"}>Đăng nhập</Link>
-              </li>}
-              {!isLogin && <li>
-                <Link to={process.env.PUBLIC_URL + "/login-register"}>
-                  Đăng ký
-                </Link>
-              </li>}
-              {isLogin && <li>
-                <Link to={process.env.PUBLIC_URL + "/my-account"}>
-                  Thông tin của tôi
-                </Link>
-              </li>}
-              {isLogin && <li>
-                <Link to={process.env.PUBLIC_URL + "/my-products"}>
-                  Sản phẩm của tôi
-                </Link>
-              </li>}
-              {isLogin && <li>
-                <p onClick={handleLogout} className="action">Đăng xuất</p>
-              </li>}
+              {!isLogin && (
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/login-register"}>
+                    Đăng nhập
+                  </Link>
+                </li>
+              )}
+              {!isLogin && (
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/login-register"}>
+                    Đăng ký
+                  </Link>
+                </li>
+              )}
+              {isLogin && (
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/my-account"}>
+                    Thông tin của tôi
+                  </Link>
+                </li>
+              )}
+              {isLogin && (
+                <li>
+                  <Link to={process.env.PUBLIC_URL + "/my-products"}>
+                    Sản phẩm của tôi
+                  </Link>
+                </li>
+              )}
+              {isLogin && (
+                <li>
+                  <p onClick={handleLogout} className="action">
+                    Đăng xuất
+                  </p>
+                </li>
+              )}
             </ul>
           </div>
-
         </div>
       </ClickAwayListener>
       {/* <div className="same-style header-compare">
@@ -403,86 +409,128 @@ const IconGroup = ({
           </span>
         </Link>
       </div> */}
-      {isLogin &&
+      {isLogin && (
         <ClickAwayListener onClickAway={handleCloseBell}>
-          <div className="same-style account-setting d-none d-lg-block" >
-            <button
-              className="account-setting-active"
-              onClick={handleClick}
-            >
+          <div className="same-style account-setting d-none d-lg-block">
+            <button className="account-setting-active" onClick={handleClick}>
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
               <i className="pe-7s-bell" />
               <span className="count-styles">
                 {unRead && unRead?.length ? unRead?.length : 0}
               </span>
             </button>
-            <div className="account-dropdown Dropdown-underLine notification_dd" ref={notificationRef} style={{ width: '400px' }} >
+            <div
+              className="account-dropdown Dropdown-underLine notification_dd"
+              ref={notificationRef}
+              style={{ width: "400px" }}
+            >
               <div className="notify_header">
                 <div className="title">Thông báo</div>
-                {noti?.length === 0 ? "" : <div className="event_read" onClick={() => handleReadAll()}>đánh dấu đọc tất cả</div>}
+                {noti?.length === 0 ? (
+                  ""
+                ) : (
+                  <div className="event_read" onClick={() => handleReadAll()}>
+                    đánh dấu đọc tất cả
+                  </div>
+                )}
               </div>
               <ul>
-                {
-                  noti?.length === 0 ? (<div className='notify_empty'>Bạn không có thông báo nào </div>) :
-                    noti?.map((item, index) => (
-                      <li key={index} className={isIdRead(item?.id) ? "notify_read" : ""} onClick={() => handleReadNotification(item?.id, getProduct(item?.attributes?.content, 1))}>
-
-                        <div className="notify_avatar">
-                          <Avatar
-                            alt="avatar"
-                            src={item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url ?
-                              (process.env.REACT_APP_SERVER_ENDPOINT + item?.attributes?.from?.data?.attributes?.avatar?.data?.attributes?.url)
+                {noti?.length === 0 ? (
+                  <div className="notify_empty">
+                    Bạn không có thông báo nào{" "}
+                  </div>
+                ) : (
+                  noti?.map((item, index) => (
+                    <li
+                      key={index}
+                      className={isIdRead(item?.id) ? "notify_read" : ""}
+                      onClick={() =>
+                        handleReadNotification(
+                          item?.id,
+                          getProduct(item?.attributes?.content, 1)
+                        )
+                      }
+                    >
+                      <div className="notify_avatar">
+                        <Avatar
+                          alt="avatar"
+                          src={
+                            item?.attributes?.from?.data?.attributes?.avatar
+                              ?.data?.attributes?.url
+                              ? process.env.REACT_APP_SERVER_ENDPOINT +
+                                item?.attributes?.from?.data?.attributes?.avatar
+                                  ?.data?.attributes?.url
                               : "abc"
-                            }
+                          }
+                        />
+                      </div>
+                      <div className="notify_data">
+                        <div className="data">
+                          <b>
+                            {item?.attributes?.from?.data?.attributes?.fullName}{" "}
+                          </b>
+                          đăng bán
+                          <b>
+                            {" "}
+                            {truncateString(
+                              getProduct(item?.attributes?.content, 2)
+                            )}{" "}
+                          </b>
+                        </div>
+                        <div className="date">
+                          {handleDate(item?.attributes?.updatedAt)}
+                        </div>
+                      </div>
+                      {isIdRead(item?.id) ? (
+                        ""
+                      ) : (
+                        <div className="notify_icon-read">
+                          <Brightness1Icon
+                            sx={{
+                              fontSize: "15px",
+                              color: "hsl(214, 89%, 52%)",
+                            }}
                           />
                         </div>
-                        <div className="notify_data">
-                          <div className="data">
-                            <b>{item?.attributes?.from?.data?.attributes?.fullName} </b> 
-                            đăng bán 
-                            <b> {truncateString(getProduct(item?.attributes?.content, 2))} </b>
-                          </div>
-                          <div className="date">
-                            {handleDate(item?.attributes?.updatedAt)}
-                          </div>
-                        </div>
-                        {
-                          isIdRead(item?.id) ?
-                            "" :
-                            <div className="notify_icon-read">
-                              <Brightness1Icon sx={{ fontSize: '15px', color: 'hsl(214, 89%, 52%)' }} />
-                            </div>
-                        }
-                      </li>
-                    ))
-                }
+                      )}
+                    </li>
+                  ))
+                )}
               </ul>
             </div>
           </div>
         </ClickAwayListener>
-      }
-      {isLogin && <div className="same-style header-wishlist">
-        <Link to={process.env.PUBLIC_URL + "/wishlist"}>
-          <i className="pe-7s-like" />
-          <span className="count-style">
-            {wishlistData && wishlistData?.length ? wishlistData?.length : 0}
-          </span>
-        </Link>
-      </div>}
-      {isLogin && <div className="same-style">
-        <Button
-          onClick={() => history.push(process.env.PUBLIC_URL + "/product-post")}
-          className="header-post-product"
-          sx={{
-            fontSize: "1rem",
-            textTransform: "capitalize",
-            whiteSpace: "nowrap",
-            backgroundColor: (theme) => theme.palette.primary.main,
-          }}
-          variant="contained"
-          startIcon={<PostAddIcon />}
-        >Đăng bán</Button>
-      </div>}
+      )}
+      {isLogin && (
+        <div className="same-style header-wishlist">
+          <Link to={process.env.PUBLIC_URL + "/wishlist"}>
+            <i className="pe-7s-like" />
+            <span className="count-style">
+              {wishlistData && wishlistData?.length ? wishlistData?.length : 0}
+            </span>
+          </Link>
+        </div>
+      )}
+      {isLogin && (
+        <div className="same-style">
+          <Button
+            onClick={() =>
+              history.push(process.env.PUBLIC_URL + "/product-post")
+            }
+            className="header-post-product"
+            sx={{
+              fontSize: "1rem",
+              textTransform: "capitalize",
+              whiteSpace: "nowrap",
+              backgroundColor: (theme) => theme.palette.primary.main,
+            }}
+            variant="contained"
+            startIcon={<PostAddIcon />}
+          >
+            Đăng bán
+          </Button>
+        </div>
+      )}
       {/* <div className="same-style cart-wrap d-block d-lg-none">
         <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
           <i className="pe-7s-shopbag" />
@@ -500,39 +548,37 @@ const IconGroup = ({
         </button>
       </div> */}
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={open}
         onClose={handleClose}
         autoHideDuration={6000}
         message=" "
         TransitionComponent={transition}
-        key={'bottom right'}
+        key={"bottom right"}
         ContentProps={{
           sx: {
             backgroundColor: "white",
             color: "black",
             width: "200px",
             flexWrap: "nowrap",
-            flexDirection: "row"
-          }
+            flexDirection: "row",
+          },
         }}
       >
-        <Card sx={{ minWidth: '275px', display: 'flex', p: 2 }}>
+        <Card sx={{ minWidth: "275px", display: "flex", p: 2 }}>
           <Box
             onClick={handleClickDirect}
             sx={{
-              width: '275px',
-              cursor: 'pointer',
-              '&:hover': {
-                '& .MuiTypography-root': {
-                  color: '#A749FF',
+              width: "275px",
+              cursor: "pointer",
+              "&:hover": {
+                "& .MuiTypography-root": {
+                  color: "#A749FF",
                 },
               },
             }}
           >
-            <Typography>
-              {messageInfo ? messageInfo : undefined}
-            </Typography>
+            <Typography>{messageInfo ? messageInfo : undefined}</Typography>
           </Box>
           <IconButton
             aria-label="close"
@@ -544,7 +590,7 @@ const IconGroup = ({
           </IconButton>
         </Card>
       </Snackbar>
-    </div >
+    </div>
   );
 };
 
@@ -554,23 +600,23 @@ IconGroup.propTypes = {
   currency: PropTypes.object,
   iconWhiteClass: PropTypes.string,
   deleteFromCart: PropTypes.func,
-  wishlistData: PropTypes.array
+  wishlistData: PropTypes.array,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     currency: state.currencyData,
     cartData: state.cartData,
     wishlistData: state.wishlistData,
-    compareData: state.compareData
+    compareData: state.compareData,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     deleteFromCart: (item, addToast) => {
       dispatch(deleteFromCart(item, addToast));
-    }
+    },
   };
 };
 

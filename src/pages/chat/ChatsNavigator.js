@@ -44,7 +44,7 @@ function CustomizedInputBase(props) {
         }}
         onChange={(event) => {
           props.handleSetSearchKey(event.target.value)
-          console.log(event.target.value)
+          
         }}
         onClick={props.handleSearchingMode}
       />
@@ -71,10 +71,10 @@ function ChatsNavigator(props) {
     if(props.inComingMessage != undefined && (props.inComingMessage?.length !== 0 || props.sellerData !== undefined)){
       let inComingMessage = props.inComingMessage
       let tempCustomUserList = [];
-      console.log("Chat page: inComingMessage array: ")
-      console.log(inComingMessage)
-      console.log("Chat page: props.sellerData")
-      console.log(props.sellerData)
+      
+      
+      
+      
       const uniqueUserIDsList = [...new Set(inComingMessage?.map((object) => object.attributes.from.data.id))];
       
 
@@ -97,27 +97,27 @@ function ChatsNavigator(props) {
         })); 
       }
 
-      console.log("Chat page: tempCustomUserList: ")
-      console.log(tempCustomUserList)
-      console.log("Chat page: props.incomingFromSocket.attributes.from.data.id: ")
-      console.log(props.incomingFromSocket)
+      
+      
+      
+      
       // Cheeck userlist if user (which is partner) already exist, if already there, plus, unread Count
 
       if(props.sellerData !== undefined && (tempCustomUserList.findIndex(obj => obj.id === props.sellerData.id) === -1)){
         tempCustomUserList.push({id: props.sellerData.id, unreadCount: 0})
       }
 
-      console.log("Chat page: tempCustomUserList after insert seller data: ")
-      console.log(tempCustomUserList)
+      
+      
       
       tempCustomUserList?.map((item) => {
           if(!findIdExistById(UniqueUser, item.id)){
-              console.log('Chat page: find above mentioned user')
+              
               // FinalUserList.push(QueryUserByID(item.id))
               QueryUserByID(item.id, item.unreadCount)
               setUniqueUser((prev) => [...prev, item])
           }else if(props.incomingFromSocket !== undefined && item.id === props.incomingFromSocket.attributes.from.data.id) {
-              console.log("người dùng username +1 unread: " + props.incomingFromSocket.attributes.from.data.id)
+              
               setUserList((prev) => {
                   return prev?.map((object) => {
                       if (object.id === props.incomingFromSocket.attributes.from.data.id) {

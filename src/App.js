@@ -16,8 +16,12 @@ import { getUserLogin } from "./utils/userLoginStorage";
 import { login, logout } from "./redux/actions/userStorageActions";
 import wishlistApi from "./api/wishlist-api";
 import { RESPONSE_TYPE } from "./utils/callApi";
-import { onCloseModalLoading, onOpenModalLoading } from "./redux/actions/modalLoadingActions";
+import {
+  onCloseModalLoading,
+  onOpenModalLoading,
+} from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
+import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 // Get user data
 // const user = getUserLogin();
@@ -64,9 +68,9 @@ const NotFound = lazy(() => import("./pages/other/NotFound"));
 const App = (props) => {
   const dispatch = useDispatch();
 
-  const popup = useSelector(state => state.popup);
-  const modalLoading = useSelector(state => state.modalLoading);
-  const popupErrorBase = useSelector(state => state.popupErrorBase);
+  const popup = useSelector((state) => state.popup);
+  const modalLoading = useSelector((state) => state.modalLoading);
+  const popupErrorBase = useSelector((state) => state.popupErrorBase);
 
   // [DON'T DELETE THIS] This line exist to check if user is logged in yet
   const user = getUserLogin()?.user;
@@ -74,41 +78,42 @@ const App = (props) => {
   //UseState NavigateUserInChat
   const [selectedChatPartner, setSelectedChatPartner] = useState();
   const handleNavigateChats = (partnerID) => {
-    setSelectedChatPartner(partnerID)
-  }
+    setSelectedChatPartner(partnerID);
+  };
 
   useEffect(() => {
     const getWishlist = async () => {
-      dispatch(onOpenModalLoading())
+      dispatch(onOpenModalLoading());
       const response = await wishlistApi.getWishlistPopulateAll();
       if (response.type === RESPONSE_TYPE) {
-        console.log(response.data?.product_likes)
-        dispatch(setWishlist(response.data?.product_likes || []))
+        
+        dispatch(setWishlist(response.data?.product_likes || []));
       }
-      dispatch(onCloseModalLoading())
-    }
+      dispatch(onCloseModalLoading());
+    };
     if (user) {
-      getWishlist()
+      getWishlist();
     }
-  }, [])
+  }, []);
   useEffect(() => {
     if (user) {
-      dispatch(login())
+      dispatch(login());
     } else {
-      dispatch(logout())
+      dispatch(logout());
     }
     props.dispatch(
       loadLanguages({
         languages: {
           en: require("./translations/english.json"),
           fn: require("./translations/french.json"),
-          de: require("./translations/germany.json")
-        }
+          de: require("./translations/germany.json"),
+        },
       })
     );
   });
   return (
     <ThemeProvider>
+      <ConnectSocket />
       <Popup
         isOpen={popup.open}
         onClose={popup.actions.closeAction}
@@ -121,12 +126,14 @@ const App = (props) => {
       />
 
       {/* <ModalLoading open={modalLoading.open} /> */}
-      {modalLoading.open && < div className="flone-preloader-wrapper">
-        <div className="flone-preloader">
-          <span></span>
-          <span></span>
+      {modalLoading.open && (
+        <div className="flone-preloader-wrapper">
+          <div className="flone-preloader">
+            <span></span>
+            <span></span>
+          </div>
         </div>
-      </div>}
+      )}
       <ToastProvider placement="bottom-left">
         <BreadcrumbsProvider>
           <Router>
@@ -170,41 +177,46 @@ const App = (props) => {
                     component={ShopGridStandard}
                   />
 
-
                   {/* Chat pages */}
-                  {user !== undefined ?
+                  {user !== undefined ? (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
                         <Chat
                           {...routeProps}
                           key={routeProps.match.params.id}
-                          parentHandleNavigateChats={handleNavigateChats} />
+                          parentHandleNavigateChats={handleNavigateChats}
+                        />
                       )}
                     />
-                    :
+                  ) : (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       component={LoginAndRegister}
-                    />}
+                    />
+                  )}
 
-                  {user !== undefined &&
+                  {user !== undefined && (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       render={(routeProps) => (
                         <Chat
                           {...routeProps}
                           key={routeProps.match.params.id}
-                          parentHandleNavigateChats={handleNavigateChats} />
+                          parentHandleNavigateChats={handleNavigateChats}
+                        />
                       )}
-                    />}
-
+                    />
+                  )}
 
                   {/* Shop product pages */}
                   <Route
                     path={process.env.PUBLIC_URL + "/product/:id"}
                     render={(routeProps) => (
-                      <Product {...routeProps} key={routeProps.match.params.id} />
+                      <Product
+                        {...routeProps}
+                        key={routeProps.match.params.id}
+                      />
                     )}
                   />
 
@@ -250,13 +262,20 @@ const App = (props) => {
                   <Route
                     path={process.env.PUBLIC_URL + "/product-update/:id"}
                     render={(routeProps) => (
-                      <ProductUpdate {...routeProps} key={routeProps.match.params.id} updatePage={true} />
+                      <ProductUpdate
+                        {...routeProps}
+                        key={routeProps.match.params.id}
+                        updatePage={true}
+                      />
                     )}
                   />
                   <Route
                     path={process.env.PUBLIC_URL + "/user/info/:id"}
                     render={(routeProps) => (
-                      <UserInfo {...routeProps} key={routeProps.match.params.id} />
+                      <UserInfo
+                        {...routeProps}
+                        key={routeProps.match.params.id}
+                      />
                     )}
                   />
                   <Route
@@ -303,12 +322,12 @@ const App = (props) => {
           </Router>
         </BreadcrumbsProvider>
       </ToastProvider>
-    </ThemeProvider >
+    </ThemeProvider>
   );
 };
 
 App.propTypes = {
-  dispatch: PropTypes.func
+  dispatch: PropTypes.func,
 };
 
 export default connect()(multilanguage(App));

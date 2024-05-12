@@ -134,7 +134,7 @@ const CategorySlide = () => {
     setNumScreenCarousel(numScreen);
     return categoriesShow;
   }, [categories?.length]);
-  console.log("activeCategorySlider", activeCategorySlider)
+  
   const addClassHoverBtn = useCallback(() => {
     if (btnNextSlideRef.current) {
       btnNextSlideRef.current.classList.add("icon-button-hover")

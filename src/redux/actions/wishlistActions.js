@@ -8,7 +8,7 @@ export const DELETE_FROM_WISHLIST = "DELETE_FROM_WISHLIST";
 export const DELETE_ALL_FROM_WISHLIST = "DELETE_ALL_FROM_WISHLIST";
 
 export const handleAddToWishlist = async (product, wishlistData, addToast, addToWishlist, history) => {
-  console.log("abc",history)
+  
   const user = getUserLogin();
   if (user) {
     const wishlistNew = Array.isArray(wishlistData) ?

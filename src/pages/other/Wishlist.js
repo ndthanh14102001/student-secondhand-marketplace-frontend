@@ -87,7 +87,7 @@ const Wishlist = ({
                         <tbody>
                           {wishlistItems?.map((wishlistItem, key) => {
                             const wishlistItemAtrributes = wishlistItem?.attributes || wishlistItem;
-                            console.log("wishlistItemAtrributes", wishlistItemAtrributes)
+                            
                             // const discountedPrice = getDiscountPrice(
                             //   wishlistItem.price,
                             //   wishlistItem.discount

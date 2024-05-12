@@ -167,7 +167,7 @@ const ProductGrid = ({
 
       if (recomenderInfo.distancesUniversityHasProduct?.length > 0) {
 
-        console.log("recomenderInfoCopy", recomenderInfoCopy)
+        
         while (true && recomenderInfoCopy.hasMore) {
           let universityIdFilter = []
           const filterUniversity = getFilterUniversityByIndex(recomenderInfoCopy.indexUniversityFilter);
@@ -204,7 +204,7 @@ const ProductGrid = ({
             if (response.type === RESPONSE_TYPE) {
               const metaPagination = response.data?.meta?.pagination;
               if (recomenderInfoCopy.page + 1 > metaPagination?.pageCount) {
-                console.log("check", response);
+                
                 recomenderInfoCopy.page = 1
                 if (recomenderInfoCopy.indexUniversityFilter + 1 > recomenderInfoCopy.distancesUniversityHasProduct?.length) {
                   recomenderInfoCopy.hasMore = false;
@@ -215,13 +215,13 @@ const ProductGrid = ({
                   setIsLoadingData(false);
                   break;
                 } else {
-                  console.log("check3", response);
+                  
                   recomenderInfoCopy.hasMore = true;
                   recomenderInfoCopy.indexUniversityFilter = recomenderInfoCopy.indexUniversityFilter + 1;
                 }
 
               } else {
-                console.log("check2", response);
+                
                 recomenderInfoCopy.page = recomenderInfoCopy.page + 1
                 recomenderInfoCopy.hasMore = true;
               }
@@ -233,7 +233,7 @@ const ProductGrid = ({
                 setProductList(prev => [...prev, ...response.data?.data])
 
                 if (recomenderInfoCopy.productRecommenderNext === 0) {
-                  console.log("indexUniversityFilterTmp", recomenderInfoCopy);
+                  
                   recomenderInfoCopy.productRecommenderNext = NUMBER_PRODUCT_RECOMMENDER;
                   setRecomenderInfo({
                     ...recomenderInfoCopy

@@ -132,7 +132,7 @@ const ProductDescriptionInfo = ({
           }
         })
       .then((response) => {
-        console.log(response)
+        
         addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
           appearance: "success",
           autoDismiss: true
@@ -169,7 +169,7 @@ const ProductDescriptionInfo = ({
       autoDismiss: true
     });
   }
-  console.log("product aa", product)
+  
   return (
     <>
       <Helmet>

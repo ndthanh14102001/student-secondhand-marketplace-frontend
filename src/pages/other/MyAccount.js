@@ -253,7 +253,7 @@ const MyAccount = ({ location }) => {
           setUrlAvatar(reader.result);
         };
         reader.readAsDataURL(file);
-        // console.log(reader.result);
+        
       }
     };
     input.click();

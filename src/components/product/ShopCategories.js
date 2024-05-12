@@ -6,7 +6,7 @@ import { setCategoryFilter } from "../../redux/actions/filterActions";
 // const ChildsCategoires = ({ attributes }) => {
 //   const dispatch = useDispatch();
 //   let childCategories = attributes?.children?.data;
-//   console.log("childCategories", childCategories)
+//   
 //   const element = [];
 //   let level = 1;
 //   function handleClickCategory(e, childCategories) {

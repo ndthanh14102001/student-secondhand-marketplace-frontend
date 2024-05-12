@@ -245,7 +245,7 @@ const UserInfo = ({ match }) => {
   //     description += ", mô tả chi tiết: " + reportDetailInput
   //   }
 
-  //   console.log(description)
+  //   
   // }, [checkedReportCriteria, reportDetailInput]);
 
   const handleReport = () => {
@@ -269,7 +269,7 @@ const UserInfo = ({ match }) => {
           }
         })
       .then((response) => {
-        console.log(response)
+        
         addToast(`Báo cáo người dùng "${userInfo?.fullName}" thành công. cảm ơn bạn đã báo cáo`, {
           appearance: "success",
           autoDismiss: true

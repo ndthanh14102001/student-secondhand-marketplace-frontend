@@ -61,7 +61,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
     if (response.type === RESPONSE_TYPE) {
       setListComments(response.data.data);
     }
-    console.log(response.data.data)
+    
   }
 
   useEffect(() => {

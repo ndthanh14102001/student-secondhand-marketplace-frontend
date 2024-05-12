@@ -2,16 +2,10 @@ import ChatsNavigator from './ChatsNavigator'
 import ChatFrame from './ChatFrame'
 import React, { Fragment, useEffect, useState } from 'react'
 import LayoutOne from '../../layouts/LayoutOne'
-import { BreadcrumbsItem } from 'react-breadcrumbs-dynamic'
 import { MetaTags } from 'react-meta-tags'
-import { useLocation } from 'react-router-dom'
-import Breadcrumb from '../../wrappers/breadcrumb/Breadcrumb'
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { useDispatch, useSelector } from 'react-redux';
-import LoginRegister from "../other/LoginAndRegister";
-import axios from 'axios'
-import { io } from "socket.io-client";
 import { onCloseModalLoading } from '../../redux/actions/modalLoadingActions'
 
 function ChatsFrame(props) {
@@ -33,8 +27,8 @@ function ChatsFrame(props) {
   const [inComingMessage, setIncomingMessage] = useState();
 
   const handleChangeSeller = (info) => {  
-    console.log("Thay đổi user từ chat navigator thành: ")
-    console.log(info)
+    
+    
     setUser(info)
   }
 
@@ -74,14 +68,14 @@ function ChatsFrame(props) {
   useEffect(() => {
     const getUserInfo = async () => {
       const userId = match.params.id;
-      console.log(match)
+      
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
         method: "get",
       });
       if (response.type === RESPONSE_TYPE) {
-        console.log("thông tin người bán hiện tại được cập nhật lại theo ng bán: ")
-        console.log(response.data)
+        
+        
         setUser(response.data);
       }
     }
@@ -93,9 +87,9 @@ function ChatsFrame(props) {
 
   // các hàm phải chạy 1 lần khi khởi tạo component
   useEffect(()=>{
-    console.log("Đã chạy hàm này")
+    
     if(userLoginData !== undefined && isNotCalledYet) {
-      console.log("Đã chạy hàm này 2")
+      
       getChatsRelatedToLoggedInPerson();
       setIsNotCalledYet(false)
     }
@@ -108,8 +102,8 @@ function ChatsFrame(props) {
       method: "get",
     });
     if (response.type === RESPONSE_TYPE) {
-      // console.log('Danh sách chat tới người log in hiện tại')
-      // console.log(response.data)
+      
+      
       if(match.params.id !== undefined) {
         setIncomingMessage(
           response.data.data?.map((item) => {
