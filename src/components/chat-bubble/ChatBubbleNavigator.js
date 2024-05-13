@@ -7,9 +7,11 @@ import axios from "axios";
 
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import ForumIcon from "@mui/icons-material/Forum";
+import useChatBubbleHook from "./useChatBubbleHook";
 
 function ChatBubbleNavigator(props) {
   const socket = useSelector((state) => state.socket.socket);
+
   const [userList, setUserList] = useState([]);
   const [CustomUserList, setCustomUserList] = useState();
   const [incomingMessage, setIncomingMessage] = useState([]);
@@ -17,9 +19,7 @@ function ChatBubbleNavigator(props) {
 
   // Get all unread message & Initiate Socket receive the message to login user
   useEffect(() => {
-    
     if (socket !== null) {
-      
       const listener = (message) => {
         // const dataPrototype = {
         // id : message.id,
@@ -35,16 +35,15 @@ function ChatBubbleNavigator(props) {
         //     },
         // }
         // }
-        
-        
+
         // // props.onUpdateUnreadChat(dataPrototype)
         // setIncomingMessage((prev) => [...prev, dataPrototype])
 
         // Tạm
         // setPartnerJustSent(message.from.id);
-        
+
         // getChatsRelatedToLoggedInPerson();
-        
+        console.log("message", message);
       };
 
       socket.on("private message", listener);
@@ -64,17 +63,12 @@ function ChatBubbleNavigator(props) {
       method: "get",
     });
     if (response.type === RESPONSE_TYPE) {
-      
-      
       setIncomingMessage(response.data.data);
     }
   };
 
   // Eliminate user that has been navigated
   useEffect(() => {
-    
-    
-    
     if (userList?.length > 0 && props.selectedChatPartner !== undefined) {
       setUserList((prev) => {
         props.getChatsCount(
@@ -90,8 +84,7 @@ function ChatBubbleNavigator(props) {
   useEffect(() => {
     if (incomingMessage?.length !== 0) {
       let tempCustomUserList = [];
-      
-      
+
       const uniqueUserIDsList = [
         ...new Set(
           incomingMessage?.map((object) => object.attributes.from.data.id)
@@ -119,9 +112,6 @@ function ChatBubbleNavigator(props) {
           tempCustomUserList.reduce((total, obj) => total + obj.unreadCount, 0)
         );
       }
-
-      
-      
 
       // Cheeck userlist if user (which is partner) already exist, if already there, plus, unread Count
       tempCustomUserList?.map((item) => {
@@ -174,7 +164,7 @@ function ChatBubbleNavigator(props) {
   };
 
   // useEffect(() => {
-  //     
+  //
   // },[userList])
 
   return (

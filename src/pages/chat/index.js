@@ -1,4 +1,4 @@
-import ChatsNavigator from './ChatsNavigator'
+import ChatsNavigator from './ChatNavigator'
 import ChatFrame from './ChatFrame'
 import React, { Fragment, useEffect, useState } from 'react'
 import LayoutOne from '../../layouts/LayoutOne'
@@ -67,7 +67,7 @@ function ChatsFrame(props) {
   // Lấy thông tin người bán hiện tại theo id
   useEffect(() => {
     const getUserInfo = async () => {
-      const userId = match.params.id;
+      const userId = match?.params?.id;
       
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
@@ -166,7 +166,7 @@ function ChatsFrame(props) {
                       sellerData={user}
                       userLoginData={userLoginData}
                       socket={setupSocket}
-                      isPartnerDeclared={match.params.id !== undefined || user !== undefined}
+                      isPartnerDeclared={match?.params?.id !== undefined || user !== undefined}
                       handleNavigateChats={handleNavigateChats}
                       onUpdateUnreadChat={onUpdateUnreadChat}
                     />

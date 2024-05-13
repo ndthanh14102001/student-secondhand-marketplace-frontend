@@ -183,9 +183,9 @@ const App = (props) => {
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
                         <Chat
-                          {...routeProps}
-                          key={routeProps.match.params.id}
-                          parentHandleNavigateChats={handleNavigateChats}
+                          // {...routeProps}
+                          // key={routeProps.match.params.id}
+                          // parentHandleNavigateChats={handleNavigateChats}
                         />
                       )}
                     />
