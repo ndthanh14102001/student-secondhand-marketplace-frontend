@@ -1,15 +1,17 @@
 import React, { useEffect } from "react";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setSocket } from "../../redux/actions/socketActions";
 import { io } from "socket.io-client";
 
 const ConnectSocket = () => {
   const dispatch = useDispatch();
-
+  const isLogin = useSelector((state) => state?.userStorage?.isLogin);
   useEffect(() => {
-    connectSocket();
-  }, []);
+    if (isLogin) {
+      connectSocket();
+    }
+  }, [isLogin]);
 
   function connectSocket() {
     let tokenArr = getUserLogin()?.token?.split(" ");
