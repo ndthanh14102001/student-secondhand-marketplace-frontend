@@ -1,115 +1,81 @@
-import { Avatar, Badge, Box, IconButton, Stack } from "@mui/material";
-import "./chat-bubble.css";
-import ChatBubbleNavigator from "./ChatBubbleNavigator";
-import ChatBubbleRequireLogin from "./ChatBubbleRequireLogin";
-
-// icon import
-import SmsIcon from "@mui/icons-material/Sms";
-import { getUserLogin } from "../../utils/userLoginStorage";
-import { useEffect, useState } from "react";
-import useChatBubbleHook from "./useChatBubbleHook";
 import { useHistory } from "react-router-dom";
+import { Box, ClickAwayListener } from "@mui/material";
 
+import ChatBubbleRequireLogin from "./ChatBubbleRequireLogin";
+import { getUserLogin } from "../../utils/userLoginStorage";
+import useChatBubbleHook from "./useChatBubbleHook";
+import NumberOfUnreadMessage from "./NumberOfUnreadMessage";
+
+import "./chat-bubble.css";
 function ChatBubble(props) {
   const chatBubbleHook = useChatBubbleHook();
-  const userLoginData = getUserLogin()?.user;
-  const navigate = useHistory();
-  const [openBubbleDrawer, setOpenBubbleDrawer] = useState(false); //Open drawer and display sum of incoming chats
-  const [totalChatCount, setTotalChatCount] = useState(0);
 
-  const getChatsCount = (count) => {
-    setTotalChatCount(count);
-  };
+  const navigate = useHistory();
 
   const navigateChatPage = () => {
+    const userLoginData = getUserLogin()?.user;
     if (userLoginData) {
       navigate.push(process.env.PUBLIC_URL + "/chat");
+    } else {
+      chatBubbleHook.toggleRequireLoginPopup();
     }
   };
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        left: 0,
-        bottom: 0,
-        width: "150px",
-        height: "150px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        zIndex: 1,
+    <ClickAwayListener
+      onClickAway={() => {
+        chatBubbleHook.closeRequireLoginPopup();
       }}
     >
-      {/* Button size: 60x60 px */}
-      <Badge
-        badgeContent={chatBubbleHook?.numberOfUnreadMessages}
-        max={99}
-        color="error"
-        overlap="circular"
-      >
-        <IconButton
-          className="ChatBubbleCSS"
-          sx={{
-            p: "12px",
-            background: "#a749ff",
-            color: "white",
-            borderRadius: "50%",
-            zIndex: "1",
-            boxShadow: 3,
-          }}
-        >
-          <SmsIcon sx={{ fontSize: "36px" }} />
-        </IconButton>
-      </Badge>
-
-      {/* This Box will receive all click event to execute bubble chat drawer */}
-      <Box
-        onClick={navigateChatPage}
-        sx={{
-          width: "70px",
-          height: "70px",
-          position: "absolute",
-          borderRadius: "50%",
-          zIndex: "2",
-          transitionDuration: "500ms",
-          "&:hover": {
-            background: "rgba(167, 73, 255, 0.35)",
-            width: "85px",
-            height: "85px",
-            borderRadius: "50%",
-            cursor: "pointer",
-          },
-          "&:active": {
-            background: "rgba(167, 73, 255, 0.3)",
-            width: "85px",
-            height: "85px",
-            borderRadius: "50%",
-            cursor: "pointer",
-            transform: "scale(0.9)",
-            transitionDuration: "100ms",
-          },
-        }}
-      ></Box>
-
-      {/* This tag contain bubble drawer's content */}
       <Box
         sx={{
-          maxHeight: openBubbleDrawer ? "400px" : "0px",
-          maxWidth: openBubbleDrawer ? "600px" : "0px",
-          position: "absolute",
-          borderRadius: "30px",
-          bottom: "44px",
-          marginBottom: "62px",
-          transitionDuration: "300ms",
-          justifyContent: "center",
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "150px",
+          height: "150px",
           display: "flex",
-          overflow: "hidden",
-          padding: openBubbleDrawer ? "10px" : "",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 1,
         }}
       >
-        {!userLoginData && <ChatBubbleRequireLogin />}
+        <NumberOfUnreadMessage
+          numberOfUnreadMessages={chatBubbleHook.numberOfUnreadMessages}
+        />
+
+        {/* This Box will receive all click event to execute bubble chat drawer */}
+        <Box
+          onClick={navigateChatPage}
+          sx={{
+            width: "70px",
+            height: "70px",
+            position: "absolute",
+            borderRadius: "50%",
+            zIndex: "2",
+            transitionDuration: "500ms",
+            "&:hover": {
+              background: "rgba(167, 73, 255, 0.35)",
+              width: "85px",
+              height: "85px",
+              borderRadius: "50%",
+              cursor: "pointer",
+            },
+            "&:active": {
+              background: "rgba(167, 73, 255, 0.3)",
+              width: "85px",
+              height: "85px",
+              borderRadius: "50%",
+              cursor: "pointer",
+              transform: "scale(0.9)",
+              transitionDuration: "100ms",
+            },
+          }}
+        ></Box>
+
+        {/* This tag contain bubble drawer's content */}
+        {chatBubbleHook.isOpenRequireLoginPopup && <ChatBubbleRequireLogin />}
       </Box>
-    </Box>
+    </ClickAwayListener>
   );
 }
 
