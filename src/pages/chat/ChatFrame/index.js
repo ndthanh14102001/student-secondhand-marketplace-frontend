@@ -21,6 +21,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import ChatIcon from "@mui/icons-material/Chat";
 import useChatFrame from "./useChatFrame";
 import { useParams } from "react-router-dom";
+import Messages from "./Messages";
+import { formatMessage } from "../../../utils/chat";
+import { v4 } from "uuid";
 
 // IMPORTANT: this component still accept props "props.sellerData" as null
 // All variable involved to the aforemention props: partner (all involve with validation will not be counted)
@@ -31,28 +34,8 @@ function ChatFrame(props) {
   const { addToast } = useToasts();
   const chatTextBoxHeight = 60;
   const [partner, setPartner] = useState(props.sellerData);
-  const [currentUser, setcurrentUser] = useState(props.userLoginData);
-  const [chats, setChats] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  // Format time data
-  const formatDate = (date) => {
-    const inputDate = new Date(date);
-    const minutes =
-      inputDate.getMinutes() < 10
-        ? `0${inputDate.getMinutes()}`
-        : inputDate.getMinutes();
 
-    return (
-      `${inputDate.getDate().toString().padStart(2, "0")}-${(
-        inputDate.getMonth() + 1
-      )
-        .toString()
-        .padStart(
-          2,
-          "0"
-        )}-${inputDate.getFullYear()} ${inputDate.getHours()}:` + minutes
-    );
-  };
+  const [currentUser, setcurrentUser] = useState(props.userLoginData);
 
   // Get both user data with given id pass from parent component
   useEffect(() => {
@@ -110,85 +93,28 @@ function ChatFrame(props) {
     }
   }, [props?.sellerData?.id]);
 
-  // Get chat from database
-  useEffect(() => {
-    setIsLoading(true);
-    let ChatArray = [];
-    const getChats = async () => {
-      await axios
-        .get(
-          process.env.REACT_APP_API_ENDPOINT +
-            `/chatFrame?.chats?pagination[page]=1&pagination[pageSize]=100&filters[$and][0][sender][id][$eq]=${currentUser?.id}&filters[$and][1][receiver][id][$eq]=${partner?.id}&populate=*`
-        )
-        .then((response) => {
-          // setChats(prev => [...prev, ...response.data])
-          ChatArray = ChatArray.concat(response.data?.data);
-          axios
-            .get(
-              process.env.REACT_APP_API_ENDPOINT +
-                `/chatFrame?.chats?pagination[page]=1&pagination[pageSize]=100&filters[$and][0][from][id][$eq]=${partner?.id}&filters[$and][1][to][id][$eq]=${currentUser?.id}&populate=*`
-            )
-            .then((response) => {
-              // setChats(prev => [...prev, ...response.data])
-              ChatArray = ChatArray.concat(response.data?.data);
-              let sortedChat = ChatArray.sort(function (a, b) {
-                return a.attributes.createdAt.localeCompare(
-                  b?.attributes?.createdAt
-                );
-              }).reverse();
-              setChats(sortedChat);
-              setIsLoading(false);
-            })
-            .catch((error) => {
-              addToast("Lỗi nhận tin nhắn chiều thứ hai", {
-                appearance: "error",
-                autoDismiss: true,
-              });
-            });
-        })
-        .catch((error) => {
-          addToast("Lỗi nhận tin nhắn chiều thứ nhất", {
-            appearance: "error",
-            autoDismiss: true,
-          });
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    };
-
-    if (
-      props?.sellerData?.id !== undefined &&
-      props?.userLoginData?.id !== undefined &&
-      partner !== null &&
-      currentUser !== null
-    ) {
-      getChats();
-    }
-  }, [partner, currentUser]);
-
   // Set chatFrame?.chats to read (Proceed only once)
-  useEffect(() => {
-    if (partner !== undefined && chatFrame?.chats !== undefined) {
-      const updateRecords = async () => {
-        const promises = chatFrame?.chats?.map((item) => {
-          if (
-            item.attributes.sender.data?.id === partner?.id &&
-            item.attributes.read === false
-          ) {
-            return axios.put(
-              `${process.env.REACT_APP_API_ENDPOINT}/chatFrame?.chats/${item?.id}`,
-              { data: { read: true } }
-            );
-          }
-        });
-        await Promise.all(promises);
-        props.handleNavigateChats(partner?.id);
-      };
+  // useEffect(() => {
+  //   if (partner !== undefined && chatFrame?.chats !== undefined) {
+  //     const updateRecords = async () => {
+  //       const promises = chatFrame?.chats?.map((item) => {
+  //         if (
+  //           item.attributes.sender.data?.id === partner?.id &&
+  //           item.attributes.read === false
+  //         ) {
+  //           return axios.put(
+  //             `${process.env.REACT_APP_API_ENDPOINT}/chats/${item?.id}`,
+  //             { data: { read: true } }
+  //           );
+  //         }
+  //       });
+  //       await Promise.all(promises);
+  //       props.handleNavigateChats(partner?.id);
+  //     };
 
-      updateRecords();
-    }
-  }, [partner, chatFrame?.chats]);
+  //     updateRecords();
+  //   }
+  // }, [partner, chatFrame?.chats]);
 
   // Send message (socket emit)
   const sendMessage = (e) => {
@@ -202,34 +128,23 @@ function ChatFrame(props) {
       content: mess,
       to: partner?.id,
     });
+    const formattedMessage = formatMessage({
+      content: mess,
+      id: v4(),
 
-    const dataPrototype = {
-      id: 69,
-      attributes: {
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        content: mess,
-        read: false,
-        from: {
-          data: {
-            id: currentUser?.id,
-            attributes: {
-              username: currentUser.username,
-            },
-          },
-        },
-        to: {
-          data: {
-            id: partner?.id,
-            attributes: {
-              username: partner.username,
-            },
-          },
-        },
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      receiverId: partner?.id,
+      receiverAttribute: {
+        username: partner.username,
       },
-    };
-    setChats((prev) => [dataPrototype, ...prev]);
+      senderId: currentUser?.id,
+      senderAttribute: {
+        username: currentUser.username,
+      },
+    });
     document.getElementById("MessageEditorBox").value = "";
+    chatFrame.addChat(formattedMessage);
   };
 
   // Send chat when press enter
@@ -246,34 +161,26 @@ function ChatFrame(props) {
   useEffect(() => {
     // if(partner !== undefined) {
     const listener = (message) => {
-      const dataPrototype = {
+      console.log("message", message);
+      const formattedMessage = formatMessage({
         id: message?.id,
-        attributes: {
-          createdAt: message.createdAt,
-          updatedAt: message.updatedAt,
-          content: message.content,
-          read: false,
-          from: {
-            data: {
-              id: message.sender?.id,
-              attributes: {
-                // username: partner.username,
-              },
-            },
-          },
-          to: {
-            data: {
-              id: currentUser?.id,
-              attributes: {
-                // username: currentUser.username,
-              },
-            },
-          },
+
+        content: message?.content,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+
+        receiverId: currentUser?.id,
+        receiverAttribute: {
+          username: currentUser?.username,
         },
-      };
-      props.onUpdateUnreadChat(dataPrototype);
-      if (partner?.id === message.sender?.id) {
-        setChats((prev) => [dataPrototype, ...prev]);
+        senderId: message?.from?.id,
+        senderAttribute: {
+          username: partner?.username,
+        },
+      });
+      props.onUpdateUnreadChat(formattedMessage);
+      if (partner?.id === message?.from?.id) {
+        chatFrame.addChat(formattedMessage);
       }
     };
 
@@ -284,154 +191,6 @@ function ChatFrame(props) {
     };
     // }
   }, [partner]);
-
-  // Message Content
-  const MessageContent = () => {
-    console.log("chatFrame?.chats", chatFrame?.chats);
-    return chatFrame?.chats?.map((item, index) => {
-      const sender = item.attributes.sender.data;
-      const receiver = item.attributes.receiver.data;
-      return (
-        // Box message này hiển thị nếu message là của đối phương
-        <Box
-          key={index}
-          sx={{
-            display: "flex",
-            flexDirection: "row",
-            flexGrow: "1",
-            alignItems: "end",
-          }}
-        >
-          <Avatar
-            alt={receiver?.attributes?.username}
-            src={`${process.env.REACT_APP_SERVER_ENDPOINT}${receiver?.avatar?.url}`}
-            sx={{ width: 28, height: 28, marginBottom: "8px" }}
-          />
-          <Box
-            sx={{
-              backgroundColor: "white",
-              fontSize: "14px",
-              padding: "10px",
-              margin: "8px",
-              maxWidth: "75%",
-              borderRadius: "9px",
-              border: "1px solid lightgrey",
-              boxShadow: "1px 1px 1px lightgrey",
-            }}
-          >
-            <Box sx={{ overflowWrap: "anywhere" }}>
-              {item?.attributes?.message}
-            </Box>
-            <Box
-              className="timeDisplay"
-              sx={{
-                fontSize: "10px",
-                color: "grey",
-                marginTop: "10px",
-                textAlign: "right",
-              }}
-            >
-              {formatDate(item?.attributes?.createdAt)}
-            </Box>
-          </Box>
-        </Box>
-      );
-      // if (item.attributes.sender.data?.id === item.attributes.receiver.data?.id) {
-      //   return (
-      //     // Box message này hiển thị nếu message là của đối phương
-      //     <Box
-      //       key={index}
-      //       sx={{
-      //         display: "flex",
-      //         flexDirection: "row",
-      //         flexGrow: "1",
-      //         alignItems: "end",
-      //       }}
-      //     >
-      //       <Avatar
-      //         alt={partner.username}
-      //         src={`${process.env.REACT_APP_SERVER_ENDPOINT}${partner.avatar?.url}`}
-      //         sx={{ width: 28, height: 28, marginBottom: "8px" }}
-      //       />
-      //       <Box
-      //         sx={{
-      //           backgroundColor: "white",
-      //           fontSize: "14px",
-      //           padding: "10px",
-      //           margin: "8px",
-      //           maxWidth: "75%",
-      //           borderRadius: "9px",
-      //           border: "1px solid lightgrey",
-      //           boxShadow: "1px 1px 1px lightgrey",
-      //         }}
-      //       >
-      //         <Box sx={{ overflowWrap: "anywhere" }}>
-      //           {item.attributes.content}
-      //         </Box>
-      //         <Box
-      //           className="timeDisplay"
-      //           sx={{
-      //             fontSize: "10px",
-      //             color: "grey",
-      //             marginTop: "10px",
-      //             textAlign: "right",
-      //           }}
-      //         >
-      //           {formatDate(item.attributes.createdAt)}
-      //         </Box>
-      //       </Box>
-      //     </Box>
-      //   );
-      // } else {
-      //   return (
-      //     // Khung chat này hiển thị nếu message là của bản thân
-      //     <Box
-      //       key={index}
-      //       sx={{
-      //         display: "flex",
-      //         flexDirection: "row-reverse",
-      //         flexGrow: "1",
-      //         alignItems: "end",
-      //       }}
-      //     >
-      //       <Avatar
-      //         alt={currentUser.username}
-      //         src={`${process.env.REACT_APP_SERVER_ENDPOINT}${currentUser.avatar?.url}`}
-      //         sx={{
-      //           width: 32,
-      //           height: 32,
-      //           marginBottom: "8px",
-      //           backgroundColor: "rgb(0, 132, 255)",
-      //         }}
-      //       />
-      //       <Box
-      //         sx={{
-      //           backgroundColor: "#e5efff",
-      //           color: "black",
-      //           fontSize: "14px",
-      //           padding: "10px",
-      //           margin: "8px",
-      //           maxWidth: "75%",
-      //           borderRadius: "9px",
-      //           border: "1px solid lightgrey",
-      //           boxShadow: "1px 1px 1px lightgrey",
-      //         }}
-      //       >
-      //         <Box sx={{ overflowWrap: "anywhere" }}>
-      //           {item.attributes.content}
-      //         </Box>
-      //         <Box
-      //           className="timeDisplay"
-      //           sx={{ fontSize: "10px", color: "grey", marginTop: "10px" }}
-      //         >
-      //           {formatDate(item.attributes.createdAt)}
-      //         </Box>
-      //       </Box>
-      //     </Box>
-      //   );
-      // }
-    });
-  };
 
   //Welcome panel (getting started)
   const WelcomeToChatPanel = () => {
@@ -570,10 +329,6 @@ function ChatFrame(props) {
     );
   };
 
-  //UseEffect update chat
-  useEffect(() => {
-    MessageContent();
-  }, [chatFrame?.chats]);
   return (
     <div
       style={{
@@ -640,7 +395,7 @@ function ChatFrame(props) {
           {params?.id && chatFrame?.chats?.length === 0 ? (
             <NoChatYetPanel />
           ) : (
-            <MessageContent />
+            <Messages messages={chatFrame.chats} />
           )}
           {!params?.id && <WelcomeToChatPanel />}
           {/* {props.isPartnerDeclared ? (

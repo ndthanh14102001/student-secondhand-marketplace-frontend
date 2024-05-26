@@ -7,9 +7,10 @@ import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { onCloseModalLoading } from "../../redux/actions/modalLoadingActions";
+import { useParams } from "react-router-dom";
 
 function ChatsFrame(props) {
-  const { parentHandleNavigateChats, match } = props;
+  const { match } = props;
   const dispatch = useDispatch();
   const setupSocket = useSelector((state) => state.socket.socket);
   // const { pathname } = useLocation();
@@ -18,11 +19,12 @@ function ChatsFrame(props) {
 
   // Thông tin người bán hiện tại
   const [user, setUser] = useState();
+  const params = useParams();
 
   // Mảng tin nhắn từ mọi người tới người đăng nhập hiện tại
   const [incomingFromSocket, setincomingFromSocket] = useState();
   const [isNotCalledYet, setIsNotCalledYet] = useState(true);
-  const [inComingMessage, setIncomingMessage] = useState();
+  const [inComingMessage, setIncomingMessage] = useState([]);
 
   const handleChangeSeller = (info) => {
     setUser(info);
@@ -48,14 +50,16 @@ function ChatsFrame(props) {
           return item;
         });
       });
-      parentHandleNavigateChats(partnerID);
+      // parentHandleNavigateChats(partnerID);
     }
   };
 
   //Update new message to IncomingMessage
   const onUpdateUnreadChat = (input) => {
     setincomingFromSocket(input);
-    setIncomingMessage((prev) => [...prev, input]);
+    setIncomingMessage((prev) => {
+      return [...prev, input];
+    });
   };
 
   //Tắt cái modal loading
@@ -66,8 +70,7 @@ function ChatsFrame(props) {
   // Lấy thông tin người bán hiện tại theo id
   useEffect(() => {
     const getUserInfo = async () => {
-      const userId = match?.params?.id;
-
+      const userId = params?.id;
       const response = await callApi({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
         method: "get",
@@ -77,10 +80,8 @@ function ChatsFrame(props) {
       }
     };
 
-    if (match !== undefined) {
-      getUserInfo();
-    }
-  }, []);
+    getUserInfo();
+  }, [params]);
 
   // các hàm phải chạy 1 lần khi khởi tạo component
   useEffect(() => {

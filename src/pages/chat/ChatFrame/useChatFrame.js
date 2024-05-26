@@ -16,7 +16,11 @@ const useChatFrame = () => {
       getChats();
     }
   }, [params?.id]);
-  return { chats };
+
+  const addChat = (chat) => {
+    setChats((prev) => [chat, ...prev]);
+  };
+  return { chats, addChat };
 };
 
 export default useChatFrame;
