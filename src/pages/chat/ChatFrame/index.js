@@ -24,6 +24,7 @@ import { useParams } from "react-router-dom";
 import Messages from "./Messages";
 import { formatMessage } from "../../../utils/chat";
 import { v4 } from "uuid";
+import { PRIVATE_MESSAGE } from "../constants";
 
 // IMPORTANT: this component still accept props "props.sellerData" as null
 // All variable involved to the aforemention props: partner (all involve with validation will not be counted)
@@ -124,7 +125,7 @@ function ChatFrame(props) {
     } else {
     }
     let mess = targetMessBox.value;
-    socket.emit("private message", {
+    socket.emit(PRIVATE_MESSAGE, {
       content: mess,
       to: partner?.id,
     });
@@ -184,10 +185,10 @@ function ChatFrame(props) {
       }
     };
 
-    socket.on("private message", listener);
+    socket.on(PRIVATE_MESSAGE, listener);
 
     return () => {
-      socket.off("private message", listener);
+      socket.off(PRIVATE_MESSAGE, listener);
     };
     // }
   }, [partner]);

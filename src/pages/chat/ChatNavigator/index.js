@@ -398,7 +398,10 @@ function ChatsNavigator(props) {
       />
       <Divider variant="middle" sx={{ m: "14px 0" }} />
       {/* {isSearching ? <ListUserSearching /> : <ListUserChat />} */}
-      <Users users={navigatorHook.partners} />
+      <Users
+        users={navigatorHook.partners}
+        handleReceiveNewChat={navigatorHook.handleReceiveNewChat}
+      />
     </Box>
   );
 }

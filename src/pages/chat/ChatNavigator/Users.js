@@ -2,12 +2,13 @@ import React from "react";
 import TextsmsTwoToneIcon from "@mui/icons-material/TextsmsTwoTone";
 import { Avatar, Box, Chip, Stack } from "@mui/material";
 import { useHistory, useParams } from "react-router-dom";
-const Users = ({ users }) => {
+const Users = ({ users, handleReceiveNewChat }) => {
   const history = useHistory();
   const params = useParams();
   const isSelected = (userId) => {
     return `${userId}` === params?.id;
   };
+  console.log("users", users);
   return (
     <Box>
       <Box
@@ -27,9 +28,9 @@ const Users = ({ users }) => {
       >
         <Box>
           {users?.length > 0 ? (
-            users?.map((user, index) => (
+            users?.map((user) => (
               <Box
-                key={index}
+                key={user?.id}
                 sx={{
                   display: "flex",
                   flexDirection: "row",
