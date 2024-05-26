@@ -30,4 +30,21 @@ const formatMessage = ({
     },
   };
 };
-export { formatMessage };
+
+const formatDate = (date) => {
+  const inputDate = new Date(date);
+  const minutes =
+    inputDate.getMinutes() < 10
+      ? `0${inputDate.getMinutes()}`
+      : inputDate.getMinutes();
+
+  return (
+    `${inputDate.getDate().toString().padStart(2, "0")}-${(
+      inputDate.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}-${inputDate.getFullYear()} ${inputDate.getHours()}:` +
+    minutes
+  );
+};
+export { formatMessage, formatDate };

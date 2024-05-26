@@ -49,7 +49,7 @@ const Users = ({ users }) => {
                 }}
               >
                 <Avatar
-                  alt={user.username}
+                  // alt={user.username}
                   src={`${process.env.REACT_APP_SERVER_ENDPOINT}${user.avatar?.url}`}
                   sx={{ width: 52, height: 52 }}
                 />

@@ -395,7 +395,7 @@ function ChatFrame(props) {
           {params?.id && chatFrame?.chats?.length === 0 ? (
             <NoChatYetPanel />
           ) : (
-            <Messages messages={chatFrame.chats} />
+            <Messages messages={chatFrame.chats} partner={partner} />
           )}
           {!params?.id && <WelcomeToChatPanel />}
           {/* {props.isPartnerDeclared ? (
