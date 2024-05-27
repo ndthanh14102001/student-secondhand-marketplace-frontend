@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import chatApi from "../../../api/chat";
 import { useParams } from "react-router-dom";
 import { RESPONSE_TYPE } from "../../../utils/callApi";
@@ -14,6 +14,17 @@ const useChatFrame = () => {
     };
     if (params?.id) {
       getChats();
+    }
+  }, [params?.id]);
+
+  useEffect(() => {
+    const markMessagesAsSeen = async () => {
+      await chatApi.readChatsBySenderId({
+        senderId: params?.id,
+      });
+    };
+    if (params?.id) {
+      markMessagesAsSeen();
     }
   }, [params?.id]);
 

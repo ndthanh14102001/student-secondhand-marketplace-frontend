@@ -2,13 +2,13 @@ import React from "react";
 import TextsmsTwoToneIcon from "@mui/icons-material/TextsmsTwoTone";
 import { Avatar, Box, Chip, Stack } from "@mui/material";
 import { useHistory, useParams } from "react-router-dom";
-const Users = ({ users, handleReceiveNewChat }) => {
+const Users = ({ users, onClickUser }) => {
   const history = useHistory();
   const params = useParams();
   const isSelected = (userId) => {
     return `${userId}` === params?.id;
   };
-  console.log("users", users);
+
   return (
     <Box>
       <Box
@@ -30,7 +30,7 @@ const Users = ({ users, handleReceiveNewChat }) => {
           {users?.length > 0 ? (
             users?.map((user) => (
               <Box
-                key={user?.id}
+                key={user?.user_id}
                 sx={{
                   display: "flex",
                   flexDirection: "row",
@@ -39,14 +39,14 @@ const Users = ({ users, handleReceiveNewChat }) => {
                   p: "8px 8px",
                   borderRadius: "16px",
                   transitionDuration: "400ms",
-                  backgroundColor: isSelected(user?.id) ? "#ebf5ff" : "",
+                  backgroundColor: isSelected(user?.user_id) ? "#ebf5ff" : "",
                   "&:hover": {
-                    backgroundColor: isSelected(user?.id) && "whitesmoke",
+                    backgroundColor: isSelected(user?.user_id) && "whitesmoke",
                     cursor: "pointer",
                   },
                 }}
                 onClick={() => {
-                  history.push("/chat/" + user?.id);
+                  onClickUser(user?.user_id);
                 }}
               >
                 <Avatar
@@ -62,14 +62,14 @@ const Users = ({ users, handleReceiveNewChat }) => {
                     flexDirection: "column",
                   }}
                 >
-                  <Box sx={{ fontSize: "16px" }}>{user.username}</Box>
+                  <Box sx={{ fontSize: "16px" }}>{user?.full_name}</Box>
                   {/* <Box sx={{ fontSize: '13px', color: user.newestMessage.read ? 'grey' : 'blue', mt: '2px', fontWeight: user.newestMessage.read ? '' : 'bold'}}>{user.newestMessage}</Box> */}
                 </Box>
-                {user?.chats?.length > 0 && (
+                {user?.seencount > 0 && (
                   <Chip
                     color="error"
                     size="small"
-                    label={user?.chats?.length || 0}
+                    label={user?.seencount || 0}
                   />
                 )}
               </Box>

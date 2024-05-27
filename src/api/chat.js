@@ -75,5 +75,15 @@ const chatApi = {
     }
     return response;
   },
+  readChatsBySenderId: async ({ senderId }) => {
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/chats/read/" + senderId,
+      method: "patch",
+      headers: {
+        authorization: getUserLogin().token,
+      },
+    });
+    return response;
+  },
 };
 export default chatApi;

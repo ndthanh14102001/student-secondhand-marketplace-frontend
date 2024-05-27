@@ -400,7 +400,7 @@ function ChatsNavigator(props) {
       {/* {isSearching ? <ListUserSearching /> : <ListUserChat />} */}
       <Users
         users={navigatorHook.partners}
-        handleReceiveNewChat={navigatorHook.handleReceiveNewChat}
+        onClickUser={navigatorHook.onClickUser}
       />
     </Box>
   );
