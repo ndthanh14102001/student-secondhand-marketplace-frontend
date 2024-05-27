@@ -8,9 +8,10 @@ import { createMultilanguageReducer } from "redux-multilanguage";
 import modalLoadingReducer from "./modalLoadingReducer";
 import userStorageReducer from "./userStorage";
 import popupReducer from "./popupReducer";
-import filterReducer from "./filterReducer"
+import filterReducer from "./filterReducer";
 import { popupErrorBaseReducer } from "./popupErrorBase";
 import socketReducer from "./socketReducer";
+import chatBubbleReducer from "./chatBubbleReducer";
 // import socketReducer from "./socketReducer";
 
 const rootReducer = combineReducers({
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
   filter: filterReducer,
   popupErrorBase: popupErrorBaseReducer,
   socket: socketReducer,
+  chatBubble: chatBubbleReducer,
 });
 
 export default rootReducer;

@@ -8,7 +8,7 @@ const useNavigatorHook = () => {
   const history = useHistory();
   const params = useParams();
   const [partners, setPartners] = useState([]);
-
+  console.log("partners", partners);
   const socket = useSelector((state) => state.socket.socket);
   useEffect(() => {
     (async function getPartnerts() {
@@ -21,7 +21,7 @@ const useNavigatorHook = () => {
 
   useEffect(() => {
     const handleReceiveNewChat = async (chat) => {
-      if (chat?.from?.id.toString() !== params?.id.toString()) {
+      if (chat?.from?.id?.toString() !== params?.id?.toString()) {
         setPartners((oldPartners) => {
           for (let index = 0; index < oldPartners?.length; index++) {
             const oldPartner = oldPartners[index];
@@ -31,12 +31,18 @@ const useNavigatorHook = () => {
               break;
             }
           }
-          return oldPartners;
+          console.log("oldPartners", oldPartners);
+          return [...oldPartners];
         });
       } else {
         await markMessagesAsSeen();
       }
     };
+
+    const movePartnerToTop = (partners, index) => {
+      partners.unshift(partners.splice(index, 1)[0]);
+    };
+
     const markMessagesAsSeen = async () => {
       await chatApi.readChatsBySenderId({
         senderId: params?.id,
@@ -51,11 +57,7 @@ const useNavigatorHook = () => {
         socket?.off(PRIVATE_MESSAGE);
       }
     };
-  }, [socket, params]);
-
-  const movePartnerToTop = (partners, index) => {
-    partners.unshift(partners.splice(index, 1)[0]);
-  };
+  }, [socket, params, setPartners]);
 
   const onClickUser = (userId) => {
     setPartners((oldPartners) => {

@@ -22,6 +22,7 @@ import {
 } from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
+import { useParams } from "react-router-dom";
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 // Get user data
 // const user = getUserLogin();
@@ -71,6 +72,7 @@ const App = (props) => {
   const popup = useSelector((state) => state.popup);
   const modalLoading = useSelector((state) => state.modalLoading);
   const popupErrorBase = useSelector((state) => state.popupErrorBase);
+  const chatBubble = useSelector((state) => state.chatBubble);
 
   // [DON'T DELETE THIS] This line exist to check if user is logged in yet
   const user = getUserLogin()?.user;
@@ -86,7 +88,6 @@ const App = (props) => {
       dispatch(onOpenModalLoading());
       const response = await wishlistApi.getWishlistPopulateAll();
       if (response.type === RESPONSE_TYPE) {
-        
         dispatch(setWishlist(response.data?.product_likes || []));
       }
       dispatch(onCloseModalLoading());
@@ -157,7 +158,7 @@ const App = (props) => {
                   </div>
                 }
               >
-                <ChatBubble selectedChatPartner={selectedChatPartner} />
+                {chatBubble?.isShow && <ChatBubble selectedChatPartner={selectedChatPartner} />}
                 <Switch>
                   <Route
                     exact
@@ -183,9 +184,9 @@ const App = (props) => {
                       path={process.env.PUBLIC_URL + "/chat/:id"}
                       render={(routeProps) => (
                         <Chat
-                          // {...routeProps}
-                          // key={routeProps.match.params.id}
-                          // parentHandleNavigateChats={handleNavigateChats}
+                        // {...routeProps}
+                        // key={routeProps.match.params.id}
+                        // parentHandleNavigateChats={handleNavigateChats}
                         />
                       )}
                     />

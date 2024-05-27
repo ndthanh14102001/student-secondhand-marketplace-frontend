@@ -8,6 +8,7 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import { useDispatch, useSelector } from "react-redux";
 import { onCloseModalLoading } from "../../redux/actions/modalLoadingActions";
 import { useParams } from "react-router-dom";
+import { hideChatBubble, showChatBubble } from "../../redux/actions/chatBubbleActions";
 
 function ChatsFrame(props) {
   const { match } = props;
@@ -65,6 +66,10 @@ function ChatsFrame(props) {
   //Tắt cái modal loading
   useEffect(() => {
     dispatch(onCloseModalLoading());
+    dispatch(hideChatBubble());
+    return () => {
+      dispatch(showChatBubble());
+    }
   }, []);
 
   // Lấy thông tin người bán hiện tại theo id
