@@ -48,7 +48,6 @@ const ProductGrid = ({
         const users = await userApi.getAllUserHasProduct((response) =>
           dispatch(onShowPopupErrorBase(response))
         );
-        console.log("users", users);
         const distances = [];
         const universityCaculated = {};
         const distancesUniversity =
@@ -64,7 +63,6 @@ const ProductGrid = ({
           }
         });
         distances.sort((a, b) => Number(a.distance) - Number(b.distance));
-        console.log("distances", distances);
         setRecomenderInfo((prev) => ({
           ...prev,
           distancesUniversityHasProduct: distances,

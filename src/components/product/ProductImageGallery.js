@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import { LightgalleryProvider, LightgalleryItem } from "react-lightgallery";
 import Swiper from "react-id-swiper";
+import { IMAGE_SIZE_MEDIUM, getImageUrl } from "../../utils/image";
 
 const ProductImageGallery = ({ product }) => {
   const [gallerySwiper, getGallerySwiper] = useState(null);
@@ -26,7 +27,7 @@ const ProductImageGallery = ({ product }) => {
     spaceBetween: 10,
     loopedSlides: 4,
     loop: true,
-    effect: "fade"
+    effect: "fade",
   };
 
   const thumbnailSwiperParams = {
@@ -40,7 +41,7 @@ const ProductImageGallery = ({ product }) => {
     slideToClickedSlide: true,
     navigation: {
       nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev"
+      prevEl: ".swiper-button-prev",
     },
     renderPrevButton: () => (
       <button className="swiper-button-prev ht-swiper-button-nav">
@@ -51,7 +52,7 @@ const ProductImageGallery = ({ product }) => {
       <button className="swiper-button-next ht-swiper-button-nav">
         <i className="pe-7s-angle-right" />
       </button>
-    )
+    ),
   };
 
   return (
@@ -71,25 +72,19 @@ const ProductImageGallery = ({ product }) => {
         )} */}
         <LightgalleryProvider>
           <Swiper {...gallerySwiperParams}>
-            {imagesPorduct && Array.isArray(imagesPorduct) &&
+            {imagesPorduct &&
+              Array.isArray(imagesPorduct) &&
               imagesPorduct?.map((single, key) => {
-                const singleUrl = single?.attributes?.url;
+                const singleUrl = getImageUrl(single, IMAGE_SIZE_MEDIUM);
                 return (
                   <div key={key}>
-                    <LightgalleryItem
-                      group="any"
-                      src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
-                    >
+                    <LightgalleryItem group="any" src={singleUrl}>
                       <button>
                         <i className="pe-7s-expand1"></i>
                       </button>
                     </LightgalleryItem>
                     <div className="single-image">
-                      <img
-                        src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
-                        className="img-fluid"
-                        alt=""
-                      />
+                      <img src={singleUrl} className="img-fluid" alt="" />
                     </div>
                   </div>
                 );
@@ -99,17 +94,14 @@ const ProductImageGallery = ({ product }) => {
       </div>
       <div className="product-small-image-wrapper mt-15">
         <Swiper {...thumbnailSwiperParams}>
-          {imagesPorduct && Array.isArray(imagesPorduct) &&
+          {imagesPorduct &&
+            Array.isArray(imagesPorduct) &&
             imagesPorduct?.map((single, key) => {
-              const singleUrl = single?.attributes?.url;
+              const singleUrl = getImageUrl(single, IMAGE_SIZE_MEDIUM);
               return (
                 <div key={key}>
                   <div className="single-image">
-                    <img
-                      src={process.env.REACT_APP_SERVER_ENDPOINT + singleUrl}
-                      className="img-fluid"
-                      alt=""
-                    />
+                    <img src={singleUrl} className="img-fluid" alt="" />
                   </div>
                 </div>
               );
@@ -121,7 +113,7 @@ const ProductImageGallery = ({ product }) => {
 };
 
 ProductImageGallery.propTypes = {
-  product: PropTypes.object
+  product: PropTypes.object,
 };
 
 export default ProductImageGallery;
