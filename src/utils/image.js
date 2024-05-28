@@ -15,7 +15,6 @@ const getImageUrl = (imageData, size = IMAGE_SIZE_SMALL) => {
 };
 
 const getImageBySize = (formats, size) => {
-  console.log(formats, size);
   if (formats) {
     if (size in formats) {
       return formats[size];

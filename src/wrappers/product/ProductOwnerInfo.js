@@ -43,7 +43,7 @@ const ProductOwnerInfo = ({
 
   useEffect(() => {
     if (check === 1) {
-      let list = userAttributes?.followers || userAttributes?.followers?.data;
+      let list = userAttributes?.followers?.data || userAttributes?.followers;
       if (Array.isArray(list)) {
         list.forEach((follower) => {
           setListIdFollow(listIdFollow.concat(follower.id));
@@ -69,7 +69,7 @@ const ProductOwnerInfo = ({
         url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
         method: "put",
         data: {
-          user_followed: list,
+          followers: list,
         },
       });
       if (response.type === RESPONSE_TYPE) {
