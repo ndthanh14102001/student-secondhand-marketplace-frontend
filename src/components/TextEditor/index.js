@@ -8,9 +8,7 @@ import "react-quill/dist/quill.snow.css";
 import "../../assets/css/textEditor.css";
 import * as constants from "./constants";
 const CustomToolbar = () => (
-  <div
-    id="text-editor-toolbar"
-  >
+  <div id="text-editor-toolbar">
     {/* <select className="ql-font" defaultValue="muli">
       <option value="muli">Muli</option>
     </select> */}
@@ -55,83 +53,113 @@ Font.whitelist = [
 ];
 Quill.register(Font, true);
 
-const TextEditor = React.forwardRef(({
-  value,
-  setValue,
-  placeholder,
-  toolbarTextHoverColor,
-  toolbarBackgroundColor,
-  contentEditorBackgroundColor,
-  contentEditorTextColor,
-}, ref) => {
-  const r = React.useMemo(() => document.querySelector(":root"));
-
-  const refRectQuill = useRef();
-
-  useEffect(function setToolbarTextHoverColor() {
-    if (toolbarTextHoverColor) {
-      r.style.setProperty(constants.TOOLBAR_TEXT_HOVER_COLOR, toolbarTextHoverColor);
-    }
-  }, [toolbarTextHoverColor]);
-
-  useEffect(function setToolbarBackgroundColor() {
-    if (toolbarBackgroundColor) {
-      r.style.setProperty(constants.TOOLBAR_BACKGROUND_COLOR, toolbarBackgroundColor);
-    }
-  }, [toolbarBackgroundColor]);
-
-  useEffect(function setContentEditorBackgroundColor() {
-    if (contentEditorBackgroundColor) {
-      r.style.setProperty(constants.CONTENT_EDITOR_BACKGROUND_COLOR, contentEditorBackgroundColor);
-    }
-  }, [contentEditorBackgroundColor]);
-
-  useEffect(function setContentEditorTextColor() {
-    if (contentEditorTextColor) {
-      r.style.setProperty(constants.CONTENT_EDITOR_TEXT_COLOR, contentEditorTextColor);
-    }
-  }, [contentEditorTextColor]);
-
-  useEffect(() => {
-    refRectQuill.current.getEditor().root.dataset.placeholder = placeholder || "";
-  }, [ref, placeholder]);
-  const modules = {
-    toolbar: {
-      container: "#text-editor-toolbar",
+const TextEditor = React.forwardRef(
+  (
+    {
+      value,
+      setValue,
+      placeholder,
+      toolbarTextHoverColor,
+      toolbarBackgroundColor,
+      contentEditorBackgroundColor,
+      contentEditorTextColor,
     },
-  };
-  const formats = [
-    "header",
-    "font",
-    "size",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-    "color",
-    "align",
-  ];
-  return (
-    <div className="text-editor" ref={ref}>
-      <CustomToolbar />
-      < ReactQuill
-        ref={refRectQuill}
-        value={value}
-        onChange={setValue}
-        placeholder={placeholder}
-        modules={modules}
-        formats={formats}
-        format={formats}
-      />
-    </div>
-  );
-});
+    ref
+  ) => {
+    const r = React.useMemo(() => document.querySelector(":root"));
+
+    const refRectQuill = useRef();
+
+    useEffect(
+      function setToolbarTextHoverColor() {
+        if (toolbarTextHoverColor) {
+          r.style.setProperty(
+            constants.TOOLBAR_TEXT_HOVER_COLOR,
+            toolbarTextHoverColor
+          );
+        }
+      },
+      [toolbarTextHoverColor]
+    );
+
+    useEffect(
+      function setToolbarBackgroundColor() {
+        if (toolbarBackgroundColor) {
+          r.style.setProperty(
+            constants.TOOLBAR_BACKGROUND_COLOR,
+            toolbarBackgroundColor
+          );
+        }
+      },
+      [toolbarBackgroundColor]
+    );
+
+    useEffect(
+      function setContentEditorBackgroundColor() {
+        if (contentEditorBackgroundColor) {
+          r.style.setProperty(
+            constants.CONTENT_EDITOR_BACKGROUND_COLOR,
+            contentEditorBackgroundColor
+          );
+        }
+      },
+      [contentEditorBackgroundColor]
+    );
+
+    useEffect(
+      function setContentEditorTextColor() {
+        if (contentEditorTextColor) {
+          r.style.setProperty(
+            constants.CONTENT_EDITOR_TEXT_COLOR,
+            contentEditorTextColor
+          );
+        }
+      },
+      [contentEditorTextColor]
+    );
+
+    useEffect(() => {
+      refRectQuill.current.getEditor().root.dataset.placeholder =
+        placeholder || "";
+    }, [ref, placeholder]);
+    const modules = {
+      toolbar: {
+        container: "#text-editor-toolbar",
+      },
+    };
+    const formats = [
+      "header",
+      "font",
+      "size",
+      "bold",
+      "italic",
+      "underline",
+      "strike",
+      "blockquote",
+      "list",
+      "bullet",
+      "indent",
+      "link",
+      "image",
+      "color",
+      "align",
+    ];
+    return (
+      <div className="text-editor" ref={ref}>
+        <CustomToolbar />
+        <ReactQuill
+          ref={refRectQuill}
+          value={value}
+          onChange={setValue}
+          placeholder={placeholder}
+          modules={modules}
+          formats={formats}
+          format={formats}
+        />
+      </div>
+    );
+  }
+);
 TextEditor.PropType = {
   value: PropType.string,
   setValue: PropType.func,

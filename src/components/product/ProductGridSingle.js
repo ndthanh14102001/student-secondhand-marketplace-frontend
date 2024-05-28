@@ -48,7 +48,7 @@ const ProductGridSingle = ({
     attributes?.images?.data?.length > 0 &&
     attributes?.images?.data;
   const user = attributes?.userId?.data?.attributes;
-  const avatar = user?.avatar?.data?.attributes?.url;
+  const avatar = user?.avatar?.data?.attributes;
   return (
     <Fragment>
       <div
@@ -66,13 +66,13 @@ const ProductGridSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={getImageUrl(images[0], IMAGE_SIZE_MEDIUM)}
+                src={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
                 alt=""
               />
               {images && images?.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={getImageUrl(images[1], IMAGE_SIZE_MEDIUM)}
+                  src={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
                   alt=""
                 />
               ) : (
@@ -132,9 +132,8 @@ const ProductGridSingle = ({
               {ddmmyyhhmm(new Date(attributes?.createdAt))}{" "}
             </Typography>
             <BoxInfo>
-              <Avatar
-                src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar}
-              />
+              {console.log("avatar", avatar)}
+              <Avatar src={avatar && getImageUrl(avatar)} />
               <Box
                 className="capitalizeText"
                 sx={{

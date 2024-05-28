@@ -9,18 +9,25 @@ import { connect } from "react-redux";
 import {
   addToWishlist,
   deleteFromWishlist,
-  deleteAllFromWishlist
+  deleteAllFromWishlist,
 } from "../../redux/actions/wishlistActions";
 import { addToCart } from "../../redux/actions/cartActions";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
-import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
+import {
+  getProductImages,
+  getVietNamMoneyFormat,
+} from "../../utils/handleData";
 import { useSelector } from "react-redux";
 import wishlistApi from "../../api/wishlist-api";
 import { RESPONSE_TYPE } from "../../utils/callApi";
-import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
+import {
+  onCloseModalLoading,
+  onOpenModalLoading,
+} from "../../redux/actions/modalLoadingActions";
 import { useDispatch } from "react-redux";
+import { getImageUrl } from "../../utils/image";
 const Wishlist = ({
   location,
   cartItems,
@@ -28,26 +35,28 @@ const Wishlist = ({
   addToCart,
   wishlistItems,
   deleteFromWishlist,
-  deleteAllFromWishlist
+  deleteAllFromWishlist,
 }) => {
   const { addToast } = useToasts();
   const { pathname } = location;
   const handleDeleteFormWishList = async (wishlistItem) => {
     const response = await wishlistApi.updateWishlist({
-      wishlist: wishlistItems.filter(item => item.id !== wishlistItem.id)?.map((item) => item.id)
+      wishlist: wishlistItems
+        .filter((item) => item.id !== wishlistItem.id)
+        ?.map((item) => item.id),
     });
     if (response.type === RESPONSE_TYPE) {
       deleteFromWishlist(wishlistItem, addToast);
     }
-  }
+  };
   const handleDeleteAllWishlist = async () => {
     const response = await wishlistApi.updateWishlist({
-      wishlist: []
+      wishlist: [],
     });
     if (response.type === RESPONSE_TYPE) {
-      deleteAllFromWishlist(addToast)
+      deleteAllFromWishlist(addToast);
     }
-  }
+  };
   return (
     <Fragment>
       <MetaTags>
@@ -58,7 +67,9 @@ const Wishlist = ({
         />
       </MetaTags>
 
-      <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
+      <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>
+        Trang chủ
+      </BreadcrumbsItem>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
         Sản phẩm yêu thich
       </BreadcrumbsItem>
@@ -70,7 +81,9 @@ const Wishlist = ({
           <div className="container">
             {wishlistItems && wishlistItems?.length >= 1 ? (
               <Fragment>
-                <h3 className="cart-page-title">Danh sách sản phẩm yêu thích của bạn</h3>
+                <h3 className="cart-page-title">
+                  Danh sách sản phẩm yêu thích của bạn
+                </h3>
                 <div className="row">
                   <div className="col-12">
                     <div className="table-content table-responsive cart-table-content">
@@ -86,8 +99,9 @@ const Wishlist = ({
                         </thead>
                         <tbody>
                           {wishlistItems?.map((wishlistItem, key) => {
-                            const wishlistItemAtrributes = wishlistItem?.attributes || wishlistItem;
-                            
+                            const wishlistItemAtrributes =
+                              wishlistItem?.attributes || wishlistItem;
+
                             // const discountedPrice = getDiscountPrice(
                             //   wishlistItem.price,
                             //   wishlistItem.discount
@@ -95,11 +109,15 @@ const Wishlist = ({
                             // const finalProductPrice = (
                             //   wishlistItem.price * currency.currencyRate
                             // ).toFixed(2);
-                            const finalProductPrice = getVietNamMoneyFormat(wishlistItemAtrributes?.price);
+                            const finalProductPrice = getVietNamMoneyFormat(
+                              wishlistItemAtrributes?.price
+                            );
                             // const cartItem = cartItems.filter(
                             //   item => item.id === wishlistItem.id
                             // )[0];
-                            const wishlistItemImages = getProductImages(wishlistItemAtrributes) || wishlistItemAtrributes?.images;
+                            const wishlistItemImages =
+                              getProductImages(wishlistItemAtrributes) ||
+                              wishlistItemAtrributes?.images;
                             return (
                               <tr key={key}>
                                 <td className="product-thumbnail">
@@ -112,10 +130,7 @@ const Wishlist = ({
                                   >
                                     <img
                                       className="img-fluid"
-                                      src={
-                                        process.env.REACT_APP_SERVER_ENDPOINT +
-                                        (wishlistItemImages[0]?.attributes?.url || wishlistItemImages[0]?.url)
-                                      }
+                                      src={getImageUrl(wishlistItemImages[0])}
                                       alt=""
                                     />
                                   </Link>
@@ -139,8 +154,17 @@ const Wishlist = ({
                                   </span>
                                 </td>
                                 <td>
-                                  <span className={wishlistItemAtrributes?.status !== PRODUCT_ON_SALE_STATUS && "product-details-sold-status"}>
-                                    {wishlistItemAtrributes?.status === PRODUCT_ON_SALE_STATUS ? "Đang bán" : "Đã bán"}
+                                  <span
+                                    className={
+                                      wishlistItemAtrributes?.status !==
+                                        PRODUCT_ON_SALE_STATUS &&
+                                      "product-details-sold-status"
+                                    }
+                                  >
+                                    {wishlistItemAtrributes?.status ===
+                                    PRODUCT_ON_SALE_STATUS
+                                      ? "Đang bán"
+                                      : "Đã bán"}
                                   </span>
                                 </td>
                                 {/* <td className="product-wishlist-cart">
@@ -196,7 +220,11 @@ const Wishlist = ({
 
                                 <td className="product-remove">
                                   <button
-                                    onClick={async () => await handleDeleteFormWishList(wishlistItem)}
+                                    onClick={async () =>
+                                      await handleDeleteFormWishList(
+                                        wishlistItem
+                                      )
+                                    }
                                   >
                                     <i className="fa fa-times"></i>
                                   </button>
@@ -214,14 +242,14 @@ const Wishlist = ({
                   <div className="col-lg-12">
                     <div className="cart-shiping-update-wrapper">
                       <div className="cart-shiping-update">
-                        <Link
-                          to={process.env.PUBLIC_URL + "/category"}
-                        >
+                        <Link to={process.env.PUBLIC_URL + "/category"}>
                           Tiếp tục mua sắm
                         </Link>
                       </div>
                       <div className="cart-clear">
-                        <button onClick={async () => await handleDeleteAllWishlist()}>
+                        <button
+                          onClick={async () => await handleDeleteAllWishlist()}
+                        >
                           Làm trống sản phẩm yêu thích
                         </button>
                       </div>
@@ -260,18 +288,18 @@ Wishlist.propTypes = {
   location: PropTypes.object,
   deleteAllFromWishlist: PropTypes.func,
   deleteFromWishlist: PropTypes.func,
-  wishlistItems: PropTypes.array
+  wishlistItems: PropTypes.array,
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = (state) => {
   return {
     cartItems: state.cartData,
     wishlistItems: state.wishlistData,
-    currency: state.currencyData
+    currency: state.currencyData,
   };
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (item, addToast, quantityCount) => {
       dispatch(addToCart(item, addToast, quantityCount));
@@ -282,9 +310,9 @@ const mapDispatchToProps = dispatch => {
     deleteFromWishlist: (item, addToast, quantityCount) => {
       dispatch(deleteFromWishlist(item, addToast, quantityCount));
     },
-    deleteAllFromWishlist: addToast => {
+    deleteAllFromWishlist: (addToast) => {
       dispatch(deleteAllFromWishlist(addToast));
-    }
+    },
   };
 };
 

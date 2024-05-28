@@ -1,5 +1,11 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useCallback, useState, useEffect,useMemo } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useState,
+  useEffect,
+  useMemo,
+} from "react";
 import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
@@ -7,13 +13,17 @@ import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import callApi, { RESPONSE_TYPE,STATUS_BAD_REQUEST } from "../../utils/callApi";
+import callApi, {
+  RESPONSE_TYPE,
+  STATUS_BAD_REQUEST,
+} from "../../utils/callApi";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { updateUser } from "../../utils/userLoginStorage";
-import Avatar from '@mui/material/Avatar';
-import Typography from '@mui/material/Typography';
+import Avatar from "@mui/material/Avatar";
+import Typography from "@mui/material/Typography";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 import { getAllUniversity } from "../../utils/data/university";
+import { getImageUrl } from "../../utils/image";
 
 const MyAccount = ({ location }) => {
   const universityData = useMemo(() => {
@@ -35,7 +45,7 @@ const MyAccount = ({ location }) => {
     email: "",
     address: "",
     phone: "",
-    universityId: ""
+    universityId: "",
   });
 
   const [inputValue, setInputValue] = useState({
@@ -44,7 +54,7 @@ const MyAccount = ({ location }) => {
     email: user?.user?.email,
     address: user?.user?.address,
     phone: user?.user?.phone,
-    universityId: user?.user?.universityId
+    universityId: user?.user?.universityId,
   });
 
   const [inputPassword, setInputPassword] = useState({
@@ -60,30 +70,30 @@ const MyAccount = ({ location }) => {
   const [isChangeAvatar, setIsChangeAvatar] = useState(false);
   const [urlAvatar, setUrlAvatar] = useState();
   const [fileAvatarInput, setFileAvatarInput] = useState(null);
-  const [follower, setFollower] = useState([])
-  const [listId, setListId] = useState([])
-  const [isChangeList, setIsChangeList] = useState(false)
+  const [follower, setFollower] = useState([]);
+  const [listId, setListId] = useState([]);
+  const [isChangeList, setIsChangeList] = useState(false);
 
   async function fetchData() {
     const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.user?.id ,
+      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.user?.id,
       method: "get",
       params: {
         populate: {
           avatar: true,
           user_followed: {
-            populate: "*"
-          }
+            populate: "*",
+          },
         },
-      }
-    })
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
-      setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data?.avatar?.url);
+      setUrlAvatar(getImageUrl(response?.data?.avatar));
       const arr = response.data?.user_followed;
       setFollower(arr);
       arr?.map((userFollow) => {
-        setListId(prevList => prevList.concat(userFollow.id))
-      })
+        setListId((prevList) => prevList.concat(userFollow.id));
+      });
     }
   }
 
@@ -97,7 +107,7 @@ const MyAccount = ({ location }) => {
   }, []);
 
   const handleChangePassword = useCallback(({ target: { name, value } }) => {
-    setInputPassword((prevData) => ({ ...prevData, [name]: value }))
+    setInputPassword((prevData) => ({ ...prevData, [name]: value }));
   }, []);
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -107,74 +117,73 @@ const MyAccount = ({ location }) => {
       setReadonly(false);
       setButtonPressed(true);
       setStatusProfile(1);
-    }
-    else if (statusProfile === 1) {
+    } else if (statusProfile === 1) {
       let count = 0;
       let toast = 0;
-      if(inputValue.username === ""){
+      if (inputValue.username === "") {
         setMessageError((prev) => ({
           ...prev,
-          username: "bạn chưa nhập tên tài khoản"
-        }))
+          username: "bạn chưa nhập tên tài khoản",
+        }));
         count++;
-      }
-      else if(inputValue.username.trim()?.length < 6){
+      } else if (inputValue.username.trim()?.length < 6) {
         setMessageError((prev) => ({
           ...prev,
-          username: "bạn phải nhập tên tài khoản ít nhất 6 kí tự"
-        }))
+          username: "bạn phải nhập tên tài khoản ít nhất 6 kí tự",
+        }));
         count++;
       }
-      if(inputValue.fullName === ""){
+      if (inputValue.fullName === "") {
         setMessageError((prev) => ({
           ...prev,
-          fullName: "bạn chưa nhập họ và tên"
-        }))
+          fullName: "bạn chưa nhập họ và tên",
+        }));
         count++;
       }
-      if(inputValue.email === ""){
+      if (inputValue.email === "") {
         setMessageError((prev) => ({
           ...prev,
-          email: "bạn chưa nhập email"
-        }))
+          email: "bạn chưa nhập email",
+        }));
         count++;
-      }
-      else if(!emailRegex.test(inputValue.email.trim())){
+      } else if (!emailRegex.test(inputValue.email.trim())) {
         setMessageError((prev) => ({
           ...prev,
-          email: "email của bạn chưa đúng định dạng"
-        }))
+          email: "email của bạn chưa đúng định dạng",
+        }));
         count++;
       }
-      if(inputValue.address === ""){
+      if (inputValue.address === "") {
         setMessageError((prev) => ({
           ...prev,
-          address: "bạn chưa nhập địa chỉ của bạn"
-        }))
+          address: "bạn chưa nhập địa chỉ của bạn",
+        }));
         count++;
       }
-      if(inputValue.phone === ""){
+      if (inputValue.phone === "") {
         setMessageError((prev) => ({
           ...prev,
-          phone: "bạn chưa nhập số điện thoại"
-        }))
+          phone: "bạn chưa nhập số điện thoại",
+        }));
         count++;
-      }
-      else if(inputValue.phone.trim()?.length > 11 || inputValue.phone.trim()?.length < 10){
+      } else if (
+        inputValue.phone.trim()?.length > 11 ||
+        inputValue.phone.trim()?.length < 10
+      ) {
         setMessageError((prev) => ({
           ...prev,
-          phone: "bạn nhập sai số điện thoại"
-        }))
+          phone: "bạn nhập sai số điện thoại",
+        }));
         count++;
       }
-      if(inputValue.universityId === ""){
+      if (inputValue.universityId === "") {
         setMessageError((prev) => ({
           ...prev,
-          universityId: "bạn chọn trường đại học"
-        }))
+          universityId: "bạn chọn trường đại học",
+        }));
         count++;
       }
-      if(count === 0){
+      if (count === 0) {
         if (isChangeInput) {
           const response = await callApi({
             url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
@@ -185,12 +194,12 @@ const MyAccount = ({ location }) => {
               email: inputValue.email,
               address: inputValue.address,
               phone: inputValue.phone,
-              universityId: inputValue.universityId
+              universityId: inputValue.universityId,
             },
             // headers: {
             //   Authorization: user.token,
             // }
-          })
+          });
           if (response.type === RESPONSE_TYPE) {
             toast++;
             updateUser(response.data);
@@ -198,30 +207,29 @@ const MyAccount = ({ location }) => {
         }
       }
       if (isChangeAvatar) {
-
         let formData = new FormData();
-        formData.append('files', fileAvatarInput);
+        formData.append("files", fileAvatarInput);
 
         const response1 = await callApi({
           url: process.env.REACT_APP_API_ENDPOINT + "/upload",
           method: "post",
           data: formData,
-          headers: { 
-            'Content-Type': 'multipart/form-data',
+          headers: {
+            "Content-Type": "multipart/form-data",
             Authorization: user.token,
-           },
-        })
+          },
+        });
         if (response1.type === RESPONSE_TYPE) {
           const response2 = await callApi({
             url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
             method: "put",
             data: {
-              "avatar": response1.data[0].id,
+              avatar: response1.data[0].id,
             },
-            // headers: { 
+            // headers: {
             //   Authorization: user.token,
             // },
-          })
+          });
           if (response2.type === RESPONSE_TYPE) {
             toast++;
           }
@@ -230,7 +238,7 @@ const MyAccount = ({ location }) => {
       if (toast > 0) {
         addToast("thay đổi thông tin cá nhân thành công", {
           appearance: "success",
-          autoDismiss: true
+          autoDismiss: true,
         });
       }
 
@@ -238,12 +246,12 @@ const MyAccount = ({ location }) => {
       setButtonPressed(false);
       setStatusProfile(0);
     }
-  }
+  };
 
   const handleOpenImage = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "image/*";
     input.onchange = (event) => {
       const file = event.target.files[0];
       setFileAvatarInput(file);
@@ -253,44 +261,42 @@ const MyAccount = ({ location }) => {
           setUrlAvatar(reader.result);
         };
         reader.readAsDataURL(file);
-        
       }
     };
     input.click();
     setIsChangeAvatar(true);
   };
 
-  const handlePasswordChange = async() => {
+  const handlePasswordChange = async () => {
     let count = 0;
-    if(inputPassword.currentPassword === ""){
+    if (inputPassword.currentPassword === "") {
       setMessageError((prev) => ({
         ...prev,
-        currentPassword: "bạn chưa nhập mật khẩu hiện tại"
-      }))
+        currentPassword: "bạn chưa nhập mật khẩu hiện tại",
+      }));
       count++;
     }
-    if(inputPassword.password === ""){
+    if (inputPassword.password === "") {
       setMessageError((prev) => ({
         ...prev,
-        password: "bạn chưa nhập mật khẩu mới"
-      }))
+        password: "bạn chưa nhập mật khẩu mới",
+      }));
       count++;
     }
-    if(inputPassword.passwordConfirm === ""){
+    if (inputPassword.passwordConfirm === "") {
       setMessageError((prev) => ({
         ...prev,
-        passwordConfirm: "bạn chưa nhập lại mật khẩu"
-      }))
+        passwordConfirm: "bạn chưa nhập lại mật khẩu",
+      }));
       count++;
     }
-    if(count === 0 ){ 
-      if(inputPassword.password !== inputPassword.passwordConfirm) {
+    if (count === 0) {
+      if (inputPassword.password !== inputPassword.passwordConfirm) {
         setMessageError((prev) => ({
           ...prev,
-          passwordConfirm: "mật khẩu chưa chính xác"
-        }))
-      }
-      else{
+          passwordConfirm: "mật khẩu chưa chính xác",
+        }));
+      } else {
         setMessageError("");
         const response = await callApi({
           url: process.env.REACT_APP_API_ENDPOINT + "/auth/change-password/",
@@ -298,35 +304,34 @@ const MyAccount = ({ location }) => {
           data: {
             currentPassword: inputPassword.currentPassword,
             password: inputPassword.password,
-            passwordConfirmation: inputPassword.passwordConfirm
+            passwordConfirmation: inputPassword.passwordConfirm,
           },
           headers: {
             Authorization: user.token,
-          }
-        })
+          },
+        });
         if (response.type === RESPONSE_TYPE) {
           addToast("thay đổi mật khẩu thành công", {
             appearance: "success",
-            autoDismiss: true
+            autoDismiss: true,
           });
-        }
-        else {
+        } else {
           if (response.status === STATUS_BAD_REQUEST) {
             addToast("mật khẩu không chính xác", {
               appearance: "error",
-              autoDismiss: true
+              autoDismiss: true,
             });
           }
         }
       }
     }
-  }
+  };
 
   const handleChangeList = (isOpen) => {
     if (isOpen) {
-      setIsChangeList(prev => !prev);
-    } 
-  }
+      setIsChangeList((prev) => !prev);
+    }
+  };
 
   return (
     <Fragment>
@@ -337,7 +342,9 @@ const MyAccount = ({ location }) => {
           content="Compare page of flone react minimalist eCommerce template."
         />
       </MetaTags>
-      <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
+      <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>
+        Trang chủ
+      </BreadcrumbsItem>
       <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
         Thông tin của tôi
       </BreadcrumbsItem>
@@ -367,70 +374,165 @@ const MyAccount = ({ location }) => {
                             <div className="row">
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
-                                  <Avatar sx={{
-                                    width: 150,
-                                    height: 150,
-                                    m: "auto",
-                                  }}
+                                  <Avatar
+                                    sx={{
+                                      width: 150,
+                                      height: 150,
+                                      m: "auto",
+                                    }}
                                     alt="avatar"
                                     src={urlAvatar ? urlAvatar : "abc"}
                                     onClick={readonly ? null : handleOpenImage}
-                                    className={buttonPressed ? "input-style-active pointer" : ""}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active pointer"
+                                        : ""
+                                    }
                                   />
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Tên tài khoản</label>
-                                  <input type="text" name="username" value={inputValue?.username} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.username}</Typography>
+                                  <input
+                                    type="text"
+                                    name="username"
+                                    value={inputValue?.username}
+                                    readOnly={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.username}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Họ tên</label>
-                                  <input type="text" name="fullName" value={inputValue?.fullName} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.fullName}</Typography>
+                                  <input
+                                    type="text"
+                                    name="fullName"
+                                    value={inputValue?.fullName}
+                                    readOnly={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.fullName}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Email </label>
-                                  <input id="email" name="email" type="email" value={inputValue?.email} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.email}</Typography>
+                                  <input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={inputValue?.email}
+                                    readOnly={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.email}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Địa chỉ</label>
-                                  <input id="address" name="address" type="email" value={inputValue?.address} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.address}</Typography>
+                                  <input
+                                    id="address"
+                                    name="address"
+                                    type="email"
+                                    value={inputValue?.address}
+                                    readOnly={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.address}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Số điện thoại</label>
-                                  <input id="phone" name="phone" type="number" value={inputValue?.phone} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.phone}</Typography>
+                                  <input
+                                    id="phone"
+                                    name="phone"
+                                    type="number"
+                                    value={inputValue?.phone}
+                                    readOnly={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.phone}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-6 col-md-6">
                                 <div className="billing-info">
                                   <label>Trường đại học</label>
-                                  <select id="universityId" name="universityId"  value={inputValue?.universityId} disabled={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"}>
-                                    <option value="">--Chọn trường đại học của bạn--</option>
-                                    {universityData?.map((list,index)=>(
-                                      <option key={index} value={list.id} >{list?.teN_DON_VI}</option>
+                                  <select
+                                    id="universityId"
+                                    name="universityId"
+                                    value={inputValue?.universityId}
+                                    disabled={readonly}
+                                    onChange={handleInputChange}
+                                    className={
+                                      buttonPressed
+                                        ? "input-style-active"
+                                        : "input-style"
+                                    }
+                                  >
+                                    <option value="">
+                                      --Chọn trường đại học của bạn--
+                                    </option>
+                                    {universityData?.map((list, index) => (
+                                      <option key={index} value={list.id}>
+                                        {list?.teN_DON_VI}
+                                      </option>
                                     ))}
                                   </select>
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.universityId}</Typography>
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.universityId}
+                                  </Typography>
                                   {/* <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} /> */}
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="button" onClick={handleChangeProfile}>Thay đổi</button>
+                                <button
+                                  type="button"
+                                  onClick={handleChangeProfile}
+                                >
+                                  Thay đổi
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -456,28 +558,51 @@ const MyAccount = ({ location }) => {
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Mật khẩu hiện tại </label>
-                                  <input type="password" name="currentPassword" onChange={handleChangePassword} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.currentPassword}</Typography>
+                                  <input
+                                    type="password"
+                                    name="currentPassword"
+                                    onChange={handleChangePassword}
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.currentPassword}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Mật khẩu mới</label>
-                                  <input type="password" name="password" onChange={handleChangePassword} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.password}</Typography>
+                                  <input
+                                    type="password"
+                                    name="password"
+                                    onChange={handleChangePassword}
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.password}
+                                  </Typography>
                                 </div>
                               </div>
                               <div className="col-lg-12 col-md-12">
                                 <div className="billing-info">
                                   <label>Nhập lại mật khẩu</label>
-                                  <input type="password" name="passwordConfirm" onChange={handleChangePassword} />
-                                  <Typography color="error" sx={{ mt:1 }}>{messageError.passwordConfirm}</Typography>
+                                  <input
+                                    type="password"
+                                    name="passwordConfirm"
+                                    onChange={handleChangePassword}
+                                  />
+                                  <Typography color="error" sx={{ mt: 1 }}>
+                                    {messageError.passwordConfirm}
+                                  </Typography>
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
                               <div className="billing-btn">
-                                <button type="button" onClick={handlePasswordChange}>Thay đổi</button>
+                                <button
+                                  type="button"
+                                  onClick={handlePasswordChange}
+                                >
+                                  Thay đổi
+                                </button>
                               </div>
                             </div>
                           </div>
@@ -494,13 +619,22 @@ const MyAccount = ({ location }) => {
                       </Card.Header>
                       <Accordion.Collapse eventKey="2">
                         <Card.Body>
-                          {
-                            follower?.length === 0 ? 
-                            <Typography> Bạn chưa theo dõi người dùng nào</Typography> :
-                            follower?.map((fl,index) => (
-                              <ProductOwnerInfo key={index} user={fl} check={2} listFollow={listId} changeList={handleChangeList} />
+                          {follower?.length === 0 ? (
+                            <Typography>
+                              {" "}
+                              Bạn chưa theo dõi người dùng nào
+                            </Typography>
+                          ) : (
+                            follower?.map((fl, index) => (
+                              <ProductOwnerInfo
+                                key={index}
+                                user={fl}
+                                check={2}
+                                listFollow={listId}
+                                changeList={handleChangeList}
+                              />
                             ))
-                          }
+                          )}
                         </Card.Body>
                       </Accordion.Collapse>
                     </Card>
@@ -559,7 +693,7 @@ const MyAccount = ({ location }) => {
 };
 
 MyAccount.propTypes = {
-  location: PropTypes.object
+  location: PropTypes.object,
 };
 
 export default MyAccount;

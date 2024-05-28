@@ -347,7 +347,11 @@ const IconGroup = ({
                 placeholder="Tìm kiếm..."
                 onChange={(e) => setSearchValue(e.target.value)}
               />
-              <button className="button-search" onClick={handleClickSearch}>
+              <button
+                className="button-search"
+                onClick={handleClickSearch}
+                type="submit"
+              >
                 <i className="pe-7s-search" />
               </button>
             </form>

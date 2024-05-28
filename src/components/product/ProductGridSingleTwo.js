@@ -7,6 +7,7 @@ import { getDiscountPrice } from "../../helpers/product";
 import ProductModal from "./ProductModal";
 import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
+import { getImageUrl } from "../../utils/image";
 
 const ProductGridSingleTwo = ({
   product,
@@ -46,13 +47,13 @@ const ProductGridSingleTwo = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 0 && images[0]?.attributes?.url}`}
+                src={getImageUrl(images?.[0])}
                 alt=""
               />
               {images && images?.length && images?.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 0 && images[1]?.attributes?.url}`}
+                  src={getImageUrl(images?.[1])}
                   alt=""
                 />
               ) : (
