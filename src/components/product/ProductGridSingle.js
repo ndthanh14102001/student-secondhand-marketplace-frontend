@@ -132,7 +132,6 @@ const ProductGridSingle = ({
               {ddmmyyhhmm(new Date(attributes?.createdAt))}{" "}
             </Typography>
             <BoxInfo>
-              {console.log("avatar", avatar)}
               <Avatar src={avatar && getImageUrl(avatar)} />
               <Box
                 className="capitalizeText"
