@@ -162,7 +162,7 @@ function ChatFrame(props) {
   useEffect(() => {
     // if(partner !== undefined) {
     const listener = (message) => {
-      console.log("message", message);
+      
       const formattedMessage = formatMessage({
         id: message?.id,
 

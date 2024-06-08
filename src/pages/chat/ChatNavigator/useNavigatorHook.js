@@ -8,7 +8,7 @@ const useNavigatorHook = () => {
   const history = useHistory();
   const params = useParams();
   const [partners, setPartners] = useState([]);
-  console.log("partners", partners);
+  
   const socket = useSelector((state) => state.socket.socket);
   useEffect(() => {
     (async function getPartnerts() {
@@ -31,7 +31,7 @@ const useNavigatorHook = () => {
               break;
             }
           }
-          console.log("oldPartners", oldPartners);
+          
           return [...oldPartners];
         });
       } else {

@@ -118,7 +118,7 @@ const IconGroup = ({
       const product = notification?.product;
       return {
         id: notification?.id,
-        attributes:  {
+        attributes: {
           createdAt: Date.now(),
           type: 1,
           updatedAt: Date.now(),
@@ -153,11 +153,7 @@ const IconGroup = ({
       };
     };
     if (socket) {
-      console.log("socket", socket);
       socket.on(NOTIFICATION, (message) => {
-        console.log("message", message);
-        console.log("convertReceivedNotificationInSocketToNotifcation", convertReceivedNotificationInSocketToNotifcation(message));
-
         setNotifications((oldNotifications) => [
           convertReceivedNotificationInSocketToNotifcation(message),
           ...oldNotifications,
