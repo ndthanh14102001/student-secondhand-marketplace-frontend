@@ -33,6 +33,7 @@ import { onClosePopup } from '../../redux/actions/popupActions';
 
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { getUniversityById } from "../../utils/data/university";
+import { getImageUrl } from "../../utils/image";
 
 function a11yProps(index) {
   return {
@@ -61,7 +62,7 @@ const UserInfo = ({ match }) => {
   const [listIdFollow, setListIdFollow] = useState([]);
 
   const avatar = useMemo(() => {
-    return userInfo?.avatar?.url;
+    return userInfo?.avatar;
   }, [userInfo]);
 
   const [productStatusShow, setProductSatusShow] = React.useState(PRODUCT_ON_SALE_KEY);
@@ -416,7 +417,7 @@ const UserInfo = ({ match }) => {
                       justifyContent: "center"
                     }}>
                     <Avatar
-                      src={`${process.env.REACT_APP_SERVER_ENDPOINT}${avatar}`}
+                      src={getImageUrl(avatar)}
                       sx={{ width: "100px", height: "100px", border: "1px solid #ccc" }}>
                     </Avatar>
                     <Box marginLeft={"1rem"} sx={{ display: 'flex', flexDirection: 'column' }}>
