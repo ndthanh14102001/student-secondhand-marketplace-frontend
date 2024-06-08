@@ -56,6 +56,17 @@ const notificationApi = {
     });
     return response;
   },
+  readAll: async () => {
+    const loggedInUser = getUserLogin();
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/read/notifications",
+      method: "patch",
+      headers: {
+        authorization: loggedInUser?.token,
+      },
+    });
+    return response;
+  },
 };
 
 export default notificationApi;

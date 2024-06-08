@@ -256,41 +256,18 @@ const IconGroup = ({
   };
 
   const handleReadAll = async () => {
-    let list = [];
-    notifications?.map((item) => {
-      list.push(item?.id);
-      setRead((prev) => prev.concat(item?.id));
-    });
-
-    const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
-      method: "get",
-      params: {
-        populate: {
-          notification_reads: true,
-        },
-      },
-    });
+    const response = await notificationApi.readAll();
     if (response.type === RESPONSE_TYPE) {
-      let read = [];
-      let read1 = response.data?.notification_reads;
-      read1?.map((item) => {
-        read.push(item.id);
+      setNotifications((oldNotifications) => {
+        const newNotifications = [];
+        for (let index = 0; index < oldNotifications.length; index++) {
+          const oldNotification = oldNotifications[index];
+          oldNotification?.attributes?.readUsers?.data?.push(user);
+          newNotifications.push(oldNotification);
+        }
+        return newNotifications;
       });
-      let final = list.concat(read);
-      const response1 = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.id,
-        method: "put",
-        data: {
-          notification_reads: final,
-        },
-      });
-      if (response1.type === RESPONSE_TYPE) {
-        addToast("đã đọc tất cả thông báo", {
-          appearance: "success",
-          autoDismiss: true,
-        });
-      }
+      setUnreadNotifications([]);
     }
   };
   const getProduct = (item, status) => {
@@ -412,11 +389,11 @@ const IconGroup = ({
             <button className="account-setting-active" onClick={handleClick}>
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
               <i className="pe-7s-bell" />
-              <span className="count-styles">
-                {unReadNotifications && unReadNotifications?.length
-                  ? unReadNotifications?.length
-                  : 0}
-              </span>
+              {unReadNotifications?.length > 0 && (
+                <span className="count-styles">
+                  {unReadNotifications?.length || 0}
+                </span>
+              )}
             </button>
             <div
               className="account-dropdown Dropdown-underLine notification_dd"
