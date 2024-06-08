@@ -28,6 +28,7 @@ import { NOTIFICATION } from "../../pages/chat/constants";
 import notificationApi from "../../api/notification";
 import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
 import { v4 } from "uuid";
+import { getNotificationMessageByNotificationType } from "../../utils/notification";
 
 function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
@@ -120,7 +121,7 @@ const IconGroup = ({
         id: notification?.id,
         attributes: {
           createdAt: Date.now(),
-          type: 1,
+          type: notification?.type,
           updatedAt: Date.now(),
           publishedAt: Date.now(),
           sender: {
@@ -154,6 +155,7 @@ const IconGroup = ({
     };
     if (socket) {
       socket.on(NOTIFICATION, (message) => {
+        console.log("message", message);
         setNotifications((oldNotifications) => [
           convertReceivedNotificationInSocketToNotifcation(message),
           ...oldNotifications,
@@ -440,7 +442,10 @@ const IconGroup = ({
                         <div className="notify_data">
                           <div className="data">
                             <b>{sender?.fullName} </b>
-                            đăng bán <b>{product?.attributes?.name}</b>
+                            {getNotificationMessageByNotificationType(
+                              item?.attributes
+                            )}{" "}
+                            <b>{product?.attributes?.name}</b>
                           </div>
                           <div className="date">
                             {handleDate(item?.attributes?.updatedAt)}

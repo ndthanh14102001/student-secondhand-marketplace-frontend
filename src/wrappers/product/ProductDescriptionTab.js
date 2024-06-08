@@ -6,17 +6,17 @@ import { useState } from "react";
 import { useEffect } from "react";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
-import SendIcon from '@mui/icons-material/Send';
-import { Box,Paper,InputBase,Avatar } from "@mui/material";
+import SendIcon from "@mui/icons-material/Send";
+import { Box, Paper, InputBase, Avatar } from "@mui/material";
 import { useToasts } from "react-toast-notifications";
-import { useDispatch } from 'react-redux';
-import { onShowPopup } from '../../redux/actions/popupActions';
-import { POPUP_TYPE_ERROR } from '../../redux/reducers/popupReducer';
-import { onClosePopup } from '../../redux/actions/popupActions';
-import '../../assets/css/textEditor.css';
+import { useDispatch } from "react-redux";
+import { onShowPopup } from "../../redux/actions/popupActions";
+import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
+import { onClosePopup } from "../../redux/actions/popupActions";
+import "../../assets/css/textEditor.css";
+import commentApi from "../../api/comment";
 
 const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
-
   const user = getUserLogin();
 
   const [urlAvatar, setUrlAvatar] = useState();
@@ -26,42 +26,47 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
   const { addToast } = useToasts();
   const dispatch = useDispatch();
-  
-  const MessageComponent = <div dangerouslySetInnerHTML={{ __html: productFullDesc }} />;
+
+  const MessageComponent = (
+    <div dangerouslySetInnerHTML={{ __html: productFullDesc }} />
+  );
 
   async function getUrlAvatar() {
-    if(user !== null){
+    if (user !== null) {
       const response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id + '?populate=*',
+        url:
+          process.env.REACT_APP_API_ENDPOINT +
+          "/users/" +
+          user.user.id +
+          "?populate=*",
         method: "get",
-      })
+      });
       if (response.type === RESPONSE_TYPE) {
-        setUrlAvatar(process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url);
+        setUrlAvatar(
+          process.env.REACT_APP_SERVER_ENDPOINT + response.data.avatar?.url
+        );
       }
-    }
-    else
-      setUrlAvatar("abc");
+    } else setUrlAvatar("abc");
   }
 
   async function fetchData() {
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/comments",
       method: "get",
-      headers: { 
-        'Content-Type': 'application/json',
+      headers: {
+        "Content-Type": "application/json",
         // Authorization: user.token,
       },
       params: {
         filters: {
-          product: id
+          product: id,
         },
-        populate: "user.avatar"
-      }
-    })
+        populate: "user.avatar",
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
       setListComments(response.data.data);
     }
-    
   }
 
   useEffect(() => {
@@ -71,48 +76,53 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
   const formatDate = (date) => {
     const inputDate = new Date(date);
-    const minutes = inputDate.getMinutes() < 10 ? `0${inputDate.getMinutes()}`: inputDate.getMinutes();
-    
-    return `${inputDate.getDate().toString().padStart(2, '0')}-${(inputDate.getMonth() + 1).toString().padStart(2, '0')}-${inputDate.getFullYear()} ${inputDate.getHours()}:`+minutes;
-  }
+    const minutes =
+      inputDate.getMinutes() < 10
+        ? `0${inputDate.getMinutes()}`
+        : inputDate.getMinutes();
+
+    return (
+      `${inputDate.getDate().toString().padStart(2, "0")}-${(
+        inputDate.getMonth() + 1
+      )
+        .toString()
+        .padStart(
+          2,
+          "0"
+        )}-${inputDate.getFullYear()} ${inputDate.getHours()}:` + minutes
+    );
+  };
 
   const handleInputChange = (event) => {
     setComment(event.target.value);
-  }
+  };
 
   const handleSendCmt = async () => {
-    if(user !== null){
-    const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/comments",
-      method: "post",
-      data: {
-        data:{
+    if (user !== null) {
+      const response = await commentApi.create({
+        data: {
           description: comment,
           product: id,
           user: user?.user.id,
-        }
-      }
+        },
       });
-      if(response.type === RESPONSE_TYPE){
+      if (response.type === RESPONSE_TYPE) {
         fetchData();
         setComment("");
-        addToast("Bình luận thành công", {
-          appearance: "success",
-          autoDismiss: true
-        });
       }
+    } else {
+      dispatch(
+        onShowPopup({
+          type: POPUP_TYPE_ERROR,
+          title: "Đăng nhập",
+          content: "Hãy quay lại đăng nhập để bình luận",
+          showButtonCancel: false,
+          closeAction: () => dispatch(onClosePopup()),
+          clickOkeAction: () => dispatch(onClosePopup()),
+        })
+      );
     }
-    else{
-      dispatch(onShowPopup({
-        type: POPUP_TYPE_ERROR,
-        title: "Đăng nhập",
-        content: "Hãy quay lại đăng nhập để bình luận",
-        showButtonCancel: false,
-        closeAction: () => dispatch(onClosePopup()),
-        clickOkeAction: () => dispatch(onClosePopup()),
-      }))
-    }
-  }
+  };
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -122,7 +132,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
     setIsHovered(false);
   };
 
-  const color = isHovered ? 'primary' : 'action';
+  const color = isHovered ? "primary" : "action";
 
   return (
     <div className={`description-review-area ${spaceBottomClass}`}>
@@ -139,7 +149,9 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                 <Nav.Link eventKey="productDescription">Mô tả</Nav.Link>
               </Nav.Item>
               <Nav.Item>
-                <Nav.Link eventKey="productReviews">Bình luận({listComments?.length})</Nav.Link>
+                <Nav.Link eventKey="productReviews">
+                  Bình luận({listComments?.length})
+                </Nav.Link>
               </Nav.Item>
             </Nav>
             <Tab.Content className="description-review-bottom">
@@ -167,50 +179,56 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
               </Tab.Pane>
               <Tab.Pane eventKey="productReviews">
                 <div className="review">
-                {listComments.slice(0, 5)?.map((row, index) => (
-                  <div key={index}>
-                   <div className="row">
-                   <div className="col-lg-7">
-                     <div className="review-wrapper">
-                       <div className="single-review">
-                         <div className="review-img">
-                           <Avatar
-                             src={
-                               process.env.REACT_APP_SERVER_ENDPOINT + row.attributes.user.data?.attributes?.avatar?.data?.attributes?.url ?
-                               process.env.REACT_APP_SERVER_ENDPOINT + row.attributes.user.data?.attributes?.avatar?.data?.attributes?.url : "abc"
-                             }
-                             alt=""
-                             sx={{  mr: 1 }}
-                           />
-                         </div>
-                         <div className="review-content">
-                           <div className="review-top-wrap">
-                             <div className="review-left">
-                               <div className="review-name">
-                                 <h4>{row.attributes.user.data?.attributes?.username}</h4>
-                               </div>
-                               {/* <div className="review-rating">
+                  {listComments.slice(0, 5)?.map((row, index) => (
+                    <div key={index}>
+                      <div className="row">
+                        <div className="col-lg-7">
+                          <div className="review-wrapper">
+                            <div className="single-review">
+                              <div className="review-img">
+                                <Avatar
+                                  src={
+                                    process.env.REACT_APP_SERVER_ENDPOINT +
+                                    row.attributes.user.data?.attributes?.avatar
+                                      ?.data?.attributes?.url
+                                      ? process.env.REACT_APP_SERVER_ENDPOINT +
+                                        row.attributes.user.data?.attributes
+                                          ?.avatar?.data?.attributes?.url
+                                      : "abc"
+                                  }
+                                  alt=""
+                                  sx={{ mr: 1 }}
+                                />
+                              </div>
+                              <div className="review-content">
+                                <div className="review-top-wrap">
+                                  <div className="review-left">
+                                    <div className="review-name">
+                                      <h4>
+                                        {
+                                          row.attributes.user.data?.attributes
+                                            ?.username
+                                        }
+                                      </h4>
+                                    </div>
+                                    {/* <div className="review-rating">
                                  <i className="fa fa-star" />
                                  <i className="fa fa-star" />
                                  <i className="fa fa-star" />
                                  <i className="fa fa-star" />
                                  <i className="fa fa-star" />
                                </div> */}
-                             </div>
-                           </div>
-                           <div className="review-date">
-                             <p>
-                               {formatDate(row.attributes.updatedAt)}
-                             </p>
-                           </div>
-                           <div className="review-bottom">
-                             <p>
-                               {row.attributes.description}
-                             </p>
-                           </div>
-                         </div>
-                       </div>
-                       {/* <div className="single-review child-review">
+                                  </div>
+                                </div>
+                                <div className="review-date">
+                                  <p>{formatDate(row.attributes.updatedAt)}</p>
+                                </div>
+                                <div className="review-bottom">
+                                  <p>{row.attributes.description}</p>
+                                </div>
+                              </div>
+                            </div>
+                            {/* <div className="single-review child-review">
                          <div className="review-img">
                            <img
                              src={
@@ -245,32 +263,46 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                            </div>
                          </div>
                        </div> */}
-                     </div>
-                   </div>
-                 </div>
-                 <div className="dash"></div>
-                 </div>
-                ))}
-                <div>
-                  Bình Luận
-                </div>
-                <Box sx={{ display: 'flex', flexDirection: 'row', flexWrap: "wrap", mt: 1}}>
-                  <Avatar 
-                    src= { urlAvatar }
-                    alt=""
-                    sx={{  mr: 1 }}
-                  />
-                  <Paper sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: "950px"}}>
-                    <InputBase
+                          </div>
+                        </div>
+                      </div>
+                      <div className="dash"></div>
+                    </div>
+                  ))}
+                  <div>Bình Luận</div>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      mt: 1,
+                    }}
+                  >
+                    <Avatar src={urlAvatar} alt="" sx={{ mr: 1 }} />
+                    <Paper
+                      sx={{
+                        p: "2px 4px",
+                        display: "flex",
+                        alignItems: "center",
+                        width: "950px",
+                      }}
+                    >
+                      <InputBase
                         sx={{ ml: 1, flex: 1 }}
                         placeholder="Hãy để lại một chút ý kiến của bạn khi mua sản phẩm này..."
-                        inputProps={{ 'aria-label': 'search customer' }}
+                        inputProps={{ "aria-label": "search customer" }}
                         value={comment}
                         onChange={handleInputChange}
-                    />
-                    <SendIcon color={color} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} onClick={handleSendCmt} sx={{ cursor: 'pointer' }} />
-                  </Paper>
-                </Box>
+                      />
+                      <SendIcon
+                        color={color}
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                        onClick={handleSendCmt}
+                        sx={{ cursor: "pointer" }}
+                      />
+                    </Paper>
+                  </Box>
                 </div>
               </Tab.Pane>
             </Tab.Content>
@@ -283,7 +315,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
 
 ProductDescriptionTab.propTypes = {
   productFullDesc: PropTypes.string,
-  spaceBottomClass: PropTypes.string
+  spaceBottomClass: PropTypes.string,
 };
 
 export default ProductDescriptionTab;
