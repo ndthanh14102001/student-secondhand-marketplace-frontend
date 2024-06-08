@@ -8,13 +8,13 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import SendIcon from "@mui/icons-material/Send";
 import { Box, Paper, InputBase, Avatar } from "@mui/material";
-import { useToasts } from "react-toast-notifications";
 import { useDispatch } from "react-redux";
 import { onShowPopup } from "../../redux/actions/popupActions";
 import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
 import { onClosePopup } from "../../redux/actions/popupActions";
 import "../../assets/css/textEditor.css";
 import commentApi from "../../api/comment";
+import { formatDateToShow } from "../../utils/DateFormat";
 
 const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
   const user = getUserLogin();
@@ -24,7 +24,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
   const [comment, setComment] = useState();
   const [isHovered, setIsHovered] = useState(false);
 
-  const { addToast } = useToasts();
   const dispatch = useDispatch();
 
   const MessageComponent = (
@@ -73,25 +72,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
     fetchData();
     getUrlAvatar();
   }, []);
-
-  const formatDate = (date) => {
-    const inputDate = new Date(date);
-    const minutes =
-      inputDate.getMinutes() < 10
-        ? `0${inputDate.getMinutes()}`
-        : inputDate.getMinutes();
-
-    return (
-      `${inputDate.getDate().toString().padStart(2, "0")}-${(
-        inputDate.getMonth() + 1
-      )
-        .toString()
-        .padStart(
-          2,
-          "0"
-        )}-${inputDate.getFullYear()} ${inputDate.getHours()}:` + minutes
-    );
-  };
 
   const handleInputChange = (event) => {
     setComment(event.target.value);
@@ -221,7 +201,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                                   </div>
                                 </div>
                                 <div className="review-date">
-                                  <p>{formatDate(row.attributes.updatedAt)}</p>
+                                  <p>{formatDateToShow(row.attributes.updatedAt)}</p>
                                 </div>
                                 <div className="review-bottom">
                                   <p>{row.attributes.description}</p>

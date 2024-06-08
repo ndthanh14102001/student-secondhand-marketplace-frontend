@@ -1,38 +1,25 @@
 import PropTypes from "prop-types";
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import {
-  Box,
-  Button,
-  Card,
-  ClickAwayListener,
-  Typography,
-} from "@mui/material";
+import { Button, ClickAwayListener } from "@mui/material";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { useToasts } from "react-toast-notifications";
 import { clearUserLogin } from "../../utils/userLoginStorage";
 import { logout } from "../../redux/actions/userStorageActions";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from "@mui/material/Avatar";
 import { useEffect } from "react";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
-import Snackbar from "@mui/material/Snackbar";
-import IconButton from "@mui/material/IconButton";
-import CloseIcon from "@mui/icons-material/Close";
-import Slide from "@mui/material/Slide";
 import { setNameFilter } from "../../redux/actions/filterActions";
 import { NOTIFICATION } from "../../pages/chat/constants";
 import notificationApi from "../../api/notification";
 import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
 import { v4 } from "uuid";
 import { getNotificationMessageByNotificationType } from "../../utils/notification";
-
-function TransitionUp(props) {
-  return <Slide {...props} direction="up" />;
-}
+import { formatDateToShow } from "../../utils/DateFormat";
 
 const IconGroup = ({
   currency,
@@ -53,16 +40,7 @@ const IconGroup = ({
 
   const [notifications, setNotifications] = useState([]);
   const [unReadNotifications, setUnreadNotifications] = useState([]);
-  const [read, setRead] = useState([]);
-  const [transition, setTransition] = React.useState(undefined);
-  const [messageInfo, setMessageInfo] = React.useState(undefined);
-  const [messageSender, setMessageSender] = React.useState("");
-  const [state, setState] = React.useState({
-    open: false,
-  });
-  const { open } = state;
   const [searchValue, setSearchValue] = useState("");
-  // const [listIdRead, setListIdRead] = useState([]);
 
   const { addToast } = useToasts();
   const handleClick = (e) => {
@@ -170,86 +148,6 @@ const IconGroup = ({
       };
     }
   }, [socket]);
-
-  useEffect(() => {
-    const updateMessage = async () => {
-      const response2 = await callApi({
-        url: `${process.env.REACT_APP_API_ENDPOINT}/users/${messageSender?.from?.id}`,
-        method: "get",
-        params: {
-          populate: {
-            avatar: true,
-          },
-        },
-      });
-
-      if (response2.type === RESPONSE_TYPE) {
-        const sender = {
-          data: {
-            id: response2?.data?.id,
-            attributes: {
-              fullName: response2?.data?.fullName,
-              avatar: {
-                data: {
-                  attributes: {
-                    url: response2?.data?.avatar?.url
-                      ? response2?.data?.avatar?.url
-                      : "",
-                  },
-                },
-              },
-            },
-          },
-        };
-
-        const data = {
-          id: messageSender?.id,
-          attributes: {
-            content: messageSender?.content,
-            createdAt: messageSender?.createdAt,
-            from: sender,
-          },
-        };
-
-        // setNotifications((prevNoti) => [data, ...prevNoti]);
-        setState({ open: true });
-        setTransition(() => TransitionUp);
-
-        const messagesender = `${
-          response2.data.fullName
-        } vừa mới đăng bán ${getProduct(messageSender.content, 2)}`;
-        setMessageInfo(messagesender);
-      }
-    };
-
-    updateMessage();
-  }, [messageSender]);
-
-  const handleClose = () => {
-    setState({ ...state, open: false });
-  };
-
-  const handleDate = (date) => {
-    const inputDate = new Date(date);
-    const now = new Date();
-    const oneDayInMs = 1000 * 60 * 60 * 24;
-    const oneHourInMs = 1000 * 60 * 60;
-    const oneMinuteInMs = 1000 * 60;
-    const diffInDays = Math.floor(
-      (now.getTime() - inputDate.getTime()) / oneDayInMs
-    );
-    const diffInHours = Math.floor(
-      (now.getTime() - inputDate.getTime()) / oneHourInMs
-    );
-    const diffInMinutes = Math.floor(
-      (now.getTime() - inputDate.getTime()) / oneMinuteInMs
-    );
-    if (diffInDays > 0) return `${diffInDays} ngày trước`;
-    if (diffInHours > 0) return `${diffInHours} giờ trước`;
-    if (diffInMinutes > 0) return `${diffInMinutes} phút trước`;
-    return "ngay bây giờ";
-  };
-
   const handleReadNotification = async (notificationId, product) => {
     const response = await notificationApi.read(notificationId);
     if (response.type === RESPONSE_TYPE) {
@@ -271,19 +169,6 @@ const IconGroup = ({
       });
       setUnreadNotifications([]);
     }
-  };
-  const getProduct = (item, status) => {
-    const parts = item?.split(";");
-    if (status === 1) return parts?.[0];
-    return parts?.[1];
-  };
-
-  const handleClickDirect = () => {
-    history.push(
-      process.env.PUBLIC_URL +
-        "/product/" +
-        getProduct(messageSender.content, 1)
-    );
   };
 
   const handleClickSearch = (e) => {
@@ -448,7 +333,7 @@ const IconGroup = ({
                             <b>{product?.attributes?.name}</b>
                           </div>
                           <div className="date">
-                            {handleDate(item?.attributes?.updatedAt)}
+                            {formatDateToShow(item?.attributes?.updatedAt)}
                           </div>
                         </div>
                         {isReadNotification ? (
@@ -502,65 +387,6 @@ const IconGroup = ({
           </Button>
         </div>
       )}
-      {/* <div className="same-style cart-wrap d-block d-lg-none">
-        <Link className="icon-cart" to={process.env.PUBLIC_URL + "/cart"}>
-          <i className="pe-7s-shopbag" />
-          <span className="count-style">
-            {cartData && cartData?.length ? cartData?.length : 0}
-          </span>
-        </Link>
-      </div> */}
-      {/* <div className="same-style mobile-off-canvas d-block d-lg-none">
-        <button
-          className="mobile-aside-button"
-          onClick={() => triggerMobileMenu()}
-        >
-          <i className="pe-7s-menu" />
-        </button>
-      </div> */}
-      <Snackbar
-        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-        open={open}
-        onClose={handleClose}
-        autoHideDuration={6000}
-        message=" "
-        TransitionComponent={transition}
-        key={"bottom right"}
-        ContentProps={{
-          sx: {
-            backgroundColor: "white",
-            color: "black",
-            width: "200px",
-            flexWrap: "nowrap",
-            flexDirection: "row",
-          },
-        }}
-      >
-        <Card sx={{ minWidth: "275px", display: "flex", p: 2 }}>
-          <Box
-            onClick={handleClickDirect}
-            sx={{
-              width: "275px",
-              cursor: "pointer",
-              "&:hover": {
-                "& .MuiTypography-root": {
-                  color: "#A749FF",
-                },
-              },
-            }}
-          >
-            <Typography>{messageInfo ? messageInfo : undefined}</Typography>
-          </Box>
-          <IconButton
-            aria-label="close"
-            color="inherit"
-            sx={{ p: 0.5 }}
-            onClick={handleClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        </Card>
-      </Snackbar>
     </div>
   );
 };

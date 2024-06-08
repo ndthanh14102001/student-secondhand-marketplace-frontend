@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import chatApi from "../../../api/chat";
 import { RESPONSE_TYPE } from "../../../utils/callApi";
 import { PRIVATE_MESSAGE } from "../constants";
@@ -8,7 +8,7 @@ const useNavigatorHook = () => {
   const history = useHistory();
   const params = useParams();
   const [partners, setPartners] = useState([]);
-  
+
   const socket = useSelector((state) => state.socket.socket);
   useEffect(() => {
     (async function getPartnerts() {
@@ -31,7 +31,7 @@ const useNavigatorHook = () => {
               break;
             }
           }
-          
+
           return [...oldPartners];
         });
       } else {

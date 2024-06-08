@@ -2,15 +2,10 @@ import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
-  CircularProgress,
-  Divider,
   IconButton,
   InputBase,
-  TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
-import { useToasts } from "react-toast-notifications";
 import callApi, { RESPONSE_TYPE } from "../../../utils/callApi";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -32,7 +27,6 @@ function ChatFrame(props) {
   const chatFrame = useChatFrame();
   const params = useParams();
   const { socket } = props;
-  const { addToast } = useToasts();
   const chatTextBoxHeight = 60;
   const [partner, setPartner] = useState(props.sellerData);
 

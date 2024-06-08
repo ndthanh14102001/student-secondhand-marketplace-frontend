@@ -1,5 +1,5 @@
-import { Box, Grid, colors } from "@mui/material";
-import React, { Fragment, useEffect } from "react";
+import { Box, Grid } from "@mui/material";
+import React, { Fragment } from "react";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import { MetaTags } from "react-meta-tags";
 import { useLocation } from "react-router-dom";
