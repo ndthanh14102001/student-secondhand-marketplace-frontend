@@ -11,7 +11,13 @@ const notificationApi = {
         authorization: loggedInUser?.token,
       },
       params: {
-        populate: ["sender", "readUsers"],
+        populate: {
+          sender: {
+            populate: ["avatar"],
+          },
+          readUsers: true,
+          product: true,
+        },
         sort: {
           createdAt: "desc",
         },
@@ -33,6 +39,17 @@ const notificationApi = {
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/notifications/unread",
       method: "get",
+      headers: {
+        authorization: loggedInUser?.token,
+      },
+    });
+    return response;
+  },
+  read: async (notificationId) => {
+    const loggedInUser = getUserLogin();
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + "/read/notification/" + notificationId,
+      method: "patch",
       headers: {
         authorization: loggedInUser?.token,
       },

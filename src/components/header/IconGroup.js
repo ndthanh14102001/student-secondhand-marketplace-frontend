@@ -26,6 +26,7 @@ import Slide from "@mui/material/Slide";
 import { setNameFilter } from "../../redux/actions/filterActions";
 import { NOTIFICATION } from "../../pages/chat/constants";
 import notificationApi from "../../api/notification";
+import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
 
 function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
@@ -100,7 +101,6 @@ const IconGroup = ({
   }
   async function getUnReadNotifications() {
     const response = await notificationApi.getUnreadNotifications();
-    console.log("response",response)
     if (response.type === RESPONSE_TYPE) {
       setUnreadNotifications(response.data || []);
     }
@@ -164,7 +164,7 @@ const IconGroup = ({
           },
         };
 
-        setNotifications((prevNoti) => [data, ...prevNoti]);
+        // setNotifications((prevNoti) => [data, ...prevNoti]);
         setState({ open: true });
         setTransition(() => TransitionUp);
 
@@ -203,36 +203,10 @@ const IconGroup = ({
     return "ngay bây giờ";
   };
 
-  const handleReadNotification = async (id, link) => {
-    const response = await callApi({
-      url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
-      method: "get",
-      params: {
-        populate: {
-          reads: true,
-        },
-      },
-    });
+  const handleReadNotification = async (notificationId, product) => {
+    const response = await notificationApi.read(notificationId);
     if (response.type === RESPONSE_TYPE) {
-      let list = [];
-      let listIdRead = [];
-      list = response?.data?.data?.attributes?.reads?.data;
-      list?.map((item) => {
-        listIdRead.push(item.id);
-      });
-      listIdRead.push(user?.id);
-      const response1 = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/notifications/" + id,
-        method: "put",
-        data: {
-          data: {
-            reads: listIdRead,
-          },
-        },
-      });
-      if (response1.type === RESPONSE_TYPE) {
-        history.push(process.env.PUBLIC_URL + "/product/" + link);
-      }
+      history.push(process.env.PUBLIC_URL + "/product/" + product?.id);
     }
   };
 
@@ -293,12 +267,12 @@ const IconGroup = ({
     history.push(process.env.PUBLIC_URL + "/category");
     dispatch(setNameFilter(searchValue.trim()));
   };
-  const truncateString = (str) => {
-    if (str?.length > 20) {
-      return str.slice(0, 30) + "...";
-    }
-    return str;
-  };
+  // const truncateString = (str) => {
+  //   if (str?.length > 20) {
+  //     return str.slice(0, 30) + "...";
+  //   }
+  //   return str;
+  // };
 
   const hasBeenRead = (notification) => {
     return notification?.attributes?.readUsers?.data?.some((readUser) => {
@@ -422,45 +396,29 @@ const IconGroup = ({
                 ) : (
                   notifications?.map((item, index) => {
                     const isReadNotification = hasBeenRead(item);
+                    const sender = item?.attributes?.sender?.data?.attributes;
+                    const product = item?.attributes?.product?.data;
                     return (
                       <li
-                        key={index}
+                        key={item?.id}
                         className={isReadNotification ? "notify_read" : ""}
                         onClick={() =>
-                          handleReadNotification(
-                            item?.id,
-                            getProduct(item?.attributes?.content, 1)
-                          )
+                          handleReadNotification(item?.id, product)
                         }
                       >
                         <div className="notify_avatar">
                           <Avatar
                             alt="avatar"
-                            src={
-                              item?.attributes?.from?.data?.attributes?.avatar
-                                ?.data?.attributes?.url
-                                ? process.env.REACT_APP_SERVER_ENDPOINT +
-                                  item?.attributes?.from?.data?.attributes
-                                    ?.avatar?.data?.attributes?.url
-                                : "abc"
-                            }
+                            src={getImageUrl(
+                              sender?.avatar?.data?.attributes,
+                              IMAGE_SIZE_SMALL
+                            )}
                           />
                         </div>
                         <div className="notify_data">
                           <div className="data">
-                            <b>
-                              {
-                                item?.attributes?.from?.data?.attributes
-                                  ?.fullName
-                              }{" "}
-                            </b>
-                            đăng bán
-                            <b>
-                              {" "}
-                              {truncateString(
-                                getProduct(item?.attributes?.content, 2)
-                              )}{" "}
-                            </b>
+                            <b>{sender?.fullName} </b>
+                            đăng bán <b>{product?.attributes?.name}</b>
                           </div>
                           <div className="date">
                             {handleDate(item?.attributes?.updatedAt)}
