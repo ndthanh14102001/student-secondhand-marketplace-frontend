@@ -27,6 +27,7 @@ import { setNameFilter } from "../../redux/actions/filterActions";
 import { NOTIFICATION } from "../../pages/chat/constants";
 import notificationApi from "../../api/notification";
 import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
+import { v4 } from "uuid";
 
 function TransitionUp(props) {
   return <Slide {...props} direction="up" />;
@@ -112,11 +113,59 @@ const IconGroup = ({
   }, []);
 
   useEffect(() => {
+    const convertReceivedNotificationInSocketToNotifcation = (notification) => {
+      const sender = notification?.sender;
+      const product = notification?.product;
+      return {
+        id: notification?.id,
+        attributes:  {
+          createdAt: Date.now(),
+          type: 1,
+          updatedAt: Date.now(),
+          publishedAt: Date.now(),
+          sender: {
+            data: {
+              id: sender?.id,
+              attributes: {
+                username: sender?.username,
+                fullName: sender?.fullName,
+                createdAt: "2024-05-07T17:52:35.700Z",
+                updatedAt: "2024-05-29T04:46:52.580Z",
+                avatar: {
+                  data: {
+                    id: v4(),
+                    attributes: sender?.avatar,
+                  },
+                },
+              },
+            },
+          },
+          readUsers: {
+            data: [],
+          },
+          product: {
+            data: {
+              id: product?.id,
+              attributes: product,
+            },
+          },
+        },
+      };
+    };
     if (socket) {
       console.log("socket", socket);
       socket.on(NOTIFICATION, (message) => {
         console.log("message", message);
-        // setMessageSender(message);
+        console.log("convertReceivedNotificationInSocketToNotifcation", convertReceivedNotificationInSocketToNotifcation(message));
+
+        setNotifications((oldNotifications) => [
+          convertReceivedNotificationInSocketToNotifcation(message),
+          ...oldNotifications,
+        ]);
+        setUnreadNotifications((oldUnreadNotifications) => [
+          ...oldUnreadNotifications,
+          message,
+        ]);
       });
       return () => {
         socket.off(NOTIFICATION);
