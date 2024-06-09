@@ -2,7 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { Avatar, Box, IconButton, InputBase, Typography } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
-import Messages from "../../components/Messages";
+import Messages from "../../components/message";
 import useChatFrameHook from "../../hooks/chat-frame/ChatFrameHook";
 import { CHAT_TEXT_BOX_HEIGHT } from "../../constants/chat/constants";
 import WelcomeToChatPanel from "../../components/chat-frame/WelcomeToChatPanel";

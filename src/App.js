@@ -9,7 +9,7 @@ import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 import ChatBubble from "./components/chat-bubble";
 // import ModalLoading from "./components/modal-loading";
-import Popup from "./components/Popup";
+import Popup from "./components/popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
@@ -22,8 +22,6 @@ import {
 } from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
-
-const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -51,7 +49,7 @@ const App = (props) => {
   const dispatch = useDispatch();
 
   const isLogin = useSelector((state) => state.userStorage.isLogin);
-  
+
   const popup = useSelector((state) => state.popup);
   const modalLoading = useSelector((state) => state.modalLoading);
   const popupErrorBase = useSelector((state) => state.popupErrorBase);
@@ -78,7 +76,7 @@ const App = (props) => {
       getWishlist();
     }
   }, [isLogin]);
-  
+
   useEffect(() => {
     if (loggedInUser) {
       dispatch(login());
@@ -256,10 +254,6 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/test"}
                     component={DistanceCalculator}
                   /> */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/test"}
-                    component={SwipeableTextMobileStepper}
-                  />
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>

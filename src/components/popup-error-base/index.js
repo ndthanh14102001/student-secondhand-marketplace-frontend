@@ -2,7 +2,7 @@ import React from "react";
 import { useMemo } from "react";
 import  * as errorType from "../../utils/callApi";
 import * as message from "./constants";
-import Popup from "../Popup";
+import Popup from "../popup";
 import { clearUserLogin } from "../../utils/userLoginStorage";
 import { useHistory } from "react-router-dom";
 

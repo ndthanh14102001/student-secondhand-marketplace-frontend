@@ -3,9 +3,9 @@ import { useMemo } from 'react';
 import { Box, TextField, Typography, Button, styled, InputAdornment, IconButton } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { ERROR_COLOR, getColorToPasswordStrength } from '../../components/PasswordStrengthBar/constants';
+import { ERROR_COLOR, getColorToPasswordStrength } from '../../components/password-strength-bar/constants';
 
-import PasswordStrengthBar from '../../components/PasswordStrengthBar';
+import PasswordStrengthBar from '../../components/password-strength-bar';
 import { forgotPasswordApi } from '../../api/forgot-password-api';
 import { RESPONSE_TYPE } from '../../utils/callApi';
 import { useDispatch } from 'react-redux';

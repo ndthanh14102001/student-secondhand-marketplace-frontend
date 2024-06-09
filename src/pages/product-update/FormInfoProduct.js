@@ -13,7 +13,7 @@ import React, { useEffect, useState } from 'react'
 import validator from 'validator';
 import callApi, { RESPONSE_TYPE } from '../../utils/callApi';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
-import TextEditor from '../../components/TextEditor';
+import TextEditor from '../../components/text-editor';
 export function MyListSubheader(
   props
 ) {

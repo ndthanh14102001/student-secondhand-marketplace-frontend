@@ -30,9 +30,9 @@ import { onShowPopup, onClosePopup } from "../redux/actions/popupActions";
 import { POPUP_TYPE_ERROR } from "../redux/reducers/popupReducer";
 import { useRef } from "react";
 
-import PasswordStrengthBar from "../components/PasswordStrengthBar";
+import PasswordStrengthBar from "../components/password-strength-bar";
 import { useMemo } from "react";
-import { ERROR_COLOR, getColorToPasswordStrength } from "../components/PasswordStrengthBar/constants";
+import { ERROR_COLOR, getColorToPasswordStrength } from "../components/password-strength-bar/constants";
 import { getAllUniversity } from "../utils/data/university";
 const LOGIN_KEY = "login";
 const REGISTER_KEY = "register";

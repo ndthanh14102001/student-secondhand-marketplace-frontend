@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
 } from "@mui/material";
-import TextEditor from "../../../components/TextEditor";
+import TextEditor from "../../../components/text-editor";
 import ProductInfoInput from "../../../components/product-post/ProductInfoInput";
 import useFromInfoProductHook from "../../../hooks/product-post/FromInfoProductHook";
 
