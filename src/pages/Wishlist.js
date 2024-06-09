@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
@@ -19,20 +19,11 @@ import {
   getProductImages,
   getVietNamMoneyFormat,
 } from "../utils/handleData";
-import { useSelector } from "react-redux";
 import wishlistApi from "../api/wishlist-api";
 import { RESPONSE_TYPE } from "../utils/callApi";
-import {
-  onCloseModalLoading,
-  onOpenModalLoading,
-} from "../redux/actions/modalLoadingActions";
-import { useDispatch } from "react-redux";
 import { getImageUrl } from "../utils/image";
 const Wishlist = ({
   location,
-  cartItems,
-  currency,
-  addToCart,
   wishlistItems,
   deleteFromWishlist,
   deleteAllFromWishlist,
