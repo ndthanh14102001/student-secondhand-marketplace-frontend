@@ -50,6 +50,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const App = (props) => {
   const dispatch = useDispatch();
 
+  const isLogin = useSelector((state) => state.userStorage.isLogin);
+  
   const popup = useSelector((state) => state.popup);
   const modalLoading = useSelector((state) => state.modalLoading);
   const popupErrorBase = useSelector((state) => state.popupErrorBase);
@@ -75,7 +77,8 @@ const App = (props) => {
     if (loggedInUser) {
       getWishlist();
     }
-  }, []);
+  }, [isLogin]);
+  
   useEffect(() => {
     if (loggedInUser) {
       dispatch(login());
