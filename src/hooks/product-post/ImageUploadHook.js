@@ -67,7 +67,7 @@ const useImageUploadHook = ({ setProductInfo }) => {
       isValidImages: true,
     }));
   };
-  const handleShowImage = (file) => {
+  const showImage = (file) => {
     try {
       return URL.createObjectURL(file);
     } catch (e) {
@@ -85,7 +85,7 @@ const useImageUploadHook = ({ setProductInfo }) => {
     uploadImages,
     addImage,
     removeImage,
-    handleShowImage,
+    showImage,
   };
 };
 
