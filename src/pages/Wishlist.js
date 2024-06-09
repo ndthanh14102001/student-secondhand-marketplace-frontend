@@ -10,24 +10,24 @@ import {
   addToWishlist,
   deleteFromWishlist,
   deleteAllFromWishlist,
-} from "../../redux/actions/wishlistActions";
-import { addToCart } from "../../redux/actions/cartActions";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { PRODUCT_ON_SALE_STATUS } from "../../constants";
+} from "../redux/actions/wishlistActions";
+import { addToCart } from "../redux/actions/cartActions";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
+import { PRODUCT_ON_SALE_STATUS } from "../constants";
 import {
   getProductImages,
   getVietNamMoneyFormat,
-} from "../../utils/handleData";
+} from "../utils/handleData";
 import { useSelector } from "react-redux";
-import wishlistApi from "../../api/wishlist-api";
-import { RESPONSE_TYPE } from "../../utils/callApi";
+import wishlistApi from "../api/wishlist-api";
+import { RESPONSE_TYPE } from "../utils/callApi";
 import {
   onCloseModalLoading,
   onOpenModalLoading,
-} from "../../redux/actions/modalLoadingActions";
+} from "../redux/actions/modalLoadingActions";
 import { useDispatch } from "react-redux";
-import { getImageUrl } from "../../utils/image";
+import { getImageUrl } from "../utils/image";
 const Wishlist = ({
   location,
   cartItems,

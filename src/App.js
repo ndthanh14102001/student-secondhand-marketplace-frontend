@@ -25,32 +25,27 @@ import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
 
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
 
-// home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
-// shop pages
 const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
-
-// product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
 
-// chat pages
 const Chat = lazy(() => import("./pages/chat/index.js"));
 
-// other pages
-const MyAccount = lazy(() => import("./pages/other/MyAccount"));
-const MyProducts = lazy(() => import("./pages/other/my-products"));
+const MyAccount = lazy(() => import("./pages/MyAccount"));
+
+const MyProducts = lazy(() => import("./pages/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
 const ProductUpdate = lazy(() => import("./pages/product-update"));
+
 const UserInfo = lazy(() => import("./pages/user-info"));
+const LoginAndRegister = lazy(() => import("./pages/LoginAndRegister"));
+const ForgotPassword = lazy(() => import("./pages/forgot-password"));
 
-const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
-const ForgotPassword = lazy(() => import("./pages/other/forgot-password"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
 
-const Cart = lazy(() => import("./pages/other/Cart"));
-const Wishlist = lazy(() => import("./pages/other/Wishlist"));
-
-const NotFound = lazy(() => import("./pages/other/NotFound"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const App = (props) => {
   const dispatch = useDispatch();
@@ -60,7 +55,6 @@ const App = (props) => {
   const popupErrorBase = useSelector((state) => state.popupErrorBase);
   const chatBubble = useSelector((state) => state.chatBubble);
 
-  // [DON'T DELETE THIS] This line exist to check if user is logged in yet
   const loggedInUser = getUserLogin()?.user;
 
   //UseState NavigateUserInChat

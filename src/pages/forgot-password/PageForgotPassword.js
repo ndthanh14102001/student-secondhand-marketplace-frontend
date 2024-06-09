@@ -1,11 +1,11 @@
 import { Box, TextField, Typography, Button } from '@mui/material'
 import React from 'react'
 import { useState } from 'react';
-import { forgotPasswordApi } from '../../../api/forgot-password-api';
-import { RESPONSE_TYPE } from '../../../utils/callApi';
+import { forgotPasswordApi } from '../../api/forgot-password-api';
+import { RESPONSE_TYPE } from '../../utils/callApi';
 import { useDispatch } from 'react-redux';
-import { onShowPopupErrorBase } from '../../../redux/actions/popupErrorBaseActions';
-import { onOpenModalLoading, onCloseModalLoading } from '../../../redux/actions/modalLoadingActions';
+import { onShowPopupErrorBase } from '../../redux/actions/popupErrorBaseActions';
+import { onOpenModalLoading, onCloseModalLoading } from '../../redux/actions/modalLoadingActions';
 
 const PageForgotPassword = ({ email, setEmail }) => {
   const dispatch = useDispatch();

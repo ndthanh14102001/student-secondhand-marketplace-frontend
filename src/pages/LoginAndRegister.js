@@ -9,10 +9,10 @@ import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import Tab from "react-bootstrap/Tab";
 import Nav from "react-bootstrap/Nav";
 
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import callApi, { RESPONSE_TYPE, STATUS_BAD_REQUEST } from "../../utils/callApi";
-import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
+import callApi, { RESPONSE_TYPE, STATUS_BAD_REQUEST } from "../utils/callApi";
+import { onCloseModalLoading, onOpenModalLoading } from "../redux/actions/modalLoadingActions";
 import {
   Box,
   Button,
@@ -24,16 +24,16 @@ import {
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
-import { noRememberLogin, rememberLogin } from "../../utils/userLoginStorage";
-import { login } from "../../redux/actions/userStorageActions";
-import { onShowPopup, onClosePopup } from "../../redux/actions/popupActions";
-import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
+import { noRememberLogin, rememberLogin } from "../utils/userLoginStorage";
+import { login } from "../redux/actions/userStorageActions";
+import { onShowPopup, onClosePopup } from "../redux/actions/popupActions";
+import { POPUP_TYPE_ERROR } from "../redux/reducers/popupReducer";
 import { useRef } from "react";
 
-import PasswordStrengthBar from "../../components/PasswordStrengthBar";
+import PasswordStrengthBar from "../components/PasswordStrengthBar";
 import { useMemo } from "react";
-import { ERROR_COLOR, getColorToPasswordStrength } from "../../components/PasswordStrengthBar/constants";
-import { getAllUniversity } from "../../utils/data/university";
+import { ERROR_COLOR, getColorToPasswordStrength } from "../components/PasswordStrengthBar/constants";
+import { getAllUniversity } from "../utils/data/university";
 const LOGIN_KEY = "login";
 const REGISTER_KEY = "register";
 

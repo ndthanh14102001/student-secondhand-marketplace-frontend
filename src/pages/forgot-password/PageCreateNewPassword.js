@@ -3,16 +3,16 @@ import { useMemo } from 'react';
 import { Box, TextField, Typography, Button, styled, InputAdornment, IconButton } from '@mui/material'
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { ERROR_COLOR, getColorToPasswordStrength } from '../../../components/PasswordStrengthBar/constants';
+import { ERROR_COLOR, getColorToPasswordStrength } from '../../components/PasswordStrengthBar/constants';
 
-import PasswordStrengthBar from '../../../components/PasswordStrengthBar';
-import { forgotPasswordApi } from '../../../api/forgot-password-api';
-import { RESPONSE_TYPE } from '../../../utils/callApi';
+import PasswordStrengthBar from '../../components/PasswordStrengthBar';
+import { forgotPasswordApi } from '../../api/forgot-password-api';
+import { RESPONSE_TYPE } from '../../utils/callApi';
 import { useDispatch } from 'react-redux';
-import { onShowPopupErrorBase } from '../../../redux/actions/popupErrorBaseActions';
+import { onShowPopupErrorBase } from '../../redux/actions/popupErrorBaseActions';
 import { useToasts } from 'react-toast-notifications';
 import { useHistory } from 'react-router-dom';
-import { onCloseModalLoading, onOpenModalLoading } from '../../../redux/actions/modalLoadingActions';
+import { onCloseModalLoading, onOpenModalLoading } from '../../redux/actions/modalLoadingActions';
 const BoxInput = styled(Box)(() => ({
   marginBottom: "1rem",
   width: "500px"

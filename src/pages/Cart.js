@@ -5,16 +5,16 @@ import { useToasts } from "react-toast-notifications";
 import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import { connect } from "react-redux";
-import { getDiscountPrice } from "../../utils/product";
+import { getDiscountPrice } from "../utils/product";
 import {
   addToCart,
   decreaseQuantity,
   deleteFromCart,
   cartItemStock,
   deleteAllFromCart
-} from "../../redux/actions/cartActions";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+} from "../redux/actions/cartActions";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
 
 const Cart = ({
   location,

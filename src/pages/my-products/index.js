@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react'
 import { MetaTags } from 'react-meta-tags'
-import LayoutOne from '../../../layouts/LayoutOne'
+import LayoutOne from '../../layouts/LayoutOne'
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
-import Breadcrumb from "../../../wrappers/breadcrumb/Breadcrumb";
+import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
 import { useLocation } from 'react-router';
 import { Box, Tab, Tabs } from '@mui/material';
-import ProductPostList from './ProductPostList';
-import { PRODUCT_SOLD_KEY, PRODUCT_ON_SALE_KEY } from './constants';
+import PostedProductList from '../../wrappers/product/PostedProductList';
+import { PRODUCT_SOLD_KEY, PRODUCT_ON_SALE_KEY } from '../../constants/my-products/constants';
 
 function a11yProps(index) {
   return {
@@ -46,12 +46,12 @@ const MyProducts = () => {
                     <Tab label="Sản phẩm đã bán" {...a11yProps(PRODUCT_SOLD_KEY)} />
                   </Tabs>
                 </Box>
-                <ProductPostList value={value} index={PRODUCT_ON_SALE_KEY}>
+                <PostedProductList value={value} index={PRODUCT_ON_SALE_KEY}>
                   Sản phẩm đang bán
-                </ProductPostList>
-                <ProductPostList value={value} index={PRODUCT_SOLD_KEY}>
+                </PostedProductList>
+                <PostedProductList value={value} index={PRODUCT_SOLD_KEY}>
                   Sản phẩm đã bán
-                </ProductPostList>
+                </PostedProductList>
               </Box>
             </div>
           </div>

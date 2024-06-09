@@ -11,19 +11,19 @@ import MetaTags from "react-meta-tags";
 import { BreadcrumbsItem } from "react-breadcrumbs-dynamic";
 import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
-import LayoutOne from "../../layouts/LayoutOne";
-import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
+import LayoutOne from "../layouts/LayoutOne";
+import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
 import callApi, {
   RESPONSE_TYPE,
   STATUS_BAD_REQUEST,
-} from "../../utils/callApi";
-import { getUserLogin } from "../../utils/userLoginStorage";
-import { updateUser } from "../../utils/userLoginStorage";
+} from "../utils/callApi";
+import { getUserLogin } from "../utils/userLoginStorage";
+import { updateUser } from "../utils/userLoginStorage";
 import Avatar from "@mui/material/Avatar";
 import Typography from "@mui/material/Typography";
-import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
-import { getAllUniversity } from "../../utils/data/university";
-import { getImageUrl } from "../../utils/image";
+import ProductOwnerInfo from "../wrappers/product/ProductOwnerInfo";
+import { getAllUniversity } from "../utils/data/university";
+import { getImageUrl } from "../utils/image";
 
 const MyAccount = ({ location }) => {
   const universityData = useMemo(() => {

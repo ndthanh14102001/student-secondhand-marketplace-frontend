@@ -24,7 +24,7 @@ import { onShowPopupErrorBase } from '../../redux/actions/popupErrorBaseActions'
 import { onCloseModalLoading, onOpenModalLoading } from '../../redux/actions/modalLoadingActions';
 import { ddmmyy } from '../../utils/DateFormat';
 import ShopProducts from '../../wrappers/product/ShopProducts';
-import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../other/my-products/constants';
+import { PRODUCT_ON_SALE_KEY, PRODUCT_SOLD_KEY } from '../../constants/my-products/constants';
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from '../../constants';
 
 import { onShowPopup } from '../../redux/actions/popupActions';

@@ -12,7 +12,7 @@ import { getUserLogin } from "../../utils/userLoginStorage";
 import { onShowPopupErrorBase } from "../../redux/actions/popupErrorBaseActions";
 import { useMemo } from "react";
 import { PRODUCT_ON_SALE_STATUS, PRODUCT_SOLD_STATUS } from "../../constants";
-import { PRODUCT_ON_SALE_KEY } from "../../pages/other/my-products/constants";
+import { PRODUCT_ON_SALE_KEY } from "../../constants/my-products/constants"; 
 import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
 const MyProductGrid = ({
