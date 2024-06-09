@@ -22,5 +22,4 @@ const getImageBySize = (formats, size) => {
     return Object.values(formats)?.[0];
   }
 };
-
 export { getImageUrl };

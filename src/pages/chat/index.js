@@ -1,11 +1,7 @@
-import React, { Fragment, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { Fragment, useEffect } from "react";
 import { MetaTags } from "react-meta-tags";
 import { useDispatch, useSelector } from "react-redux";
 import LayoutOne from "../../layouts/LayoutOne";
-import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
-import { getUserLogin } from "../../utils/userLoginStorage";
-import { onCloseModalLoading } from "../../redux/actions/modalLoadingActions";
 import {
   hideChatBubble,
   showChatBubble,
@@ -14,120 +10,15 @@ import ChatFrame from "../../wrappers/chat-frame";
 import ChatsNavigator from "../../wrappers/chat-navigator";
 
 function ChatsFrame(props) {
-  const { match } = props;
   const dispatch = useDispatch();
-  const setupSocket = useSelector((state) => state.socket.socket);
-  // const { pathname } = useLocation();
-  // const attributes = product?.attributes;
-  const userLoginData = getUserLogin()?.user;
+  const socket = useSelector((state) => state.socket.socket);
 
-  // Thông tin người bán hiện tại
-  const [user, setUser] = useState();
-  const params = useParams();
-
-  // Mảng tin nhắn từ mọi người tới người đăng nhập hiện tại
-  const [incomingFromSocket, setincomingFromSocket] = useState();
-  const [isNotCalledYet, setIsNotCalledYet] = useState(true);
-  const [inComingMessage, setIncomingMessage] = useState([]);
-
-  const handleChangeSeller = (info) => {
-    setUser(info);
-  };
-
-  //After change partner, the unread messages become read
-  const handleNavigateChats = (partnerID) => {
-    if (inComingMessage !== undefined) {
-      setIncomingMessage((prev) => {
-        return prev?.map((item) => {
-          if (
-            item.attributes.from.data.id === partnerID &&
-            !item.attributes.read
-          ) {
-            return {
-              ...item,
-              attributes: {
-                ...item.attributes,
-                read: true,
-              },
-            };
-          }
-          return item;
-        });
-      });
-      // parentHandleNavigateChats(partnerID);
-    }
-  };
-
-  //Update new message to IncomingMessage
-  const onUpdateUnreadChat = (input) => {
-    setincomingFromSocket(input);
-    setIncomingMessage((prev) => {
-      return [...prev, input];
-    });
-  };
-
-  //Tắt cái modal loading
   useEffect(() => {
-    dispatch(onCloseModalLoading());
     dispatch(hideChatBubble());
     return () => {
       dispatch(showChatBubble());
     };
   }, []);
-
-  // Lấy thông tin người bán hiện tại theo id
-  useEffect(() => {
-    const getUserInfo = async () => {
-      const userId = params?.id;
-      const response = await callApi({
-        url: process.env.REACT_APP_API_ENDPOINT + "/users/" + userId,
-        method: "get",
-      });
-      if (response.type === RESPONSE_TYPE) {
-        setUser(response.data);
-      }
-    };
-
-    getUserInfo();
-  }, [params]);
-
-  // các hàm phải chạy 1 lần khi khởi tạo component
-  useEffect(() => {
-    if (userLoginData !== undefined && isNotCalledYet) {
-      getChatsRelatedToLoggedInPerson();
-      setIsNotCalledYet(false);
-    }
-  }, [userLoginData]);
-
-  //Lấy tin nhắn của tất cả mọi người gửi cho đến NGƯỜI ĐĂNG NHẬP
-  const getChatsRelatedToLoggedInPerson = async () => {
-    const response = await callApi({
-      url:
-        process.env.REACT_APP_API_ENDPOINT +
-        `/chats?pagination[page]=1&pagination[pageSize]=100&filters[to][id][$eq]=${userLoginData.id}&populate=*`,
-      method: "get",
-    });
-    if (response.type === RESPONSE_TYPE) {
-      if (match.params.id !== undefined) {
-        setIncomingMessage(
-          response.data.data?.map((item) => {
-            if (item.attributes.from.data.id === match.params.id) {
-              return {
-                ...item,
-                attributes: {
-                  ...item.attributes,
-                  read: true,
-                },
-              };
-            }
-            return item;
-          })
-        );
-      } else {
-        setIncomingMessage(response.data.data);
-      }
-    }
-  };
 
   return (
     <Fragment>
@@ -138,12 +29,7 @@ function ChatsFrame(props) {
           content="Compare page of flone react minimalist eCommerce template."
         />
       </MetaTags>
-      {/* <BreadcrumbsItem to={process.env.PUBLIC_URL + "/"}>Trang chủ</BreadcrumbsItem>
-      <BreadcrumbsItem to={process.env.PUBLIC_URL + pathname}>
-        Chat với người bán
-      </BreadcrumbsItem> */}
       <LayoutOne headerTop="visible">
-        {/* <Breadcrumb /> */}
         <div className="product-area pt-60 pb-60" style={{ padding: 0 }}>
           <div className="container" style={{ margin: "auto" }}>
             <div
@@ -154,16 +40,10 @@ function ChatsFrame(props) {
               }}
             >
               <div style={{ margin: "8px" }}>
-                <ChatsNavigator
-                  handleChangeSeller={handleChangeSeller}
-                  userLoginData={userLoginData}
-                  inComingMessage={inComingMessage}
-                  incomingFromSocket={incomingFromSocket}
-                  sellerData={user}
-                />
+                <ChatsNavigator />
               </div>
               <div style={{ marginLeft: "8px", marginTop: "8px" }}>
-                {setupSocket !== null && <ChatFrame />}
+                {socket !== null && <ChatFrame />}
               </div>
             </div>
           </div>
