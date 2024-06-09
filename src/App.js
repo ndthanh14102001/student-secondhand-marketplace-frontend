@@ -22,10 +22,8 @@ import {
 } from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
-import { useParams } from "react-router-dom";
+
 const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
-// Get user data
-// const user = getUserLogin();
 
 // home pages
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
@@ -40,8 +38,6 @@ const Product = lazy(() => import("./pages/shop-product/Product"));
 const Chat = lazy(() => import("./pages/chat/index.js"));
 
 // other pages
-const About = lazy(() => import("./pages/other/About"));
-const Contact = lazy(() => import("./pages/other/Contact"));
 const MyAccount = lazy(() => import("./pages/other/MyAccount"));
 const MyProducts = lazy(() => import("./pages/other/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
@@ -53,8 +49,6 @@ const ForgotPassword = lazy(() => import("./pages/other/forgot-password"));
 
 const Cart = lazy(() => import("./pages/other/Cart"));
 const Wishlist = lazy(() => import("./pages/other/Wishlist"));
-const Compare = lazy(() => import("./pages/other/Compare"));
-const Checkout = lazy(() => import("./pages/other/Checkout"));
 
 const NotFound = lazy(() => import("./pages/other/NotFound"));
 
@@ -67,7 +61,7 @@ const App = (props) => {
   const chatBubble = useSelector((state) => state.chatBubble);
 
   // [DON'T DELETE THIS] This line exist to check if user is logged in yet
-  const user = getUserLogin()?.user;
+  const loggedInUser = getUserLogin()?.user;
 
   //UseState NavigateUserInChat
   const [selectedChatPartner, setSelectedChatPartner] = useState();
@@ -84,12 +78,12 @@ const App = (props) => {
       }
       dispatch(onCloseModalLoading());
     };
-    if (user) {
+    if (loggedInUser) {
       getWishlist();
     }
   }, []);
   useEffect(() => {
-    if (user) {
+    if (loggedInUser) {
       dispatch(login());
     } else {
       dispatch(logout());
@@ -118,7 +112,6 @@ const App = (props) => {
         content={popup.content}
       />
 
-      {/* <ModalLoading open={modalLoading.open} /> */}
       {modalLoading.open && (
         <div className="flone-preloader-wrapper">
           <div className="flone-preloader">
@@ -173,16 +166,10 @@ const App = (props) => {
                   />
 
                   {/* Chat pages */}
-                  {user !== undefined ? (
+                  {loggedInUser !== undefined ? (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
-                      render={(routeProps) => (
-                        <Chat
-                        // {...routeProps}
-                        // key={routeProps.match.params.id}
-                        // parentHandleNavigateChats={handleNavigateChats}
-                        />
-                      )}
+                      render={(routeProps) => <Chat />}
                     />
                   ) : (
                     <Route
@@ -191,7 +178,7 @@ const App = (props) => {
                     />
                   )}
 
-                  {user !== undefined && (
+                  {loggedInUser !== undefined && (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       render={(routeProps) => (
@@ -216,14 +203,6 @@ const App = (props) => {
                   />
 
                   {/* Other pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/about"}
-                    component={About}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/contact"}
-                    component={Contact}
-                  />
                   <Route
                     path={process.env.PUBLIC_URL + "/my-account"}
                     component={MyAccount}
@@ -270,14 +249,6 @@ const App = (props) => {
                   <Route
                     path={process.env.PUBLIC_URL + "/wishlist"}
                     component={Wishlist}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/compare"}
-                    component={Compare}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/checkout"}
-                    component={Checkout}
                   />
 
                   <Route
