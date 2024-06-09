@@ -2,7 +2,7 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useEffect, useState } from "react";
 import { connect, useDispatch } from "react-redux";
-import { getProducts } from "../../helpers/product";
+import { getProducts } from "../../utils/product";
 import ProductGridSingleTwo from "../../components/product/ProductGridSingleTwo";
 import { addToCart } from "../../redux/actions/cartActions";
 import { addToWishlist } from "../../redux/actions/wishlistActions";

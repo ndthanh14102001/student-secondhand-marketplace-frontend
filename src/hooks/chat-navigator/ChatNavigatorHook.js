@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import chatApi from "../../../api/chat";
-import { RESPONSE_TYPE } from "../../../utils/callApi";
-import { PRIVATE_MESSAGE } from "../constants";
 import { useSelector } from "react-redux";
 import { useHistory, useParams } from "react-router-dom";
-const useNavigatorHook = () => {
+import chatApi from "../../api/chat";
+import { RESPONSE_TYPE } from "../../utils/callApi";
+import { PRIVATE_MESSAGE } from "../../constants/chat/constants";
+const useChatNavigatorHook = () => {
   const history = useHistory();
   const params = useParams();
   const [partners, setPartners] = useState([]);
@@ -75,4 +75,4 @@ const useNavigatorHook = () => {
   return { partners, onClickUser };
 };
 
-export default useNavigatorHook;
+export default useChatNavigatorHook;

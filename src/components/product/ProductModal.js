@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState, useEffect } from "react";
 import Swiper from "react-id-swiper";
-import { getProductCartQuantity } from "../../helpers/product";
+import { getProductCartQuantity } from "../../utils/product";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Rating from "./sub-components/ProductRating";

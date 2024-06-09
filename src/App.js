@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useEffect, Suspense, lazy, useState } from "react";
-import ScrollToTop from "./helpers/scroll-top";
+import ScrollToTop from "./utils/scroll-top.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
@@ -38,14 +38,6 @@ const Product = lazy(() => import("./pages/shop-product/Product"));
 
 // chat pages
 const Chat = lazy(() => import("./pages/chat/index.js"));
-
-// blog pages
-const BlogStandard = lazy(() => import("./pages/blog/BlogStandard"));
-const BlogNoSidebar = lazy(() => import("./pages/blog/BlogNoSidebar"));
-const BlogRightSidebar = lazy(() => import("./pages/blog/BlogRightSidebar"));
-const BlogDetailsStandard = lazy(() =>
-  import("./pages/blog/BlogDetailsStandard")
-);
 
 // other pages
 const About = lazy(() => import("./pages/other/About"));
@@ -158,7 +150,9 @@ const App = (props) => {
                   </div>
                 }
               >
-                {chatBubble?.isShow && <ChatBubble selectedChatPartner={selectedChatPartner} />}
+                {chatBubble?.isShow && (
+                  <ChatBubble selectedChatPartner={selectedChatPartner} />
+                )}
                 <Switch>
                   <Route
                     exact
@@ -219,24 +213,6 @@ const App = (props) => {
                         key={routeProps.match.params.id}
                       />
                     )}
-                  />
-
-                  {/* Blog pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-standard"}
-                    component={BlogStandard}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-no-sidebar"}
-                    component={BlogNoSidebar}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-right-sidebar"}
-                    component={BlogRightSidebar}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-details-standard"}
-                    component={BlogDetailsStandard}
                   />
 
                   {/* Other pages */}

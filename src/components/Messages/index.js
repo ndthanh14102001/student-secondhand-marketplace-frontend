@@ -1,5 +1,5 @@
 import React from "react";
-import { getUserLogin } from "../../../../utils/userLoginStorage";
+import { getUserLogin } from "../../utils/userLoginStorage";
 import MyMessage from "./MyMessage";
 import PartnerMessage from "./PartnerMessage";
 

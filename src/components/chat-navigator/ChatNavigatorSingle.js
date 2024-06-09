@@ -1,9 +1,9 @@
 import React from "react";
 import TextsmsTwoToneIcon from "@mui/icons-material/TextsmsTwoTone";
 import { Avatar, Box, Chip, Stack } from "@mui/material";
-import { useHistory, useParams } from "react-router-dom";
-const Users = ({ users, onClickUser }) => {
-  const history = useHistory();
+import { useParams } from "react-router-dom";
+import { getImageUrl } from "../../utils/image";
+const ChatNavigatorSingle = ({ users, onClickUser }) => {
   const params = useParams();
   const isSelected = (userId) => {
     return `${userId}` === params?.id;
@@ -51,7 +51,7 @@ const Users = ({ users, onClickUser }) => {
               >
                 <Avatar
                   // alt={user.username}
-                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${user.avatar?.url}`}
+                  src={getImageUrl(user?.avatar)}
                   sx={{ width: 52, height: 52 }}
                 />
                 <Box
@@ -100,4 +100,4 @@ const Users = ({ users, onClickUser }) => {
   );
 };
 
-export default Users;
+export default ChatNavigatorSingle;

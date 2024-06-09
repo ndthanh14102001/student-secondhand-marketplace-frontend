@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import { getDiscountPrice } from "../../helpers/product";
+import { getDiscountPrice } from "../../utils/product";
 import ProductModal from "./ProductModal";
 import { getProductImages, getVietNamMoneyFormat } from "../../utils/handleData";
 import { ddmmyyhhmm } from "../../utils/DateFormat";

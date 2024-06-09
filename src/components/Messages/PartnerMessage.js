@@ -1,6 +1,7 @@
 import { Avatar, Box } from "@mui/material";
 import React from "react";
-import { formatDate } from "../../../../utils/chat";
+import { formatDate } from "../../utils/chat"; 
+import { getImageUrl } from "../../utils/image";
 
 const PartnerMessage = ({ receiver, message, createdAt }) => {
   return (
@@ -13,8 +14,8 @@ const PartnerMessage = ({ receiver, message, createdAt }) => {
       }}
     >
       <Avatar
-        // alt={receiver?.attributes?.username}
-        src={`${process.env.REACT_APP_SERVER_ENDPOINT}${receiver?.avatar?.url}`}
+        alt={"avatar"}
+        src={getImageUrl(receiver?.avatar)}
         sx={{ width: 28, height: 28, marginBottom: "8px" }}
       />
       <Box

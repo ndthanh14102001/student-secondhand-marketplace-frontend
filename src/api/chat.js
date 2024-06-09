@@ -75,6 +75,49 @@ const chatApi = {
     }
     return response;
   },
+  getPartnerByUserId: async ({ userId }) => {
+    const response = await callApi({
+      url: process.env.REACT_APP_API_ENDPOINT + `/users/${userId}`,
+      method: "get",
+      params: {
+        populate: {
+          product: {
+            populate: {
+              images: {
+                populate: "*",
+              },
+              userId: {
+                populate: {
+                  avatar: {
+                    populate: "*",
+                  },
+                  product: {
+                    populate: "*",
+                  },
+                },
+              },
+            },
+          },
+          avatar: {
+            populate: "*",
+          },
+          user_followed: {
+            populate: "*",
+          },
+        },
+      },
+    });
+    if (response.type === RESPONSE_TYPE) {
+      return {
+        ...response,
+        partner: response.data,
+      };
+    }
+    return {
+      ...response,
+      partner: {},
+    };
+  },
   readChatsBySenderId: async ({ senderId }) => {
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/chats/read/" + senderId,

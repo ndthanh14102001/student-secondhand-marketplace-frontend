@@ -1,3 +1,5 @@
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import {
   Avatar,
   Box,
@@ -8,17 +10,14 @@ import {
   Paper,
   Stack,
 } from "@mui/material";
-
-import React, { useEffect, useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
-import callApi, { RESPONSE_TYPE } from "../../../utils/callApi";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
 import ContentPasteSearchTwoToneIcon from "@mui/icons-material/ContentPasteSearchTwoTone";
-
 import TextsmsTwoToneIcon from "@mui/icons-material/TextsmsTwoTone";
-import axios from "axios";
-import useNavigatorHook from "./useNavigatorHook";
-import Users from "./Users";
+
+import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
+import ChatNavigatorSingle from "../../components/chat-navigator/ChatNavigatorSingle";
+import useChatNavigatorHook from "../../hooks/chat-navigator/ChatNavigatorHook";
 
 function CustomizedInputBase(props) {
   return (
@@ -62,9 +61,7 @@ function CustomizedInputBase(props) {
 }
 
 function ChatsNavigator(props) {
-  // const [userFromURL, setUserFromURL] = useState();
-  // const [userFromSearch, setUserFromSearch] = useState([]);
-  const navigatorHook = useNavigatorHook();
+  const chatNavigatorHook = useChatNavigatorHook();
   const [userList, setUserList] = useState([]);
   const [searchKey, setSearchKey] = useState("");
   const [searchUserList, setSearchUserList] = useState([]);
@@ -185,8 +182,8 @@ function ChatsNavigator(props) {
           sx={{ overflowY: "auto", overflowX: "hidden" }}
         >
           <Box>
-            {navigatorHook.partners?.length > 0 ? (
-              navigatorHook.partners?.map((item, index) => (
+            {chatNavigatorHook.partners?.length > 0 ? (
+              chatNavigatorHook.partners?.map((item, index) => (
                 <Box
                   key={index}
                   sx={{
@@ -398,9 +395,9 @@ function ChatsNavigator(props) {
       />
       <Divider variant="middle" sx={{ m: "14px 0" }} />
       {/* {isSearching ? <ListUserSearching /> : <ListUserChat />} */}
-      <Users
-        users={navigatorHook.partners}
-        onClickUser={navigatorHook.onClickUser}
+      <ChatNavigatorSingle
+        users={chatNavigatorHook.partners}
+        onClickUser={chatNavigatorHook.onClickUser}
       />
     </Box>
   );

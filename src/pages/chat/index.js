@@ -1,14 +1,17 @@
-import ChatsNavigator from "./ChatNavigator";
-import ChatFrame from "./ChatFrame";
 import React, { Fragment, useEffect, useState } from "react";
-import LayoutOne from "../../layouts/LayoutOne";
+import { useParams } from "react-router-dom";
 import { MetaTags } from "react-meta-tags";
+import { useDispatch, useSelector } from "react-redux";
+import LayoutOne from "../../layouts/LayoutOne";
 import callApi, { RESPONSE_TYPE } from "../../utils/callApi";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import { useDispatch, useSelector } from "react-redux";
 import { onCloseModalLoading } from "../../redux/actions/modalLoadingActions";
-import { useParams } from "react-router-dom";
-import { hideChatBubble, showChatBubble } from "../../redux/actions/chatBubbleActions";
+import {
+  hideChatBubble,
+  showChatBubble,
+} from "../../redux/actions/chatBubbleActions";
+import ChatFrame from "../../wrappers/chat-frame";
+import ChatsNavigator from "../../wrappers/chat-navigator";
 
 function ChatsFrame(props) {
   const { match } = props;
@@ -69,7 +72,7 @@ function ChatsFrame(props) {
     dispatch(hideChatBubble());
     return () => {
       dispatch(showChatBubble());
-    }
+    };
   }, []);
 
   // Lấy thông tin người bán hiện tại theo id
@@ -160,18 +163,7 @@ function ChatsFrame(props) {
                 />
               </div>
               <div style={{ marginLeft: "8px", marginTop: "8px" }}>
-                {setupSocket !== null && (
-                  <ChatFrame
-                    sellerData={user}
-                    userLoginData={userLoginData}
-                    socket={setupSocket}
-                    isPartnerDeclared={
-                      match?.params?.id !== undefined || user !== undefined
-                    }
-                    handleNavigateChats={handleNavigateChats}
-                    onUpdateUnreadChat={onUpdateUnreadChat}
-                  />
-                )}
+                {setupSocket !== null && <ChatFrame />}
               </div>
             </div>
           </div>

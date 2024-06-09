@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 import React, { Fragment } from "react";
 import { connect, useDispatch } from "react-redux";
-import { getProducts } from "../../helpers/product";
+import { getProducts } from "../../utils/product";
 import ProductGridSingle from "../../components/product/ProductGridSingle";
 import { addToWishlist } from "../../redux/actions/wishlistActions";
 import { useEffect } from "react";

@@ -1,6 +1,6 @@
 import { Box } from "@mui/material";
 import React from "react";
-import { formatDate } from "../../../../utils/chat";
+import { formatDate } from "../../utils/chat";
 
 const MyMessage = ({ currentUser, message, createdAt }) => {
   return (
