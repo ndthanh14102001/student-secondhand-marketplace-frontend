@@ -14,7 +14,7 @@ import Avatar from "@mui/material/Avatar";
 import { useEffect } from "react";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
 import { setNameFilter } from "../../redux/actions/filterActions";
-import { NOTIFICATION } from "../../constants/chat/constants";
+import { NOTIFICATION } from "../../constants/notification/constants";
 import notificationApi from "../../api/notification";
 import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
 import { v4 } from "uuid";
