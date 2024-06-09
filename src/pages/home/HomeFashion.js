@@ -4,7 +4,7 @@ import LayoutOne from "../../layouts/LayoutOne";
 // import HeroSliderOne from "../../wrappers/hero-slider/HeroSliderOne";
 // import FeatureIcon from "../../wrappers/feature-icon/FeatureIcon";
 import TabProduct from "../../wrappers/product/TabProduct";
-import CategorySlide from "./CategorySlide/index";
+import CategorySlideOne from "../../wrappers/category-slide/CategorySlideOne";
 import { HOME_CATEGORY } from "../../wrappers/product/ProductGrid";
 
 const HomeFashion = () => {
@@ -27,7 +27,7 @@ const HomeFashion = () => {
         {/* featured icon */}
         {/* <FeatureIcon spaceTopClass="pt-100" spaceBottomClass="pb-60" /> */}
 
-        <CategorySlide />
+        <CategorySlideOne />
         {/* tab product */}
         <TabProduct spaceBottomClass="pb-60" category={HOME_CATEGORY} />
 
