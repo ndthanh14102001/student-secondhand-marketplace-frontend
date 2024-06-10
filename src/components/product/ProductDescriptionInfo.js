@@ -4,21 +4,42 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { getProductCartQuantity } from "../../utils/product";
 import { addToCart } from "../../redux/actions/cartActions";
-import { addToWishlist, handleAddToWishlist } from "../../redux/actions/wishlistActions";
+import {
+  addToWishlist,
+  handleAddToWishlist,
+} from "../../redux/actions/wishlistActions";
 import { addToCompare } from "../../redux/actions/compareActions";
 import Rating from "./sub-components/ProductRating";
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
 
-import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemIcon, Checkbox, ListItemText, List, TextField, InputAdornment, Typography, Stack, Box } from "@mui/material";
-import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
-import ChatIcon from '@mui/icons-material/Chat';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import InfoIcon from '@mui/icons-material/Info';
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import InsertLinkSharpIcon from '@mui/icons-material/InsertLinkSharp';
-import { Helmet } from 'react-helmet';
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  Checkbox,
+  ListItemText,
+  List,
+  TextField,
+  InputAdornment,
+  Typography,
+  Stack,
+  Box,
+} from "@mui/material";
+import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+import ChatIcon from "@mui/icons-material/Chat";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import InfoIcon from "@mui/icons-material/Info";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
+import ReportProblemOutlinedIcon from "@mui/icons-material/ReportProblemOutlined";
+import InsertLinkSharpIcon from "@mui/icons-material/InsertLinkSharp";
+import { Helmet } from "react-helmet";
 
 // import ChatsFrame from "../../components/chat"
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
@@ -44,10 +65,10 @@ const ProductDescriptionInfo = ({
   addToCart,
   addToWishlist,
   sendReport,
-  addToCompare
+  addToCompare,
 }) => {
-  const history = useHistory()
-  const wishlistData = useSelector(state => state.wishlistData);
+  const history = useHistory();
+  const wishlistData = useSelector((state) => state.wishlistData);
   const attributes = product?.attributes;
   const user = attributes?.userId?.data;
   const userLoginData = getUserLogin()?.user;
@@ -58,9 +79,7 @@ const ProductDescriptionInfo = ({
   const [selectedProductSize, setSelectedProductSize] = useState(
     product.variation ? product.variation[0].size[0].name : ""
   );
-  const [productStock, setProductStock] = useState(
-    attributes?.status
-  );
+  const [productStock, setProductStock] = useState(attributes?.status);
   const [quantityCount, setQuantityCount] = useState(1);
 
   const productCartQty = getProductCartQuantity(
@@ -81,7 +100,7 @@ const ProductDescriptionInfo = ({
     "Hàng hư hỏng sau khi mua",
     "Hàng giả, hàng nhái, hàng dựng",
     "Lý do khác",
-  ]
+  ];
 
   const handleClickOpenConfirmReport = () => {
     if (userLoginData === undefined) {
@@ -97,7 +116,7 @@ const ProductDescriptionInfo = ({
   };
 
   const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
-  const [reportDetailInput, setReportDetailInput] = React.useState('');
+  const [reportDetailInput, setReportDetailInput] = React.useState("");
   const handleToggle = (value) => () => {
     const currentIndex = checkedReportCriteria.indexOf(value);
     const newChecked = [...checkedReportCriteria];
@@ -112,85 +131,112 @@ const ProductDescriptionInfo = ({
   };
 
   const handleReport = () => {
-    let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    let descriptionInput = checkedReportCriteria
+      .filter((fruit) => fruit !== "Lý do khác")
+      .join(", ");
     if (checkedReportCriteria.indexOf("Lý do khác") > 0) {
-      descriptionInput += " và lý do khác"
+      descriptionInput += " và lý do khác";
     }
-    if (reportDetailInput !== '') {
-      descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+    if (reportDetailInput !== "") {
+      descriptionInput += ", mô tả chi tiết: " + reportDetailInput;
     }
 
     axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
-        {
-          data: {
-            type: 'product',
-            product: product?.id,
-            reporter: userLoginData.id,
-            accused: null,
-            description: descriptionInput,
-          }
-        })
+      .post(process.env.REACT_APP_API_ENDPOINT + "/reports", {
+        data: {
+          type: "product",
+          product: product?.id,
+          reporter: userLoginData.id,
+          accused: null,
+          description: descriptionInput,
+        },
+      })
       .then((response) => {
-        
         addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
           appearance: "success",
-          autoDismiss: true
+          autoDismiss: true,
         });
         handleCloseConfirmReport();
       })
       .catch((error) => {
         addToast(" Đã có lỗi !, báo cáo thất bại", {
           appearance: "error",
-          autoDismiss: true
+          autoDismiss: true,
         });
         handleCloseConfirmReport();
-      })
-  }
+      });
+  };
 
-  let shareURL = process.env.REACT_APP_IS_LOCALHOST == 1 ? "https://chosinhvien.vercel.app/product/80" : window.location.href;
+  let shareURL =
+    process.env.REACT_APP_IS_LOCALHOST == 1
+      ? "https://chosinhvien.vercel.app/product/80"
+      : window.location.href;
 
   const handleCopyURL = () => {
     const currentURL = window.location.href;
 
-    const tempInput = document.createElement('input');
+    const tempInput = document.createElement("input");
     tempInput.value = currentURL;
     document.body.appendChild(tempInput);
 
     tempInput.select();
     tempInput.setSelectionRange(0, 99999);
 
-    document.execCommand('copy');
+    document.execCommand("copy");
 
     document.body.removeChild(tempInput);
 
     addToast(" Đã copy link trang web", {
       appearance: "success",
-      autoDismiss: true
+      autoDismiss: true,
     });
-  }
-  
+  };
+
   return (
     <>
       <Helmet>
         <meta charSet="utf-8" />
         <meta property="og:url" content={window.location.href} />
-        <meta property="og:title" content={`${product?.attributes?.name} - ${product?.id}`} />
-        <meta property="og:description" content={product?.attributes?.description} />
+        <meta
+          property="og:title"
+          content={`${product?.attributes?.name} - ${product?.id}`}
+        />
+        <meta
+          property="og:description"
+          content={product?.attributes?.description}
+        />
         <meta property="og:price:amount" content={product?.attributes?.price} />
-        <meta property="og:price:currency" content='VND' />
-        <meta property="og:availability" content='instock' />
+        <meta property="og:price:currency" content="VND" />
+        <meta property="og:availability" content="instock" />
         {/* <meta property="og:image" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
-        <meta property="og:image:secure_url" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
+        <meta
+          property="og:image:secure_url"
+          content={
+            process.env.REACT_APP_SERVER_ENDPOINT +
+            product?.attributes?.images?.data[0]?.attributes?.url
+          }
+        />
         {/* <meta property="og:image:secure" content={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} /> */}
-        <link rel="preload" as="image" href={process.env.REACT_APP_SERVER_ENDPOINT + product?.attributes?.images?.data[0]?.attributes?.url} />
-        <meta property="fb:app_id" content={process.env.REACT_APP_FACEBOOK_APP_ID} />
+        <link
+          rel="preload"
+          as="image"
+          href={
+            process.env.REACT_APP_SERVER_ENDPOINT +
+            product?.attributes?.images?.data[0]?.attributes?.url
+          }
+        />
+        <meta
+          property="fb:app_id"
+          content={process.env.REACT_APP_FACEBOOK_APP_ID}
+        />
       </Helmet>
       <div className="product-details-content ml-70">
         <h2>{attributes?.name}</h2>
-        {productStock !== PRODUCT_ON_SALE_STATUS && <div className="product-details-sold-status">
-          <span>Đã bán</span>
-        </div>}
+        {productStock !== PRODUCT_ON_SALE_STATUS && (
+          <div className="product-details-sold-status">
+            <span>Đã bán</span>
+          </div>
+        )}
 
         <div className="product-details-price">
           <span>{finalProductPrice} </span>
@@ -281,24 +327,32 @@ const ProductDescriptionInfo = ({
                 navigator.clipboard.writeText("0123456789");
                 addToast("Đã copy số điện thoại", {
                   appearance: "success",
-                  autoDismiss: true
+                  autoDismiss: true,
                 });
               }}
               disabled={productCartQty >= productStock}
             >
-              <PhoneInTalkIcon />
-              {" "}
-              {user?.attributes?.phone}
+              <PhoneInTalkIcon /> {user?.attributes?.phone}
             </button>
           </div>
           <Link
             to={
-              (userLoginData !== undefined && user.id !== undefined) &&
-              ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
-            onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
+              userLoginData !== undefined &&
+              user.id !== undefined &&
+              (userLoginData.id === user.id ? "/chat" : "/chat/" + user.id)
+            }
+            onClick={
+              userLoginData === undefined
+                ? () => {
+                    setOpenNeedLoginDialog(true);
+                  }
+                : ""
+            }
+          >
             <div className="pro-details-cart btn-hover">
               <button
-                onClick={() => { }
+                onClick={
+                  () => {}
                   // addToCart(
                   //   product,
                   //   addToast,
@@ -309,36 +363,43 @@ const ProductDescriptionInfo = ({
                 }
                 disabled={productCartQty >= productStock}
               >
-                <ChatIcon />
-                {" "}
-                {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
+                <ChatIcon />{" "}
+                {userLoginData?.id === user?.id
+                  ? "Đi tới chat"
+                  : "Chat với người bán"}
               </button>
             </div>
           </Link>
         </div>
         <Button
           startIcon={wishlistItem ? <FavoriteBorderIcon /> : <FavoriteIcon />}
-          onClick={async () => await handleAddToWishlist(product, wishlistData, addToast, addToWishlist, history)}
+          onClick={async () =>
+            await handleAddToWishlist(
+              product,
+              wishlistData,
+              addToast,
+              addToWishlist,
+              history
+            )
+          }
           title={
-            wishlistItem !== undefined
-              ? "Added to wishlist"
-              : "Add to wishlist"
+            wishlistItem !== undefined ? "Added to wishlist" : "Add to wishlist"
           }
           disabled={wishlistItem !== undefined}
-        >Yêu thích
+        >
+          Yêu thích
         </Button>
         <Button
-          startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
-          // onClick={() => addToWishlist(product, addToast)}
-          title={
-            sendReport !== undefined
-              ? "sent report"
-              : "sent report"
+          startIcon={
+            sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />
           }
+          // onClick={() => addToWishlist(product, addToast)}
+          title={sendReport !== undefined ? "sent report" : "sent report"}
           disabled={sendReport !== undefined}
-          sx={{ color: 'red' }}
+          sx={{ color: "red" }}
           onClick={handleClickOpenConfirmReport}
-        >Báo cáo
+        >
+          Báo cáo
         </Button>
 
         {/* Dialog confirm report product */}
@@ -355,23 +416,26 @@ const ProductDescriptionInfo = ({
             <DialogContentText id="alert-dialog-description">
               Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
             </DialogContentText>
-            <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+            <List
+              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
+            >
               {reportCriteria?.map((value) => {
                 const labelId = `checkbox-list-label-${value}`;
 
                 return (
-                  <ListItem
-                    key={value}
-                    disablePadding
-                  >
-                    <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                  <ListItem key={value} disablePadding>
+                    <ListItemButton
+                      role={undefined}
+                      onClick={handleToggle(value)}
+                      dense
+                    >
                       <ListItemIcon>
                         <Checkbox
                           edge="start"
                           checked={checkedReportCriteria.indexOf(value) !== -1}
                           tabIndex={-1}
                           disableRipple
-                          inputProps={{ 'aria-labelledby': labelId }}
+                          inputProps={{ "aria-labelledby": labelId }}
                         />
                       </ListItemIcon>
                       <ListItemText id={labelId} primary={value} />
@@ -384,17 +448,28 @@ const ProductDescriptionInfo = ({
               fullWidth
               label="Mô tả chi tiết"
               id="outlined-start-adornment"
-              sx={{ padding: 0, mt: '12px' }}
+              sx={{ padding: 0, mt: "12px" }}
               value={reportDetailInput}
-              onChange={(event) => { setReportDetailInput(event.target.value) }}
+              onChange={(event) => {
+                setReportDetailInput(event.target.value);
+              }}
               InputProps={{
-                startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <InfoIcon />
+                  </InputAdornment>
+                ),
               }}
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
-            <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleCloseConfirmReport}
+              sx={{ textTransform: "none" }}
+            >
+              Không
+            </Button>
+            <Button onClick={handleReport} sx={{ textTransform: "none" }}>
               Xác nhận
             </Button>
           </DialogActions>
@@ -407,43 +482,42 @@ const ProductDescriptionInfo = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            Hello bạn ơi
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">Hello bạn ơi</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Bạn cần phải đăng nhập để thực hiện hành động này
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+            <Button
+              onClick={handleCloseConfirmReport}
+              sx={{ textTransform: "none" }}
+            >
+              Thoát
+            </Button>
             <a href={process.env.PUBLIC_URL + "/login-register"}>
-              <Button sx={{ textTransform: 'none' }}>
-                Đăng nhập
-              </Button>
+              <Button sx={{ textTransform: "none" }}>Đăng nhập</Button>
             </a>
           </DialogActions>
         </Dialog>
-        {
-          product.category ? (
-            <div className="pro-details-meta">
-              <span>Danh mục :</span>
-              <ul>
-                {product.category?.map((single, key) => {
-                  return (
-                    <li key={key}>
-                      <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
-                        {single}
-                      </Link>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : (
-            ""
-          )
-        }
+        {product.category ? (
+          <div className="pro-details-meta">
+            <span>Danh mục :</span>
+            <ul>
+              {product.category?.map((single, key) => {
+                return (
+                  <li key={key}>
+                    <Link to={process.env.PUBLIC_URL + "/shop-grid-standard"}>
+                      {single}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ) : (
+          ""
+        )}
         {/* {product.tag ? (
         <div className="pro-details-meta">
           <span>Tags :</span>
@@ -495,29 +569,37 @@ const ProductDescriptionInfo = ({
         <div>
           <ProductOwnerInfo user={user} check={1} />
         </div>
-        <div>
+        <div style={{ marginTop: "1rem" }}>
           <Typography>Chia sẻ tin đăng này cho bạn bè:</Typography>
-          <Stack direction="row" spacing={2} sx={{ borderTop: '1px solid #e0e0e0', borderBottom: '1px solid #e0e0e0', padding: '5px' }} >
+          <Stack
+            direction="row"
+            spacing={2}
+            sx={{
+              borderTop: "1px solid #e0e0e0",
+              borderBottom: "1px solid #e0e0e0",
+              padding: "5px",
+            }}
+          >
             <Like dataHref={shareURL} />
             <ShareMessage dataHref={shareURL} />
             <Box
               sx={{
-                backgroundColor: '#e0e0e0',
-                width: '40px',
-                height: '40px',
-                borderRadius: '100px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: 'pointer'
+                backgroundColor: "#e0e0e0",
+                width: "40px",
+                height: "40px",
+                borderRadius: "100px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                cursor: "pointer",
               }}
               onClick={handleCopyURL}
             >
-              <InsertLinkSharpIcon sx={{ transform: 'rotate(125deg)' }} />
+              <InsertLinkSharpIcon sx={{ transform: "rotate(125deg)" }} />
             </Box>
           </Stack>
         </div>
-      </div >
+      </div>
     </>
   );
 };
@@ -534,10 +616,10 @@ ProductDescriptionInfo.propTypes = {
   finalDiscountedPrice: PropTypes.number,
   finalProductPrice: PropTypes.number,
   product: PropTypes.object,
-  wishlistItem: PropTypes.object
+  wishlistItem: PropTypes.object,
 };
 
-const mapDispatchToProps = dispatch => {
+const mapDispatchToProps = (dispatch) => {
   return {
     addToCart: (
       item,
@@ -561,7 +643,7 @@ const mapDispatchToProps = dispatch => {
     },
     addToCompare: (item, addToast) => {
       dispatch(addToCompare(item, addToast));
-    }
+    },
   };
 };
 

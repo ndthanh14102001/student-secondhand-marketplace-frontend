@@ -24,6 +24,7 @@ import { POPUP_TYPE_ERROR } from "../../redux/reducers/popupReducer";
 import { onClosePopup } from "../../redux/actions/popupActions";
 import { getUniversityById } from "../../utils/data/university";
 import { getImageUrl } from "../../utils/image";
+import FlowButton from "../../components/product-owner-info/FlowButton";
 
 const ProductOwnerInfo = ({
   user,
@@ -139,13 +140,6 @@ const ProductOwnerInfo = ({
     }
   };
 
-  const truncateString = (str) => {
-    if (str?.length > 20) {
-      return str.slice(0, 15) + "...";
-    }
-    return str;
-  };
-
   return (
     <Box
       className="product-onwer-info"
@@ -153,7 +147,10 @@ const ProductOwnerInfo = ({
       sx={{ display: "flex", minWidth: "50%" }}
     >
       <Avatar
-        sx={{ width: 100, height: 100 }}
+        sx={{
+          width: 100,
+          height: 100,
+        }}
         variant="rounded"
         alt={userAttributes?.name}
         src={getImageUrl(
@@ -164,8 +161,12 @@ const ProductOwnerInfo = ({
         ml="1rem"
         display={"flex"}
         flexDirection="column"
-        justifyContent={"space-between"}
-        maxWidth={"50%"}
+        justifyContent={{
+          md: "space-between",
+          xs: "normal",
+        }}
+        flex={1}
+        overflow={"hidden"}
       >
         <Link
           onClick={onHideModal}
@@ -177,22 +178,32 @@ const ProductOwnerInfo = ({
         >
           {userAttributes?.fullName || user?.fullName}
         </Link>
-        <Box display={"flex"}>
+        <Box display={"flex"} alignItems={"center"}>
           <p>Ngày tham gia :</p>
-          <Typography component="span" fontWeight="bold" marginLeft={"0.4rem"}>
+          <Typography
+            component="span"
+            fontWeight="bold"
+            marginLeft={"0.4rem"}
+            fontSize={{ xs: "0.6rem", md: "1rem" }}
+          >
             {ddmmyy(new Date(userAttributes?.createdAt || user?.createdAt))}
           </Typography>
         </Box>
-        <Box display={"flex"}>
+        <Box display={"flex"} alignItems={"center"}>
           <p>Sản phẩm :</p>
-          <Typography component="span" fontWeight="bold" marginLeft={"0.4rem"}>
+          <Typography
+            component="span"
+            fontWeight="bold"
+            marginLeft={"0.4rem"}
+            fontSize={{ xs: "0.6rem", md: "1rem" }}
+          >
             {userAttributes?.product?.data?.length ||
               user?.product?.length ||
               0}
           </Typography>
         </Box>
 
-        <Box display={"flex"}>
+        <Box display={"flex"} alignItems={"center"}>
           <p>Vị trí :</p>
           <Tooltip
             title={
@@ -207,35 +218,44 @@ const ProductOwnerInfo = ({
               component="span"
               fontWeight="bold"
               marginLeft={"0.4rem"}
+              fontSize={{ xs: "0.6rem", md: "1rem" }}
+              whiteSpace={"nowrap"}
+              textOverflow={"ellipsis"}
+              overflow={"hidden"}
             >
-              {truncateString(
-                getUniversityById(
-                  userAttributes?.universityId || user?.universityId
-                )?.teN_DON_VI || ""
-              )}
+              {getUniversityById(
+                userAttributes?.universityId || user?.universityId
+              )?.teN_DON_VI || ""}
             </Typography>
           </Tooltip>
         </Box>
+        <FlowButton
+          isFollow={isFollow}
+          handleFollow={handleFollow}
+          sx={{
+            display: {
+              md: "none",
+              xs: "flex",
+            },
+            marginLeft: 0,
+          }}
+          buttonStyle={{
+            fontSize: "0.6rem",
+            width: "100%",
+            padding: 0,
+          }}
+        />
       </Box>
-      <Box ml={"1rem"} display={"flex"} alignItems="center">
-        {isFollow ? (
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            variant="outlined"
-            onClick={handleFollow}
-          >
-            Đang theo dõi
-          </Button>
-        ) : (
-          <Button
-            sx={{ textTransform: "capitalize" }}
-            variant="contained"
-            onClick={handleFollow}
-          >
-            Theo dõi
-          </Button>
-        )}
-      </Box>
+      <FlowButton
+        isFollow={isFollow}
+        handleFollow={handleFollow}
+        sx={{
+          display: {
+            md: "flex",
+            xs: "none",
+          },
+        }}
+      />
       <Dialog open={openUnFollow} onClose={handleCloseUnFollow}>
         <DialogTitle>
           {"Bạn có muốn hủy theo dõi người dùng này không?"}

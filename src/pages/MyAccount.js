@@ -13,10 +13,7 @@ import Card from "react-bootstrap/Card";
 import Accordion from "react-bootstrap/Accordion";
 import LayoutOne from "../layouts/LayoutOne";
 import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
-import callApi, {
-  RESPONSE_TYPE,
-  STATUS_BAD_REQUEST,
-} from "../utils/callApi";
+import callApi, { RESPONSE_TYPE, STATUS_BAD_REQUEST } from "../utils/callApi";
 import { getUserLogin } from "../utils/userLoginStorage";
 import { updateUser } from "../utils/userLoginStorage";
 import Avatar from "@mui/material/Avatar";
@@ -24,6 +21,7 @@ import Typography from "@mui/material/Typography";
 import ProductOwnerInfo from "../wrappers/product/ProductOwnerInfo";
 import { getAllUniversity } from "../utils/data/university";
 import { getImageUrl } from "../utils/image";
+import { Grid } from "@mui/material";
 
 const MyAccount = ({ location }) => {
   const universityData = useMemo(() => {
@@ -625,15 +623,18 @@ const MyAccount = ({ location }) => {
                               Bạn chưa theo dõi người dùng nào
                             </Typography>
                           ) : (
-                            follower?.map((fl, index) => (
-                              <ProductOwnerInfo
-                                key={index}
-                                user={fl}
-                                check={2}
-                                listFollow={listId}
-                                changeList={handleChangeList}
-                              />
-                            ))
+                            <Grid container spacing={2}>
+                              {follower?.map((fl, index) => (
+                                <Grid item md={6} xs={12} key={index}>
+                                  <ProductOwnerInfo
+                                    user={fl}
+                                    check={2}
+                                    listFollow={listId}
+                                    changeList={handleChangeList}
+                                  />
+                                </Grid>
+                              ))}
+                            </Grid>
                           )}
                         </Card.Body>
                       </Accordion.Collapse>

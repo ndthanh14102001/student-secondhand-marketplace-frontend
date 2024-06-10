@@ -1,10 +1,5 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from "react";
-import { Grid } from "@mui/material";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { Grid, useMediaQuery, useTheme } from "@mui/material";
 import CategorySlideOneSingle from "../../components/category-slide/CategorySlideOneSingle";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -18,10 +13,14 @@ import { v4 } from "uuid";
 import { IMAGE_SIZE_THUMBNAIL, getImageUrl } from "../../utils/image";
 import categoryApi from "../../api/category";
 const CAT_ITEM_EACH_PAGE = 5;
+const MOBILE_CAT_ITEM_EACH_PAGE = 2;
 
 const useCategorySlideHook = () => {
   const dispatch = useDispatch();
   const history = useHistory();
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
+
   const [activeCategorySlider, setActiveCategorySlider] = React.useState(0);
   const [categories, setCategories] = useState([]);
   const [numScreenCarousel, setNumScreenCarousel] = useState(0);
@@ -58,7 +57,11 @@ const useCategorySlideHook = () => {
   const getCategoriesItemScreen = (indexCat) => {
     let indexItem = 0;
     const carouselItem = [];
-    while (indexItem < CAT_ITEM_EACH_PAGE && indexCat < categories?.length) {
+    const numberOfCategoryEachPage = getNumberOfCategoryEachPage();
+    while (
+      indexItem < numberOfCategoryEachPage &&
+      indexCat < categories?.length
+    ) {
       const category = categories[indexCat];
       const attributes = category?.attributes;
       const image = getImageUrl(
@@ -68,7 +71,7 @@ const useCategorySlideHook = () => {
       carouselItem.push([
         <Grid
           item
-          xs={12 / CAT_ITEM_EACH_PAGE}
+          xs={12 / numberOfCategoryEachPage}
           onClick={() => handleClickCategoryItem(category)}
           key={v4()}
         >
@@ -84,6 +87,10 @@ const useCategorySlideHook = () => {
     };
   };
 
+  const getNumberOfCategoryEachPage = () => {
+    return isMobilePhone ? MOBILE_CAT_ITEM_EACH_PAGE : CAT_ITEM_EACH_PAGE;
+  };
+
   const categoriesCarouselShow = useMemo(() => {
     let indexCategories = 0;
     let numScreen = 0;
@@ -93,7 +100,7 @@ const useCategorySlideHook = () => {
       const { component: items, indexCat } =
         getCategoriesItemScreen(indexCategories);
       categoriesShow.push(
-        <Grid container spacing={2} key={v4()}>
+        <Grid container spacing={2} key={indexCategories}>
           {items}
         </Grid>
       );
@@ -101,7 +108,7 @@ const useCategorySlideHook = () => {
     }
     setNumScreenCarousel(numScreen);
     return categoriesShow;
-  }, [categories?.length]);
+  }, [categories?.length, isMobilePhone]);
 
   const addClassHoverBtn = useCallback(() => {
     if (btnNextSlideRef.current) {
