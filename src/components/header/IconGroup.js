@@ -3,11 +3,8 @@ import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Button, ClickAwayListener } from "@mui/material";
+import { Box, Button, ClickAwayListener } from "@mui/material";
 import PostAddIcon from "@mui/icons-material/PostAdd";
-import { useToasts } from "react-toast-notifications";
-import { clearUserLogin } from "../../utils/userLoginStorage";
-import { logout } from "../../redux/actions/userStorageActions";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from "@mui/material/Avatar";
@@ -22,14 +19,11 @@ import { getNotificationMessageByNotificationType } from "../../utils/notificati
 import { formatDateToShow } from "../../utils/DateFormat";
 
 const IconGroup = ({
-  currency,
-  cartData,
   wishlistData,
-  // compareData,
-  // deleteFromCart,
   iconWhiteClass,
+  handleLogout,
+  handleSearch
 }) => {
-  const dispatch = useDispatch();
   const isLogin = useSelector((state) => state.userStorage.isLogin);
   const socket = useSelector((state) => state?.socket?.socket);
   const accountDropRef = useRef();
@@ -42,7 +36,7 @@ const IconGroup = ({
   const [unReadNotifications, setUnreadNotifications] = useState([]);
   const [searchValue, setSearchValue] = useState("");
 
-  const { addToast } = useToasts();
+
   const handleClick = (e) => {
     e.currentTarget.nextSibling.classList.toggle("active");
   };
@@ -61,16 +55,7 @@ const IconGroup = ({
   //   );
   //   offcanvasMobileMenu.classList.add("active");
   // };
-  const handleLogout = () => {
-    history.push(process.env.PUBLIC_URL);
-    clearUserLogin();
-    addToast("Đăng xuất thành công", {
-      appearance: "success",
-      autoDismiss: true,
-    });
-    dispatch(logout());
-    handleCloseAvatarDrop();
-  };
+ 
 
   // const handleFetchData = async() => {
   async function getNotifications() {
@@ -173,20 +158,19 @@ const IconGroup = ({
 
   const handleClickSearch = (e) => {
     e.preventDefault();
-    history.push(process.env.PUBLIC_URL + "/category");
-    dispatch(setNameFilter(searchValue.trim()));
+    handleSearch(searchValue)
   };
-  // const truncateString = (str) => {
-  //   if (str?.length > 20) {
-  //     return str.slice(0, 30) + "...";
-  //   }
-  //   return str;
-  // };
 
   const hasBeenRead = (notification) => {
     return notification?.attributes?.readUsers?.data?.some((readUser) => {
       return readUser?.id === user?.id;
     });
+  };
+  const triggerMobileMenu = () => {
+    const offcanvasMobileMenu = document.querySelector(
+      "#offcanvas-mobile-menu"
+    );
+    offcanvasMobileMenu?.classList?.add("active");
   };
   return (
     <div
@@ -261,18 +245,21 @@ const IconGroup = ({
             </ul>
           </div>
         </div>
+        
       </ClickAwayListener>
-      {/* <div className="same-style header-compare">
-        <Link to={process.env.PUBLIC_URL + "/compare"}>
-          <i className="pe-7s-shuffle" />
-          <span className="count-style">
-            {compareData && compareData?.length ? compareData?.length : 0}
-          </span>
-        </Link>
-      </div> */}
+      {isLogin && (
+        <div className="same-style header-wishlist d-block d-lg-none">
+          <Link to={process.env.PUBLIC_URL + "/chat"}>
+            <i className="pe-7s-chat" />
+            <span className="count-style">
+              {wishlistData && wishlistData?.length ? wishlistData?.length : 0}
+            </span>
+          </Link>
+        </div>
+      )}
       {isLogin && (
         <ClickAwayListener onClickAway={handleCloseBell}>
-          <div className="same-style account-setting d-none d-lg-block">
+          <div className="same-style account-setting ">
             <button className="account-setting-active" onClick={handleClick}>
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
               <i className="pe-7s-bell" />
@@ -357,6 +344,7 @@ const IconGroup = ({
           </div>
         </ClickAwayListener>
       )}
+      
       {isLogin && (
         <div className="same-style header-wishlist">
           <Link to={process.env.PUBLIC_URL + "/wishlist"}>
@@ -368,7 +356,15 @@ const IconGroup = ({
         </div>
       )}
       {isLogin && (
-        <div className="same-style">
+        <Box
+          className="same-style"
+          sx={{
+            display: {
+              xs: "none",
+              md: "block",
+            },
+          }}
+        >
           <Button
             onClick={() =>
               history.push(process.env.PUBLIC_URL + "/product-post")
@@ -385,8 +381,16 @@ const IconGroup = ({
           >
             Đăng bán
           </Button>
-        </div>
+        </Box>
       )}
+      <div className="same-style mobile-off-canvas d-block d-lg-none">
+        <button
+          className="mobile-aside-button"
+          onClick={() => triggerMobileMenu()}
+        >
+          <i className="pe-7s-menu" />
+        </button>
+      </div>
     </div>
   );
 };
