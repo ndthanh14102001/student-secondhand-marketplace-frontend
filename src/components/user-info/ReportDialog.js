@@ -45,7 +45,7 @@ const ReportDialog = ({
       >
         {"Báo cáo người dùng"}
       </DialogTitle>
-      <DialogContent sx={{ width: "450px" }}>
+      <DialogContent sx={{ maxWidth: "450px" }}>
         <DialogContentText id="alert-dialog-description">
           Người dùng "{userInfo?.fullName}" có vấn đề gì ?
         </DialogContentText>

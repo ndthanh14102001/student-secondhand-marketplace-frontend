@@ -13,31 +13,25 @@ import {
   Dialog,
   DialogActions,
   DialogTitle,
-  styled,
 } from "@mui/material";
 
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import SchoolIcon from "@mui/icons-material/School";
 import AddIcon from "@mui/icons-material/Add";
 import CheckIcon from "@mui/icons-material/Check";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
-import PhoneIcon from "@mui/icons-material/Phone";
 import ReportProblemOutlinedIcon from "@mui/icons-material/ReportProblemOutlined";
 
 import LayoutOne from "../../layouts/LayoutOne";
 import Breadcrumb from "../../wrappers/breadcrumb/Breadcrumb";
-import { ddmmyy } from "../../utils/DateFormat";
 import ShopProducts from "../../wrappers/product/ShopProducts";
 import {
   PRODUCT_ON_SALE_KEY,
   PRODUCT_SOLD_KEY,
 } from "../../constants/my-products/constants";
 
-import { getUniversityById } from "../../utils/data/university";
 import { getImageUrl } from "../../utils/image";
 import ReportDialog from "../../components/user-info/ReportDialog";
 import useUserInfoHook from "../../hooks/user-info/UserInfoHook";
 import RequestLoginDialog from "../../components/user-info/RequestLoginDialog";
+import UserInfomation from "../../wrappers/user-info/UserInfomation";
 
 function a11yProps(index) {
   return {
@@ -45,12 +39,6 @@ function a11yProps(index) {
     "aria-controls": `products-tabpanel-${index}`,
   };
 }
-const BoxUserInfo = styled(Box)(() => ({
-  marginBottom: "1rem",
-  display: "flex",
-  alignItems: "center",
-  width: "100%",
-}));
 
 const UserInfo = ({ match }) => {
   const userInfoHook = useUserInfoHook();
@@ -112,10 +100,11 @@ const UserInfo = ({ match }) => {
                     openNeedLoginDialog={userInfoHook.openNeedLoginDialog}
                   />
                 </Box>
-                <Grid container>
+                <Grid container spacing={2}>
                   <Grid
                     item
-                    xs={6}
+                    xs={12}
+                    md={6}
                     sx={{
                       display: "flex",
                       alignItems: "center",
@@ -158,46 +147,8 @@ const UserInfo = ({ match }) => {
                       )}
                     </Box>
                   </Grid>
-                  <Grid item xs={6}>
-                    <BoxUserInfo>
-                      <CalendarMonthIcon />
-                      <Typography fontWeight={"bold"} marginLeft="1rem">
-                        {"Ngày tham gia"}
-                      </Typography>
-                      <Typography marginLeft="1rem">
-                        {ddmmyy(new Date(userInfoHook.userInfo?.createdAt))}
-                      </Typography>
-                    </BoxUserInfo>
-                    <BoxUserInfo>
-                      <SchoolIcon />
-                      <Typography fontWeight={"bold"} marginLeft="1rem">
-                        {"Trường đại học"}
-                      </Typography>
-                      <Typography marginLeft="1rem">
-                        {
-                          getUniversityById(userInfoHook.userInfo?.universityId)
-                            ?.teN_DON_VI
-                        }
-                      </Typography>
-                    </BoxUserInfo>
-                    <BoxUserInfo>
-                      <LocationOnIcon />
-                      <Typography fontWeight={"bold"} marginLeft="1rem">
-                        {"Địa chỉ nhà"}
-                      </Typography>
-                      <Typography marginLeft="1rem">
-                        {userInfoHook.userInfo?.address}
-                      </Typography>
-                    </BoxUserInfo>
-                    <BoxUserInfo>
-                      <PhoneIcon />
-                      <Typography fontWeight={"bold"} marginLeft="1rem">
-                        {"Số điện thoại"}
-                      </Typography>
-                      <Typography marginLeft="1rem">
-                        {userInfoHook.userInfo?.phone}
-                      </Typography>
-                    </BoxUserInfo>
+                  <Grid item xs={12} md={6}>
+                    <UserInfomation userInfo={userInfoHook.userInfo} />
                   </Grid>
                 </Grid>
               </Paper>
