@@ -9,15 +9,15 @@ const userApi = {
         filters: {
           userId: {
             id: {
-              $eq: userId
-            }
-          }
+              $eq: userId,
+            },
+          },
         },
         sort: {
-          updatedAt: "desc"
-        }
-      }
-    })
+          updatedAt: "desc",
+        },
+      },
+    });
     return response;
   },
   getAllUserHasProduct: async (handleError) => {
@@ -26,19 +26,19 @@ const userApi = {
       url: process.env.REACT_APP_API_ENDPOINT + "/users",
       method: "get",
       params: {
-        fields: ['products', 'universityId'],
+        fields: ["universityId"],
         populate: "product",
-      }
-    })
+      },
+    });
     if (response.type === RESPONSE_TYPE) {
       const responseData = response.data;
       if (Array.isArray(responseData)) {
-        data = responseData.filter((user) => user?.product?.length > 0)
+        data = responseData.filter((user) => user?.product?.length > 0);
       }
     } else {
       handleError(response);
     }
     return data;
   },
-}
+};
 export default userApi;

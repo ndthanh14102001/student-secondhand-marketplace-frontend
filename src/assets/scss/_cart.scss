@@ -234,6 +234,8 @@ h3.cart-page-title {
     @media #{$xs-layout} {
       margin: 0 0 15px;
       padding: 18px 40px 17px;
+      width: 100%;
+      text-align: center;
     }
     &:hover {
       color: #fff;

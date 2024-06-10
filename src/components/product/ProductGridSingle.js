@@ -13,11 +13,12 @@ import wishlistApi from "../../api/wishlist-api";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { IMAGE_SIZE_MEDIUM, getImageUrl } from "../../utils/image";
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
   alignItems: "center",
-  marginTop: "0.6rem"
+  marginTop: "0.6rem",
 }));
 const ProductGridSingle = ({
   product,
@@ -29,10 +30,10 @@ const ProductGridSingle = ({
   wishlistItem,
   compareItem,
   sliderClassName,
-  spaceBottomClass
+  spaceBottomClass,
 }) => {
-  const history = useHistory()
-  const wishlistData = useSelector(state => state.wishlistData);
+  const history = useHistory();
+  const wishlistData = useSelector((state) => state.wishlistData);
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
   const attributes = product?.attributes;
@@ -41,20 +42,22 @@ const ProductGridSingle = ({
     currency: "VND",
   });
   const finalProductPrice = formatter.format(attributes?.price || 0);
-  const images = attributes?.images?.data &&
+  const images =
+    attributes?.images?.data &&
     Array.isArray(attributes?.images?.data) &&
     attributes?.images?.data?.length > 0 &&
     attributes?.images?.data;
   const user = attributes?.userId?.data?.attributes;
-  const avatar = user?.avatar?.data?.attributes?.url;
+  const avatar = user?.avatar?.data?.attributes;
   return (
     <Fragment>
       <div
         style={{
-          boxSizing: "border-box"
+          boxSizing: "border-box",
         }}
-        className={`col-xl-3 col-md-6 col-lg-4 col-sm-6 ${sliderClassName ? sliderClassName : ""
-          }`}
+        className={`col-xl-3 col-md-6 col-lg-4 col-sm-6 ${
+          sliderClassName ? sliderClassName : ""
+        }`}
       >
         <div
           className={`product-wrap ${spaceBottomClass ? spaceBottomClass : ""}`}
@@ -63,13 +66,13 @@ const ProductGridSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length > 0 && images[0]?.attributes?.url}`}
+                src={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
                 alt=""
               />
               {images && images?.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length > 0 && images[1]?.attributes?.url}`}
+                  src={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
                   alt=""
                 />
               ) : (
@@ -87,7 +90,15 @@ const ProductGridSingle = ({
                       ? "Added to wishlist"
                       : "Add to wishlist"
                   }
-                  onClick={async () => await handleAddToWishlist(product, wishlistData, addToast, addToWishlist, history)}
+                  onClick={async () =>
+                    await handleAddToWishlist(
+                      product,
+                      wishlistData,
+                      addToast,
+                      addToWishlist,
+                      history
+                    )
+                  }
                 >
                   <i className="pe-7s-like" />
                 </button>
@@ -114,12 +125,14 @@ const ProductGridSingle = ({
                 </h3>
               </Tooltip>
             </div>
-            <div className="product-price" >
+            <div className="product-price">
               <span style={{ margin: 0 }}>{finalProductPrice} </span>
             </div>
-            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt))} </Typography>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>
+              {ddmmyyhhmm(new Date(attributes?.createdAt))}{" "}
+            </Typography>
             <BoxInfo>
-              <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
+              <Avatar src={avatar && getImageUrl(avatar)} />
               <Box
                 className="capitalizeText"
                 sx={{
@@ -128,19 +141,34 @@ const ProductGridSingle = ({
                   justifyContent: "center",
                   alignItems: "flex-start",
                   marginLeft: "1rem",
-                  width: "100%"
-                }}>
-                <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
-                <Tooltip PopperProps={{
-                  className: "capitalizeText"
-                }} title={getUniversityById(user?.universityId)?.teN_DON_VI.toLocaleLowerCase() || ""}>
-                  <Typography component={"span"}
+                  width: "100%",
+                }}
+              >
+                <Typography component={"span"} fontSize={"0.8rem"}>
+                  {user?.fullName || ""}{" "}
+                </Typography>
+                <Tooltip
+                  PopperProps={{
+                    className: "capitalizeText",
+                  }}
+                  title={
+                    getUniversityById(
+                      user?.universityId
+                    )?.teN_DON_VI.toLocaleLowerCase() || ""
+                  }
+                >
+                  <Typography
+                    component={"span"}
                     className="ellipsisText "
                     sx={{
                       fontSize: "0.8rem",
-                      width: "80%"
+                      width: "80%",
                     }}
-                  >{getUniversityById(user?.universityId)?.teN_DON_VI?.toLocaleLowerCase() || ""}</Typography>
+                  >
+                    {getUniversityById(
+                      user?.universityId
+                    )?.teN_DON_VI?.toLocaleLowerCase() || ""}
+                  </Typography>
                 </Tooltip>
               </Box>
             </BoxInfo>
@@ -178,7 +206,7 @@ ProductGridSingle.propTypes = {
   product: PropTypes.object,
   sliderClassName: PropTypes.string,
   spaceBottomClass: PropTypes.string,
-  wishlistItem: PropTypes.object
+  wishlistItem: PropTypes.object,
 };
 
 export default ProductGridSingle;

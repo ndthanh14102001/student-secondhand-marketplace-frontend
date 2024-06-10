@@ -1,11 +1,12 @@
-import React, { useState } from 'react'
-import { useRef } from 'react';
-import { Avatar, Box, Grid, IconButton, Typography } from '@mui/material'
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import CloseIcon from '@mui/icons-material/Close';
-import AddIcon from '@mui/icons-material/Add';
-import { useDispatch } from 'react-redux';
-import { onShowPopupErrorBaseCustom } from '../../redux/actions/popupErrorBaseActions';
+import React, { useState } from "react";
+import { useRef } from "react";
+import { Avatar, Box, Grid, IconButton, Typography } from "@mui/material";
+import AddPhotoAlternateIcon from "@mui/icons-material/AddPhotoAlternate";
+import CloseIcon from "@mui/icons-material/Close";
+import AddIcon from "@mui/icons-material/Add";
+import { useDispatch } from "react-redux";
+import { onShowPopupErrorBaseCustom } from "../../redux/actions/popupErrorBaseActions";
+import { getImageUrl } from "../../utils/image";
 
 const ImageUploadBoxStyle = {
   display: "flex",
@@ -16,11 +17,11 @@ const ImageUploadBoxStyle = {
   backgroundColor: "#f4f4f4",
   borderRadius: "8px",
   padding: "1rem",
-  border: (theme) => "2px dashed " + theme.palette.primary.main
-}
-const IMAGE_FILE_TYPE = ["jpg", "jpeg", "webp", "png"]
+  border: (theme) => "2px dashed " + theme.palette.primary.main,
+};
+const IMAGE_FILE_TYPE = ["jpg", "jpeg", "webp", "png"];
 const ImageUpload = ({ productInfo, setProductInfo }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const inputFileRef = useRef();
   const inputFileAddRef = useRef();
   const [resetValueInput, setResetValueInput] = useState(false);
@@ -28,95 +29,99 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
     if (Array.isArray(Object.values(files))) {
       for (let indexFiles = 0; indexFiles < files?.length; indexFiles++) {
         const file = files[indexFiles];
-        const extension = file.name.split('.').pop().toLowerCase();
+        const extension = file.name.split(".").pop().toLowerCase();
         if (!IMAGE_FILE_TYPE.includes(extension)) {
-          return false
+          return false;
         }
       }
     }
     return true;
-  }
+  };
   const handleUploadImages = (e) => {
     if (checkValidFileType(e.target.files)) {
-      setProductInfo(prev => ({
+      setProductInfo((prev) => ({
         ...prev,
         images: Object.values(e.target.files),
-        isValidImages: true
+        isValidImages: true,
       }));
     } else {
-      dispatch(onShowPopupErrorBaseCustom({
-        title: "Loại file không hợp lệ",
-        content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", ")
-      }))
+      dispatch(
+        onShowPopupErrorBaseCustom({
+          title: "Loại file không hợp lệ",
+          content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", "),
+        })
+      );
     }
-    setResetValueInput(prev => !prev)
-  }
+    setResetValueInput((prev) => !prev);
+  };
   const handleAddImage = (e) => {
     // setFiles(prev => [...prev, ...Object.values(e.target.files)]);
     if (checkValidFileType(e.target.files)) {
-      setProductInfo(prev => ({
+      setProductInfo((prev) => ({
         ...prev,
         images: [...prev.images, ...Object.values(e.target.files)],
-        isValidImages: true
+        isValidImages: true,
       }));
     } else {
-      dispatch(onShowPopupErrorBaseCustom({
-        title: "Loại file không hợp lệ",
-        content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", ")
-      }))
+      dispatch(
+        onShowPopupErrorBaseCustom({
+          title: "Loại file không hợp lệ",
+          content: "Chỉ hỗ trợ file " + IMAGE_FILE_TYPE.join(", "),
+        })
+      );
     }
-    setResetValueInput(prev => !prev)
-  }
+    setResetValueInput((prev) => !prev);
+  };
   const handleRemoveImage = (index) => {
     // setFiles(prev => {
     //   return prev.filter((file, indexFile) => {
     //     return index !== indexFile
     //   });
     // });
-    setProductInfo(prev => ({
+    setProductInfo((prev) => ({
       ...prev,
       images: prev.images.filter((file, indexFile) => {
-        return index !== indexFile
+        return index !== indexFile;
       }),
-      isValidImages: true
+      isValidImages: true,
     }));
   };
   const handleShowImage = (file) => {
     try {
-      return URL.createObjectURL(file)
+      return URL.createObjectURL(file);
     } catch (e) {
-      const imageAttributes = file?.attributes;
-      return process.env.REACT_APP_SERVER_ENDPOINT + imageAttributes?.url
+      return getImageUrl( file?.attributes);
     }
-  }
+  };
   return (
     <>
       <input
         ref={inputFileAddRef}
-        key={resetValueInput || ''}
+        key={resetValueInput || ""}
         onChange={handleAddImage}
         hidden
-        accept='image/*'
+        accept="image/*"
         type="file"
         multiple
       />
       <input
         ref={inputFileRef}
-        key={resetValueInput || ''}
+        key={resetValueInput || ""}
         onChange={handleUploadImages}
         hidden
-        accept='image/*'
+        accept="image/*"
         type="file"
         multiple
       />
       <Box height="100%">
-        {(!productInfo.images || productInfo.images?.length === 0) ?
+        {!productInfo.images || productInfo.images?.length === 0 ? (
           <Box
             onClick={() => inputFileRef.current.click()}
             sx={{
               height: "100%",
-              ...ImageUploadBoxStyle
-            }}>
+              ...ImageUploadBoxStyle,
+            }}
+          >
             <AddPhotoAlternateIcon
               sx={{
                 color: (theme) => theme.palette.primary.main,
@@ -124,56 +129,68 @@ const ImageUpload = ({ productInfo, setProductInfo }) => {
                 width: "60px",
               }}
             />
-            <Typography fontWeight={"bold"}> Đăng từ 4 đến 6 hình ảnh</Typography>
-          </Box> :
+            <Typography fontWeight={"bold"}>
+              {" "}
+              Đăng từ 4 đến 6 hình ảnh
+            </Typography>
+          </Box>
+        ) : (
           <Grid container spacing={2}>
             <Grid item xs={3}>
               <Box
                 onClick={() => inputFileAddRef.current.click()}
                 sx={{
                   height: "100%",
-                  ...ImageUploadBoxStyle
-                }}>
-                <AddIcon sx={{
-                  color: (theme) => theme.palette.primary.main,
-                  height: "40px",
-                  width: "40px",
-                }} />
+                  ...ImageUploadBoxStyle,
+                }}
+              >
+                <AddIcon
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                    height: "40px",
+                    width: "40px",
+                  }}
+                />
               </Box>
             </Grid>
             {productInfo.images?.map((file, index) => {
-              return <Grid item xs={3} key={index}>
-                <Box sx={{ position: "relative" }}>
-                  <IconButton
-                    onClick={() => handleRemoveImage(index)}
-                    sx={{
-                      zIndex: 100,
-                      position: "absolute",
-                      top: 0,
-                      right: 0,
-                      transform: "translate(40%, -50%)",
-                    }}>
-                    <CloseIcon />
-                  </IconButton>
-                  <Avatar
-                    src={handleShowImage(file)}
-                    variant="square"
-                    sx={{
-                      width: "80px", height: "80px",
-                      border: "1px solid #ccc",
-                      "& img": {
-                        objectFit: "contain",
-                        background: "#f7f7f7"
-                      }
-                    }}
-                  />
-                </Box>
-              </Grid>;
+              return (
+                <Grid item xs={3} key={index}>
+                  <Box sx={{ position: "relative" }}>
+                    <IconButton
+                      onClick={() => handleRemoveImage(index)}
+                      sx={{
+                        zIndex: 100,
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        transform: "translate(40%, -50%)",
+                      }}
+                    >
+                      <CloseIcon />
+                    </IconButton>
+                    <Avatar
+                      src={handleShowImage(file)}
+                      variant="square"
+                      sx={{
+                        width: "80px",
+                        height: "80px",
+                        border: "1px solid #ccc",
+                        "& img": {
+                          objectFit: "contain",
+                          background: "#f7f7f7",
+                        },
+                      }}
+                    />
+                  </Box>
+                </Grid>
+              );
             })}
-          </Grid>}
-      </Box >
+          </Grid>
+        )}
+      </Box>
     </>
-  )
-}
+  );
+};
 
-export default ImageUpload
+export default ImageUpload;

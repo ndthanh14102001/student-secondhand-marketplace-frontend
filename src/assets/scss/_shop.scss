@@ -65,6 +65,9 @@
         color: #fa6bff;
       }
     }
+    @media #{$xs-layout} {
+      display: none;
+    }
   }
 }
 

@@ -2,10 +2,17 @@ import PropTypes from "prop-types";
 import React, { Fragment, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { useToasts } from "react-toast-notifications";
-import { getDiscountPrice } from "../../helpers/product";
+import { getDiscountPrice } from "../../utils/product";
 import Rating from "./sub-components/ProductRating";
 import ProductModal from "./ProductModal";
-import { Avatar, Box, Button, Tooltip, Typography, styled } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Tooltip,
+  Typography,
+  styled,
+} from "@mui/material";
 import { ddmmyyhhmm } from "../../utils/DateFormat";
 import { PRODUCT_ON_SALE_STATUS } from "../../constants";
 import { getProductImages } from "../../utils/handleData";
@@ -14,12 +21,13 @@ import wishlistApi from "../../api/wishlist-api";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import { useSelector } from "react-redux";
 import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
+import { getImageUrl } from "../../utils/image";
 
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
   alignItems: "center",
-  marginTop: "0.6rem"
+  marginTop: "0.6rem",
 }));
 const ProductGridListSingle = ({
   product,
@@ -31,9 +39,9 @@ const ProductGridListSingle = ({
   wishlistItem,
   compareItem,
   sliderClassName,
-  spaceBottomClass
+  spaceBottomClass,
 }) => {
-  const wishlistData = useSelector(state => state.wishlistData);
+  const wishlistData = useSelector((state) => state.wishlistData);
   const history = useHistory();
   const [modalShow, setModalShow] = useState(false);
   const { addToast } = useToasts();
@@ -43,15 +51,19 @@ const ProductGridListSingle = ({
     style: "currency",
     currency: "VND",
   });
-  const finalProductPrice = formatter.format(attributes?.price || product?.price || 0);
+  const finalProductPrice = formatter.format(
+    attributes?.price || product?.price || 0
+  );
   const images = getProductImages(attributes) || product?.images;
   const user = attributes?.userId?.data?.attributes || product?.userId;
-  const avatar = user?.avatar?.data?.attributes?.url || user?.avatar?.url;
+  const avatar = getImageUrl(user?.avatar?.data?.attributes);
+
   return (
     <Fragment>
       <div
-        className={`col-xl-4 col-sm-6 ${sliderClassName ? sliderClassName : ""
-          }`}
+        className={`col-xl-4 col-sm-6 ${
+          sliderClassName ? sliderClassName : ""
+        }`}
       >
         <div
           className={`product-wrap ${spaceBottomClass ? spaceBottomClass : ""}`}
@@ -60,13 +72,13 @@ const ProductGridListSingle = ({
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
                 className="default-img"
-                src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 0 && (images[0]?.attributes?.url || images[0]?.url)}`}
+                src={getImageUrl(images?.[0])}
                 alt=""
               />
               {images && images?.length && images?.length > 1 ? (
                 <img
                   className="hover-img"
-                  src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 0 && (images[1]?.attributes?.url || images[1]?.url)}`}
+                  src={getImageUrl(images?.[1])}
                   alt=""
                 />
               ) : (
@@ -84,7 +96,15 @@ const ProductGridListSingle = ({
                       ? "Added to wishlist"
                       : "Add to wishlist"
                   }
-                  onClick={async () => await handleAddToWishlist(product, wishlistData, addToast,addToWishlist, history)}
+                  onClick={async () =>
+                    await handleAddToWishlist(
+                      product,
+                      wishlistData,
+                      addToast,
+                      addToWishlist,
+                      history
+                    )
+                  }
                 >
                   <i className="pe-7s-like" />
                 </button>
@@ -111,12 +131,16 @@ const ProductGridListSingle = ({
                 </h3>
               </Tooltip>
             </div>
-            <div className="product-price" >
+            <div className="product-price">
               <span style={{ margin: 0 }}>{finalProductPrice} </span>
             </div>
-            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))} </Typography>
+            <Typography color="#9b9b9b" component={"span"} fontSize={"0.8rem"}>
+              {ddmmyyhhmm(
+                new Date(attributes?.createdAt || product?.createdAt)
+              )}{" "}
+            </Typography>
             <BoxInfo>
-              <Avatar src={avatar && process.env.REACT_APP_SERVER_ENDPOINT + avatar} />
+              <Avatar src={avatar} />
               <Box
                 className="capitalizeText"
                 sx={{
@@ -125,19 +149,34 @@ const ProductGridListSingle = ({
                   justifyContent: "center",
                   alignItems: "flex-start",
                   marginLeft: "1rem",
-                  width: "100%"
-                }}>
-                <Typography component={"span"} fontSize={"0.8rem"}>{user?.fullName || ""} </Typography>
-                <Tooltip PopperProps={{
-                  className: "capitalizeText"
-                }} title={getUniversityById(user?.universityId)?.teN_DON_VI.toLocaleLowerCase() || ""}>
-                  <Typography component={"span"}
+                  width: "100%",
+                }}
+              >
+                <Typography component={"span"} fontSize={"0.8rem"}>
+                  {user?.fullName || ""}{" "}
+                </Typography>
+                <Tooltip
+                  PopperProps={{
+                    className: "capitalizeText",
+                  }}
+                  title={
+                    getUniversityById(
+                      user?.universityId
+                    )?.teN_DON_VI.toLocaleLowerCase() || ""
+                  }
+                >
+                  <Typography
+                    component={"span"}
                     className="ellipsisText "
                     sx={{
                       fontSize: "0.8rem",
-                      width: "80%"
+                      width: "80%",
                     }}
-                  >{getUniversityById(user?.universityId)?.teN_DON_VI?.toLocaleLowerCase() || ""}</Typography>
+                  >
+                    {getUniversityById(
+                      user?.universityId
+                    )?.teN_DON_VI?.toLocaleLowerCase() || ""}
+                  </Typography>
                 </Tooltip>
               </Box>
             </BoxInfo>
@@ -151,13 +190,13 @@ const ProductGridListSingle = ({
                   <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
                     <img
                       className="default-img img-fluid"
-                      src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 0 && images[0]?.attributes?.url}`}
+                      src={getImageUrl(images?.[0]?.attributes)}
                       alt=""
                     />
                     {images && images?.length && images?.length > 1 ? (
                       <img
                         className="hover-img img-fluid"
-                        src={`${process.env.REACT_APP_SERVER_ENDPOINT}${images && images?.length && images?.length > 1 && images[0]?.attributes?.url}`}
+                        src={getImageUrl(images?.[1]?.attributes)}
                         alt=""
                       />
                     ) : (
@@ -193,10 +232,17 @@ const ProductGridListSingle = ({
                 )}
 
                 <div className=" d-flex align-items-center">
-                  {(attributes?.status && attributes?.status === PRODUCT_ON_SALE_STATUS) || (product?.status === PRODUCT_ON_SALE_STATUS) ?
-                    <Button variant="contained" onClick={() => {
-                      history.push(`${process.env.PUBLIC_URL}/product/${product.id}`)
-                    }}>
+                  {(attributes?.status &&
+                    attributes?.status === PRODUCT_ON_SALE_STATUS) ||
+                  product?.status === PRODUCT_ON_SALE_STATUS ? (
+                    <Button
+                      variant="contained"
+                      onClick={() => {
+                        history.push(
+                          `${process.env.PUBLIC_URL}/product/${product.id}`
+                        );
+                      }}
+                    >
                       {/* <Link
                         to={`${process.env.PUBLIC_URL}/product/${product.id}`}
                       >
@@ -204,13 +250,13 @@ const ProductGridListSingle = ({
                       </Link> */}
                       Thông tin chi tiết
                     </Button>
-                    :
+                  ) : (
                     <div className="shop-list-btn">
                       <button disabled className="active">
                         Ngừng bán
                       </button>
-                    </div>}
-
+                    </div>
+                  )}
 
                   <div className="shop-list-wishlist ml-10">
                     <button
@@ -221,7 +267,15 @@ const ProductGridListSingle = ({
                           ? "Added to wishlist"
                           : "Add to wishlist"
                       }
-                      onClick={async () => await handleAddToWishlist(product, wishlistData, addToast, addToWishlist, history)}
+                      onClick={async () =>
+                        await handleAddToWishlist(
+                          product,
+                          wishlistData,
+                          addToast,
+                          addToWishlist,
+                          history
+                        )
+                      }
                     >
                       <i className="pe-7s-like" />
                     </button>
@@ -263,7 +317,7 @@ ProductGridListSingle.propTypes = {
   product: PropTypes.object,
   sliderClassName: PropTypes.string,
   spaceBottomClass: PropTypes.string,
-  wishlistItem: PropTypes.object
+  wishlistItem: PropTypes.object,
 };
 
 export default ProductGridListSingle;

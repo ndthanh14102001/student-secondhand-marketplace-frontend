@@ -4,6 +4,12 @@ import Logo from "../../components/header/Logo";
 import NavMenu from "../../components/header/NavMenu";
 import IconGroup from "../../components/header/IconGroup";
 import MobileMenu from "../../components/header/MobileMenu";
+import { logout } from "../../redux/actions/userStorageActions";
+import { useDispatch } from "react-redux";
+import { useToasts } from "react-toast-notifications";
+import { useHistory } from "react-router-dom";
+import { clearUserLogin } from "../../utils/userLoginStorage";
+import { setNameFilter } from "../../redux/actions/filterActions";
 
 const HeaderOne = ({
   layout,
@@ -11,8 +17,11 @@ const HeaderOne = ({
   borderStyle,
   headerPaddingClass,
   headerPositionClass,
-  headerBgClass, 
+  headerBgClass,
 }) => {
+  const dispatch = useDispatch();
+  const { addToast } = useToasts();
+  const history = useHistory();
   const [scroll, setScroll] = useState(0);
   const [headerTop, setHeaderTop] = useState(0);
 
@@ -29,15 +38,32 @@ const HeaderOne = ({
     setScroll(window.scrollY);
   };
 
+  const search = (value) => {
+    history.push(process.env.PUBLIC_URL + "/category");
+    dispatch(setNameFilter(value.trim()));
+  };
+
+  const handleLogout = () => {
+    history.push(process.env.PUBLIC_URL);
+    clearUserLogin();
+    addToast("Đăng xuất thành công", {
+      appearance: "success",
+      autoDismiss: true,
+    });
+    dispatch(logout());
+  };
   return (
     <header
-      className={`header-area clearfix ${headerBgClass ? headerBgClass : ""} ${headerPositionClass ? headerPositionClass : ""
-        }`}
+      className={`header-area clearfix ${headerBgClass ? headerBgClass : ""} ${
+        headerPositionClass ? headerPositionClass : ""
+      }`}
     >
       <div
-        className={` ${headerPaddingClass ? headerPaddingClass : ""
-          } sticky-bar header-res-padding clearfix ${scroll > headerTop ? "stick" : ""
-          }`}
+        className={` ${
+          headerPaddingClass ? headerPaddingClass : ""
+        } sticky-bar header-res-padding clearfix ${
+          scroll > headerTop ? "stick" : ""
+        }`}
       >
         <div className={layout === "container-fluid" ? layout : "container"}>
           <div className="row" style={{ alignItems: "center" }}>
@@ -51,12 +77,12 @@ const HeaderOne = ({
             </div>
             <div className="col-xl-2 col-lg-2 col-md-6 col-8">
               {/* Icon group */}
-              <IconGroup/>
+              <IconGroup handleLogout={handleLogout} handleSearch={search} />
             </div>
           </div>
         </div>
         {/* mobile menu */}
-        {/* <MobileMenu /> */}
+        <MobileMenu handleLogout={handleLogout} handleSearch={search} />
       </div>
     </header>
   );
@@ -67,7 +93,7 @@ HeaderOne.propTypes = {
   headerPaddingClass: PropTypes.string,
   headerPositionClass: PropTypes.string,
   layout: PropTypes.string,
-  top: PropTypes.string
+  top: PropTypes.string,
 };
 
 export default HeaderOne;

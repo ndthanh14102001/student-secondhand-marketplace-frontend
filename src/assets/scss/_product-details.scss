@@ -200,6 +200,9 @@
 
 .review{
   margin: 0 5rem 0 5rem;
+  @media #{$xs-layout}{
+    margin: 0 1rem 0 1rem;
+  }
 }
 
 .single-review {

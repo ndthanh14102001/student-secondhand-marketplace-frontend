@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React from "react";
-import { setActiveLayout } from "../../helpers/product";
+import { setActiveLayout } from "../../utils/product";
 export const PRICE_HIGH_TO_LOW_SORT = "priceHighToLow";
 export const PRICE_LOW_TO_HIGH_SORT = "priceLowToHigh";
 export const PRICE_DEFAULT_SORT = "default";

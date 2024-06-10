@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useEffect, Suspense, lazy, useState } from "react";
-import ScrollToTop from "./helpers/scroll-top";
+import ScrollToTop from "./utils/scroll-top.js";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { ToastProvider } from "react-toast-notifications";
 import { multilanguage, loadLanguages } from "redux-multilanguage";
@@ -9,7 +9,7 @@ import { BreadcrumbsProvider } from "react-breadcrumbs-dynamic";
 import ThemeProvider from "./theme";
 import ChatBubble from "./components/chat-bubble";
 // import ModalLoading from "./components/modal-loading";
-import Popup from "./components/Popup";
+import Popup from "./components/popup";
 import PopupErrorBase from "./components/popup-error-base";
 import { onClosePopupErrorBase } from "./redux/actions/popupErrorBaseActions";
 import { getUserLogin } from "./utils/userLoginStorage";
@@ -22,58 +22,45 @@ import {
 } from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
-const SwipeableTextMobileStepper = lazy(() => import("./test-image-carousel"));
-// Get user data
-// const user = getUserLogin();
+import { useMediaQuery, useTheme } from "@mui/material";
 
-// home pages
+
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
-// shop pages
 const ShopGridStandard = lazy(() => import("./pages/shop/ShopGridStandard"));
-
-// product pages
 const Product = lazy(() => import("./pages/shop-product/Product"));
 
-// chat pages
 const Chat = lazy(() => import("./pages/chat/index.js"));
 
-// blog pages
-const BlogStandard = lazy(() => import("./pages/blog/BlogStandard"));
-const BlogNoSidebar = lazy(() => import("./pages/blog/BlogNoSidebar"));
-const BlogRightSidebar = lazy(() => import("./pages/blog/BlogRightSidebar"));
-const BlogDetailsStandard = lazy(() =>
-  import("./pages/blog/BlogDetailsStandard")
-);
+const MyAccount = lazy(() => import("./pages/MyAccount"));
 
-// other pages
-const About = lazy(() => import("./pages/other/About"));
-const Contact = lazy(() => import("./pages/other/Contact"));
-const MyAccount = lazy(() => import("./pages/other/MyAccount"));
-const MyProducts = lazy(() => import("./pages/other/my-products"));
+const MyProducts = lazy(() => import("./pages/my-products"));
 const ProductPost = lazy(() => import("./pages/product-post"));
 const ProductUpdate = lazy(() => import("./pages/product-update"));
+
 const UserInfo = lazy(() => import("./pages/user-info"));
+const LoginAndRegister = lazy(() => import("./pages/LoginAndRegister"));
+const ForgotPassword = lazy(() => import("./pages/forgot-password"));
 
-const LoginAndRegister = lazy(() => import("./pages/other/LoginAndRegister"));
-const ForgotPassword = lazy(() => import("./pages/other/forgot-password"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Wishlist = lazy(() => import("./pages/Wishlist"));
 
-const Cart = lazy(() => import("./pages/other/Cart"));
-const Wishlist = lazy(() => import("./pages/other/Wishlist"));
-const Compare = lazy(() => import("./pages/other/Compare"));
-const Checkout = lazy(() => import("./pages/other/Checkout"));
-
-const NotFound = lazy(() => import("./pages/other/NotFound"));
-
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Notification = lazy(() => import("./pages/notification"));
 const App = (props) => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
+
+ 
+  const isLogin = useSelector((state) => state.userStorage.isLogin);
 
   const popup = useSelector((state) => state.popup);
   const modalLoading = useSelector((state) => state.modalLoading);
   const popupErrorBase = useSelector((state) => state.popupErrorBase);
+  const chatBubble = useSelector((state) => state.chatBubble);
 
-  // [DON'T DELETE THIS] This line exist to check if user is logged in yet
-  const user = getUserLogin()?.user;
+  const loggedInUser = getUserLogin()?.user;
 
   //UseState NavigateUserInChat
   const [selectedChatPartner, setSelectedChatPartner] = useState();
@@ -86,17 +73,17 @@ const App = (props) => {
       dispatch(onOpenModalLoading());
       const response = await wishlistApi.getWishlistPopulateAll();
       if (response.type === RESPONSE_TYPE) {
-        
         dispatch(setWishlist(response.data?.product_likes || []));
       }
       dispatch(onCloseModalLoading());
     };
-    if (user) {
+    if (loggedInUser) {
       getWishlist();
     }
-  }, []);
+  }, [isLogin]);
+
   useEffect(() => {
-    if (user) {
+    if (loggedInUser) {
       dispatch(login());
     } else {
       dispatch(logout());
@@ -111,6 +98,8 @@ const App = (props) => {
       })
     );
   });
+
+  
   return (
     <ThemeProvider>
       <ConnectSocket />
@@ -125,7 +114,6 @@ const App = (props) => {
         content={popup.content}
       />
 
-      {/* <ModalLoading open={modalLoading.open} /> */}
       {modalLoading.open && (
         <div className="flone-preloader-wrapper">
           <div className="flone-preloader">
@@ -157,7 +145,9 @@ const App = (props) => {
                   </div>
                 }
               >
-                <ChatBubble selectedChatPartner={selectedChatPartner} />
+                {chatBubble?.isShow && !isMobilePhone && (
+                  <ChatBubble selectedChatPartner={selectedChatPartner} />
+                )}
                 <Switch>
                   <Route
                     exact
@@ -178,16 +168,10 @@ const App = (props) => {
                   />
 
                   {/* Chat pages */}
-                  {user !== undefined ? (
+                  {loggedInUser !== undefined ? (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat/:id"}
-                      render={(routeProps) => (
-                        <Chat
-                          {...routeProps}
-                          key={routeProps.match.params.id}
-                          parentHandleNavigateChats={handleNavigateChats}
-                        />
-                      )}
+                      render={(routeProps) => <Chat />}
                     />
                   ) : (
                     <Route
@@ -196,7 +180,7 @@ const App = (props) => {
                     />
                   )}
 
-                  {user !== undefined && (
+                  {loggedInUser !== undefined && (
                     <Route
                       path={process.env.PUBLIC_URL + "/chat"}
                       render={(routeProps) => (
@@ -220,33 +204,7 @@ const App = (props) => {
                     )}
                   />
 
-                  {/* Blog pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-standard"}
-                    component={BlogStandard}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-no-sidebar"}
-                    component={BlogNoSidebar}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-right-sidebar"}
-                    component={BlogRightSidebar}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/blog-details-standard"}
-                    component={BlogDetailsStandard}
-                  />
-
                   {/* Other pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/about"}
-                    component={About}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/contact"}
-                    component={Contact}
-                  />
                   <Route
                     path={process.env.PUBLIC_URL + "/my-account"}
                     component={MyAccount}
@@ -294,27 +252,19 @@ const App = (props) => {
                     path={process.env.PUBLIC_URL + "/wishlist"}
                     component={Wishlist}
                   />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/compare"}
-                    component={Compare}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/checkout"}
-                    component={Checkout}
-                  />
 
                   <Route
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
                   />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/notification"}
+                    component={Notification}
+                  />
                   {/* <Route
                     path={process.env.PUBLIC_URL + "/test"}
                     component={DistanceCalculator}
                   /> */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/test"}
-                    component={SwipeableTextMobileStepper}
-                  />
                   <Route exact component={NotFound} />
                 </Switch>
               </Suspense>

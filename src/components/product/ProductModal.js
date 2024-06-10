@@ -1,19 +1,34 @@
 import PropTypes from "prop-types";
 import React, { Fragment, useState, useEffect } from "react";
 import Swiper from "react-id-swiper";
-import { getProductCartQuantity } from "../../helpers/product";
+import { getProductCartQuantity } from "../../utils/product";
 import { Modal } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import Rating from "./sub-components/ProductRating";
-import PhoneInTalkIcon from '@mui/icons-material/PhoneInTalk';
-import ChatIcon from '@mui/icons-material/Chat';
-import InfoIcon from '@mui/icons-material/Info';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
-import ReportProblemIcon from '@mui/icons-material/ReportProblem';
+import PhoneInTalkIcon from "@mui/icons-material/PhoneInTalk";
+import ChatIcon from "@mui/icons-material/Chat";
+import InfoIcon from "@mui/icons-material/Info";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
+import ReportProblemOutlinedIcon from "@mui/icons-material/ReportProblemOutlined";
+import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import { connect } from "react-redux";
-import { Button, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, InputAdornment, List, ListItem, ListItemButton, ListItemIcon, ListItemText, TextField } from "@mui/material";
+import {
+  Button,
+  Checkbox,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  InputAdornment,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  TextField,
+} from "@mui/material";
 import { getUserLogin } from "../../utils/userLoginStorage";
 
 import ProductOwnerInfo from "../../wrappers/product/ProductOwnerInfo";
@@ -26,13 +41,15 @@ import wishlistApi from "../../api/wishlist-api";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import { getImageUrl } from "../../utils/image";
 function ProductModal(props) {
   const history = useHistory();
-  const wishlistData = useSelector(state => state.wishlistData);
+  const wishlistData = useSelector((state) => state.wishlistData);
   const { product, onHide } = props;
   const userLoginData = getUserLogin()?.user;
   const attributes = product?.attributes;
   const images = getProductImages(attributes) || product?.images;
+
   const user = attributes?.userId?.data || product?.userId;
 
   const { finalproductprice } = props;
@@ -57,7 +74,7 @@ function ProductModal(props) {
     "Hàng hư hỏng sau khi mua",
     "Hàng giả, hàng nhái, hàng dựng",
     "Lý do khác",
-  ]
+  ];
 
   const handleClickOpenConfirmReport = () => {
     if (userLoginData === undefined) {
@@ -73,7 +90,7 @@ function ProductModal(props) {
   };
 
   const [checkedReportCriteria, setCheckedReportCriteria] = React.useState([]);
-  const [reportDetailInput, setReportDetailInput] = React.useState('');
+  const [reportDetailInput, setReportDetailInput] = React.useState("");
   const handleToggle = (value) => () => {
     const currentIndex = checkedReportCriteria.indexOf(value);
     const newChecked = [...checkedReportCriteria];
@@ -88,41 +105,41 @@ function ProductModal(props) {
   };
 
   const handleReport = () => {
-    let descriptionInput = checkedReportCriteria.filter(fruit => fruit !== "Lý do khác").join(", ");
+    let descriptionInput = checkedReportCriteria
+      .filter((fruit) => fruit !== "Lý do khác")
+      .join(", ");
     if (checkedReportCriteria.indexOf("Lý do khác") > 0) {
-      descriptionInput += " và lý do khác"
+      descriptionInput += " và lý do khác";
     }
-    if (reportDetailInput !== '') {
-      descriptionInput += ", mô tả chi tiết: " + reportDetailInput
+    if (reportDetailInput !== "") {
+      descriptionInput += ", mô tả chi tiết: " + reportDetailInput;
     }
 
     axios
-      .post(process.env.REACT_APP_API_ENDPOINT + '/reports',
-        {
-          data: {
-            type: 'product',
-            product: product?.id,
-            reporter: userLoginData.id,
-            accused: null,
-            description: descriptionInput,
-          }
-        })
+      .post(process.env.REACT_APP_API_ENDPOINT + "/reports", {
+        data: {
+          type: "product",
+          product: product?.id,
+          reporter: userLoginData.id,
+          accused: null,
+          description: descriptionInput,
+        },
+      })
       .then((response) => {
-        
         addToast("Đã gửi báo cáo sản phẩm này, cảm ơn bạn đã báo cáo", {
           appearance: "success",
-          autoDismiss: true
+          autoDismiss: true,
         });
         handleCloseConfirmReport();
       })
       .catch((error) => {
         addToast(" Đã có lỗi !, báo cáo thất bại", {
           appearance: "error",
-          autoDismiss: true
+          autoDismiss: true,
         });
         handleCloseConfirmReport();
-      })
-  }
+      });
+  };
 
   useEffect(() => {
     if (
@@ -140,7 +157,7 @@ function ProductModal(props) {
     getSwiper: getGallerySwiper,
     spaceBetween: 10,
     loopedSlides: 4,
-    loop: true
+    loop: true,
   };
 
   const thumbnailSwiperParams = {
@@ -154,7 +171,7 @@ function ProductModal(props) {
     slideToClickedSlide: true,
     navigation: {
       nextEl: ".swiper-button-next",
-      prevEl: ".swiper-button-prev"
+      prevEl: ".swiper-button-prev",
     },
     renderPrevButton: () => (
       <button className="swiper-button-prev ht-swiper-button-nav">
@@ -165,7 +182,7 @@ function ProductModal(props) {
       <button className="swiper-button-next ht-swiper-button-nav">
         <i className="pe-7s-angle-right" />
       </button>
-    )
+    ),
   };
   return (
     <Fragment>
@@ -181,13 +198,14 @@ function ProductModal(props) {
             <div className="col-md-5 col-sm-12 col-xs-12">
               <div className="product-large-image-wrapper">
                 <Swiper {...gallerySwiperParams}>
-                  {images && Array.isArray(images) &&
+                  {images &&
+                    Array.isArray(images) &&
                     images?.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.REACT_APP_SERVER_ENDPOINT + (single?.attributes?.url || single?.url)}
+                              src={getImageUrl(single)}
                               className="img-fluid"
                               alt=""
                             />
@@ -199,13 +217,14 @@ function ProductModal(props) {
               </div>
               <div className="product-small-image-wrapper mt-15">
                 <Swiper {...thumbnailSwiperParams}>
-                  {images && Array.isArray(images) &&
+                  {images &&
+                    Array.isArray(images) &&
                     images?.map((single, key) => {
                       return (
                         <div key={key}>
                           <div className="single-image">
                             <img
-                              src={process.env.REACT_APP_SERVER_ENDPOINT + (single?.attributes?.url || single?.url)}
+                              src={getImageUrl(single)}
                               className="img-fluid"
                               alt=""
                             />
@@ -219,17 +238,22 @@ function ProductModal(props) {
             <div className="col-md-7 col-sm-12 col-xs-12">
               <div className="product-details-content quickview-content">
                 <h2>{attributes?.name || product?.name || ""}</h2>
-                {(product?.status === PRODUCT_SOLD_STATUS || attributes?.status === PRODUCT_SOLD_STATUS) && <div className="product-details-sold-status">
-                  <span>Đã bán</span>
-                </div>}
+                {(product?.status === PRODUCT_SOLD_STATUS ||
+                  attributes?.status === PRODUCT_SOLD_STATUS) && (
+                  <div className="product-details-sold-status">
+                    <span>Đã bán</span>
+                  </div>
+                )}
                 <div className="product-details-price">
-                  <span >
-                    {finalproductprice}
-                  </span>
+                  <span>{finalproductprice}</span>
                 </div>
 
                 <div className="pro-details-date">
-                  <p style={{ color: "inherit" }}>{ddmmyyhhmm(new Date(attributes?.createdAt || product?.createdAt))}</p>
+                  <p style={{ color: "inherit" }}>
+                    {ddmmyyhhmm(
+                      new Date(attributes?.createdAt || product?.createdAt)
+                    )}
+                  </p>
                 </div>
                 <div className="pro-details-list">
                   <p>{product.shortDescription}</p>
@@ -242,23 +266,34 @@ function ProductModal(props) {
                         navigator.clipboard.writeText("0123456789");
                         addToast("Đã copy số điện thoại", {
                           appearance: "success",
-                          autoDismiss: true
+                          autoDismiss: true,
                         });
                       }}
                     >
-                      <PhoneInTalkIcon />
-                      {" "}
+                      <PhoneInTalkIcon />{" "}
                       {user?.phone || user?.attributes?.phone}
                     </button>
                   </div>
                   <Link
                     to={
-                      (userLoginData !== undefined && user.id !== undefined) &&
-                      ((userLoginData.id === user.id) ? "/chat" : "/chat/" + user.id)}
-                    onClick={userLoginData === undefined ? () => { setOpenNeedLoginDialog(true) } : ''}>
+                      userLoginData !== undefined &&
+                      user.id !== undefined &&
+                      (userLoginData.id === user.id
+                        ? "/chat"
+                        : "/chat/" + user.id)
+                    }
+                    onClick={
+                      userLoginData === undefined
+                        ? () => {
+                            setOpenNeedLoginDialog(true);
+                          }
+                        : ""
+                    }
+                  >
                     <div className="pro-details-cart btn-hover">
                       <button
-                        onClick={() => { }
+                        onClick={
+                          () => {}
                           // addToCart(
                           //   product,
                           //   addToast,
@@ -269,9 +304,10 @@ function ProductModal(props) {
                         }
                         disabled={props.productCartQty >= props.productStock}
                       >
-                        <ChatIcon />
-                        {" "}
-                        {(userLoginData?.id === user?.id) ? "Đi tới chat" : "Chat với người bán"}
+                        <ChatIcon />{" "}
+                        {userLoginData?.id === user?.id
+                          ? "Đi tới chat"
+                          : "Chat với người bán"}
                       </button>
                     </div>
                   </Link>
@@ -279,23 +315,41 @@ function ProductModal(props) {
                   <div className="pro-details-wishlist">
                     <Button
                       className={wishlistItem !== undefined ? "active" : ""}
-                      startIcon={wishlistItem ? <FavoriteIcon /> : <FavoriteBorderIcon />}
-                      onClick={async () => await handleAddToWishlist(product, wishlistData, addToast,addToWishlist, history)}
+                      startIcon={
+                        wishlistItem ? <FavoriteIcon /> : <FavoriteBorderIcon />
+                      }
+                      onClick={async () =>
+                        await handleAddToWishlist(
+                          product,
+                          wishlistData,
+                          addToast,
+                          addToWishlist,
+                          history
+                        )
+                      }
                       title={
                         wishlistItem !== undefined
                           ? "Added to wishlist"
                           : "Add to wishlist"
                       }
                       disabled={wishlistItem !== undefined}
-                    >{wishlistItem ? 'Đã thích' : 'Yêu thích'}
+                    >
+                      {wishlistItem ? "Đã thích" : "Yêu thích"}
                     </Button>
                     <Button
-                      startIcon={sendReport ? <ReportProblemIcon /> : <ReportProblemOutlinedIcon />}
+                      startIcon={
+                        sendReport ? (
+                          <ReportProblemIcon />
+                        ) : (
+                          <ReportProblemOutlinedIcon />
+                        )
+                      }
                       title={"sent report"}
                       disabled={sendReport !== undefined}
-                      sx={{ color: 'red!important' }}
+                      sx={{ color: "red!important" }}
                       onClick={handleClickOpenConfirmReport}
-                    >Báo cáo
+                    >
+                      Báo cáo
                     </Button>
 
                     {/* Dialog confirm report product */}
@@ -310,25 +364,38 @@ function ProductModal(props) {
                       </DialogTitle>
                       <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                          Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng mô tả cụ thể
+                          Sản phẩm "{attributes?.name}" có vấn đề gì? vui lòng
+                          mô tả cụ thể
                         </DialogContentText>
-                        <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
+                        <List
+                          sx={{
+                            width: "100%",
+                            maxWidth: 360,
+                            bgcolor: "background.paper",
+                          }}
+                        >
                           {reportCriteria?.map((value) => {
                             const labelId = `checkbox-list-label-${value}`;
 
                             return (
-                              <ListItem
-                                key={value}
-                                disablePadding
-                              >
-                                <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                              <ListItem key={value} disablePadding>
+                                <ListItemButton
+                                  role={undefined}
+                                  onClick={handleToggle(value)}
+                                  dense
+                                >
                                   <ListItemIcon>
                                     <Checkbox
                                       edge="start"
-                                      checked={checkedReportCriteria.indexOf(value) !== -1}
+                                      checked={
+                                        checkedReportCriteria.indexOf(value) !==
+                                        -1
+                                      }
                                       tabIndex={-1}
                                       disableRipple
-                                      inputProps={{ 'aria-labelledby': labelId }}
+                                      inputProps={{
+                                        "aria-labelledby": labelId,
+                                      }}
                                     />
                                   </ListItemIcon>
                                   <ListItemText id={labelId} primary={value} />
@@ -341,19 +408,31 @@ function ProductModal(props) {
                           fullWidth
                           label="Mô tả chi tiết"
                           id="outlined-start-adornment"
-                          sx={{ padding: 0, mt: '12px' }}
+                          sx={{ padding: 0, mt: "12px" }}
                           value={reportDetailInput}
                           onChange={(event) => {
-                            setReportDetailInput(event.target.value)
+                            setReportDetailInput(event.target.value);
                           }}
                           InputProps={{
-                            startAdornment: <InputAdornment position="start"><InfoIcon /></InputAdornment>,
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <InfoIcon />
+                              </InputAdornment>
+                            ),
                           }}
                         />
                       </DialogContent>
                       <DialogActions>
-                        <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Không</Button>
-                        <Button onClick={handleReport} sx={{ textTransform: 'none' }}>
+                        <Button
+                          onClick={handleCloseConfirmReport}
+                          sx={{ textTransform: "none" }}
+                        >
+                          Không
+                        </Button>
+                        <Button
+                          onClick={handleReport}
+                          sx={{ textTransform: "none" }}
+                        >
                           Xác nhận
                         </Button>
                       </DialogActions>
@@ -375,9 +454,14 @@ function ProductModal(props) {
                         </DialogContentText>
                       </DialogContent>
                       <DialogActions>
-                        <Button onClick={handleCloseConfirmReport} sx={{ textTransform: 'none' }}>Thoát</Button>
+                        <Button
+                          onClick={handleCloseConfirmReport}
+                          sx={{ textTransform: "none" }}
+                        >
+                          Thoát
+                        </Button>
                         <a href={process.env.PUBLIC_URL + "/login-register"}>
-                          <Button sx={{ textTransform: 'none' }}>
+                          <Button sx={{ textTransform: "none" }}>
                             Đăng nhập
                           </Button>
                         </a>
@@ -386,7 +470,11 @@ function ProductModal(props) {
                   </div>
                 </div>
                 <div>
-                  <ProductOwnerInfo user={user} check={1} onHideModal={onHide} />
+                  <ProductOwnerInfo
+                    user={user}
+                    check={1}
+                    onHideModal={onHide}
+                  />
                 </div>
               </div>
             </div>
@@ -405,8 +493,7 @@ ProductModal.propTypes = {
   onHide: PropTypes.func,
   product: PropTypes.object,
   show: PropTypes.bool,
-  wishlistitem: PropTypes.object
+  wishlistitem: PropTypes.object,
 };
-
 
 export default ProductModal;

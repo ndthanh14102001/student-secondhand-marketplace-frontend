@@ -1,6 +1,6 @@
 import PropTypes from "prop-types";
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { setActiveSort } from "../../helpers/product";
+import { setActiveSort } from "../../utils/product";
 import { useDispatch, useSelector } from "react-redux";
 import { setCategoryFilter } from "../../redux/actions/filterActions";
 // const ChildsCategoires = ({ attributes }) => {

@@ -8,14 +8,14 @@ const FooterCopyright = ({ footerLogo, spaceBottomClass, colorClass }) => {
       className={`copyright ${spaceBottomClass ? spaceBottomClass : ""} ${colorClass ? colorClass : ""
         }`}
     >
-      <div className="footer-logo">
+      <div className="footer-logo" style={{marginLeft:"-16px"}}>
         <Link to={process.env.PUBLIC_URL + "/"}>
           <img alt="" src={process.env.PUBLIC_URL + footerLogo} />
         </Link>
       </div>
-      <p style={{ whiteSpace: "nowrap", textAlign: "center" }}>
+      <p style={{ whiteSpace: "nowrap"}}>
         © 2023{" "}
-        <a href="//hasthemes.com" rel="noopener noreferrer" target="_blank">
+        <a href="#" rel="noopener noreferrer" target="_blank">
           Student Market
         </a>
         .<br /> All Rights Reserved
