@@ -95,7 +95,6 @@ function ChatFrame() {
           flexDirection: "row",
         }}
       >
-        {console.log("chatFrameHook.partner",chatFrameHook.partner)}
         <InputBase
           id="MessageEditorBox"
           placeholder="Aa...."

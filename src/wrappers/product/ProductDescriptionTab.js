@@ -61,6 +61,7 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
           product: id,
         },
         populate: "user.avatar",
+        sort: ["createdAt:desc"],
       },
     });
     if (response.type === RESPONSE_TYPE) {
@@ -159,54 +160,69 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
               </Tab.Pane>
               <Tab.Pane eventKey="productReviews">
                 <div className="review">
-                  {listComments.slice(0, 5)?.map((row, index) => (
-                    <div key={index}>
-                      <div className="row">
-                        <div className="col-lg-7">
-                          <div className="review-wrapper">
-                            <div className="single-review">
-                              <div className="review-img">
-                                <Avatar
-                                  src={
-                                    process.env.REACT_APP_SERVER_ENDPOINT +
-                                    row.attributes.user.data?.attributes?.avatar
-                                      ?.data?.attributes?.url
-                                      ? process.env.REACT_APP_SERVER_ENDPOINT +
-                                        row.attributes.user.data?.attributes
-                                          ?.avatar?.data?.attributes?.url
-                                      : "abc"
-                                  }
-                                  alt=""
-                                  sx={{ mr: 1 }}
-                                />
-                              </div>
-                              <div className="review-content">
-                                <div className="review-top-wrap">
-                                  <div className="review-left">
-                                    <div className="review-name">
-                                      <h4>
-                                        {
+                  <Box
+                    sx={{
+                      maxHeight: 500,
+                      overflowY: "auto",
+                      overflowX: "hidden",
+                      display: "flex",
+                      flexDirection: "column-reverse",
+                    }}
+                  >
+                    {listComments?.map((row) => (
+                      <div key={row?.id}>
+                        <div className="row">
+                          <div className="col-lg-7">
+                            <div className="review-wrapper">
+                              <div className="single-review">
+                                <div className="review-img">
+                                  <Avatar
+                                    src={
+                                      process.env.REACT_APP_SERVER_ENDPOINT +
+                                      row.attributes.user.data?.attributes
+                                        ?.avatar?.data?.attributes?.url
+                                        ? process.env
+                                            .REACT_APP_SERVER_ENDPOINT +
                                           row.attributes.user.data?.attributes
-                                            ?.username
-                                        }
-                                      </h4>
+                                            ?.avatar?.data?.attributes?.url
+                                        : "abc"
+                                    }
+                                    alt=""
+                                    sx={{ mr: 1 }}
+                                  />
+                                </div>
+                                <div className="review-content">
+                                  <div className="review-top-wrap">
+                                    <div className="review-left">
+                                      <div className="review-name">
+                                        <h4>
+                                          {
+                                            row.attributes.user.data?.attributes
+                                              ?.username
+                                          }
+                                        </h4>
+                                      </div>
                                     </div>
                                   </div>
-                                </div>
-                                <div className="review-date">
-                                  <p>{formatDateToShow(row.attributes.updatedAt)}</p>
-                                </div>
-                                <div className="review-bottom">
-                                  <p>{row.attributes.description}</p>
+                                  <div className="review-date">
+                                    <p>
+                                      {formatDateToShow(
+                                        row.attributes.updatedAt
+                                      )}
+                                    </p>
+                                  </div>
+                                  <div className="review-bottom">
+                                    <p>{row.attributes.description}</p>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
+                        <div className="dash"></div>
                       </div>
-                      <div className="dash"></div>
-                    </div>
-                  ))}
+                    ))}
+                  </Box>
                   <div>Bình Luận</div>
                   <Box
                     sx={{

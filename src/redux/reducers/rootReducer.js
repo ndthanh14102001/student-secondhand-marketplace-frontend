@@ -12,6 +12,7 @@ import filterReducer from "./filterReducer";
 import { popupErrorBaseReducer } from "./popupErrorBase";
 import socketReducer from "./socketReducer";
 import chatBubbleReducer from "./chatBubbleReducer";
+import notificationReducer from "./notification";
 // import socketReducer from "./socketReducer";
 
 const rootReducer = combineReducers({
@@ -28,6 +29,7 @@ const rootReducer = combineReducers({
   popupErrorBase: popupErrorBaseReducer,
   socket: socketReducer,
   chatBubble: chatBubbleReducer,
+  notificationData: notificationReducer,
 });
 
 export default rootReducer;

@@ -3,39 +3,62 @@ import React, { useRef, useState } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { connect, useDispatch, useSelector } from "react-redux";
 import { deleteFromCart } from "../../redux/actions/cartActions";
-import { Box, Button, ClickAwayListener } from "@mui/material";
+import {
+  Box,
+  Button,
+  ClickAwayListener,
+  useMediaQuery,
+  useTheme,
+  useThemeProps,
+} from "@mui/material";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { getUserLogin } from "../../utils/userLoginStorage";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import Avatar from "@mui/material/Avatar";
 import { useEffect } from "react";
 import Brightness1Icon from "@mui/icons-material/Brightness1";
-import { setNameFilter } from "../../redux/actions/filterActions";
 import { NOTIFICATION } from "../../constants/notification/constants";
 import notificationApi from "../../api/notification";
 import { IMAGE_SIZE_SMALL, getImageUrl } from "../../utils/image";
 import { v4 } from "uuid";
-import { getNotificationMessageByNotificationType } from "../../utils/notification";
+import {
+  getNotificationMessageByNotificationType,
+  handleReadAll,
+  handleReadNotification,
+  hasBeenRead,
+} from "../../utils/notification";
 import { formatDateToShow } from "../../utils/DateFormat";
+import {
+  addNotificationToTop,
+  addUnreadNotification,
+  setNotifications,
+  setUnreadNotifications,
+} from "../../redux/actions/notificationActions";
 
 const IconGroup = ({
   wishlistData,
   iconWhiteClass,
   handleLogout,
-  handleSearch
+  handleSearch,
 }) => {
+  const dispatch = useDispatch();
   const isLogin = useSelector((state) => state.userStorage.isLogin);
   const socket = useSelector((state) => state?.socket?.socket);
   const accountDropRef = useRef();
   const searchRef = useRef();
   const notificationRef = useRef();
   const history = useHistory();
-  const user = getUserLogin()?.user;
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
+  const notifications = useSelector(
+    (state) => state.notificationData.notifications
+  );
+  const unreadNotifications = useSelector(
+    (state) => state.notificationData.unreadNotifications
+  );
 
-  const [notifications, setNotifications] = useState([]);
-  const [unReadNotifications, setUnreadNotifications] = useState([]);
+  // const [unreadNotifications, setUnreadNotifications] = useState([]);
   const [searchValue, setSearchValue] = useState("");
-
 
   const handleClick = (e) => {
     e.currentTarget.nextSibling.classList.toggle("active");
@@ -55,19 +78,18 @@ const IconGroup = ({
   //   );
   //   offcanvasMobileMenu.classList.add("active");
   // };
- 
 
   // const handleFetchData = async() => {
   async function getNotifications() {
     const response = await notificationApi.getAll();
     if (response.type === RESPONSE_TYPE) {
-      setNotifications(response.data?.data || []);
+      dispatch(setNotifications(response.data?.data || []));
     }
   }
   async function getUnReadNotifications() {
     const response = await notificationApi.getUnreadNotifications();
     if (response.type === RESPONSE_TYPE) {
-      setUnreadNotifications(response.data || []);
+      dispatch(setUnreadNotifications(response.data || []));
     }
   }
 
@@ -118,54 +140,50 @@ const IconGroup = ({
     };
     if (socket) {
       socket.on(NOTIFICATION, (message) => {
-        console.log("message", message);
-        setNotifications((oldNotifications) => [
-          convertReceivedNotificationInSocketToNotifcation(message),
-          ...oldNotifications,
-        ]);
-        setUnreadNotifications((oldUnreadNotifications) => [
-          ...oldUnreadNotifications,
-          message,
-        ]);
+        console.log("notifications", notifications);
+        dispatch(
+          addNotificationToTop(
+            convertReceivedNotificationInSocketToNotifcation(message)
+          )
+        );
+        dispatch(addUnreadNotification(message));
       });
       return () => {
         socket.off(NOTIFICATION);
       };
     }
   }, [socket]);
-  const handleReadNotification = async (notificationId, product) => {
-    const response = await notificationApi.read(notificationId);
-    if (response.type === RESPONSE_TYPE) {
-      history.push(process.env.PUBLIC_URL + "/product/" + product?.id);
-    }
-  };
+  // const handleReadNotification = async (notificationId, product) => {
+  //   const response = await notificationApi.read(notificationId);
+  //   if (response.type === RESPONSE_TYPE) {
+  //     history.push(process.env.PUBLIC_URL + "/product/" + product?.id);
+  //   }
+  // };
 
-  const handleReadAll = async () => {
-    const response = await notificationApi.readAll();
-    if (response.type === RESPONSE_TYPE) {
-      setNotifications((oldNotifications) => {
-        const newNotifications = [];
-        for (let index = 0; index < oldNotifications.length; index++) {
-          const oldNotification = oldNotifications[index];
-          oldNotification?.attributes?.readUsers?.data?.push(user);
-          newNotifications.push(oldNotification);
-        }
-        return newNotifications;
-      });
-      setUnreadNotifications([]);
-    }
-  };
+  // const handleReadAll = async () => {
+  //   const response = await notificationApi.readAll();
+  //   if (response.type === RESPONSE_TYPE) {
+  //     const newNotifications = [];
+  //     for (let index = 0; index < notifications.length; index++) {
+  //       const oldNotification = notifications[index];
+  //       oldNotification?.attributes?.readUsers?.data?.push(user);
+  //       newNotifications.push(oldNotification);
+  //     }
+  //     dispatch(setNotifications(newNotifications));
+  //     dispatch(setUnreadNotifications([]));
+  //   }
+  // };
 
   const handleClickSearch = (e) => {
     e.preventDefault();
-    handleSearch(searchValue)
+    handleSearch(searchValue);
   };
 
-  const hasBeenRead = (notification) => {
-    return notification?.attributes?.readUsers?.data?.some((readUser) => {
-      return readUser?.id === user?.id;
-    });
-  };
+  // const hasBeenRead = (notification) => {
+  //   return notification?.attributes?.readUsers?.data?.some((readUser) => {
+  //     return readUser?.id === user?.id;
+  //   });
+  // };
   const triggerMobileMenu = () => {
     const offcanvasMobileMenu = document.querySelector(
       "#offcanvas-mobile-menu"
@@ -245,7 +263,6 @@ const IconGroup = ({
             </ul>
           </div>
         </div>
-        
       </ClickAwayListener>
       {isLogin && (
         <div className="same-style header-wishlist d-block d-lg-none">
@@ -260,12 +277,19 @@ const IconGroup = ({
       {isLogin && (
         <ClickAwayListener onClickAway={handleCloseBell}>
           <div className="same-style account-setting ">
-            <button className="account-setting-active" onClick={handleClick}>
+            <button
+              className="account-setting-active"
+              onClick={
+                isMobilePhone
+                  ? () => history.push("/notification")
+                  : handleClick
+              }
+            >
               {/* <i className="pe-7s-bell" onClick={handleFetchData}/> */}
               <i className="pe-7s-bell" />
-              {unReadNotifications?.length > 0 && (
+              {unreadNotifications?.length > 0 && (
                 <span className="count-styles">
-                  {unReadNotifications?.length || 0}
+                  {unreadNotifications?.length || 0}
                 </span>
               )}
             </button>
@@ -279,7 +303,10 @@ const IconGroup = ({
                 {notifications?.length === 0 ? (
                   ""
                 ) : (
-                  <div className="event_read" onClick={() => handleReadAll()}>
+                  <div
+                    className="event_read"
+                    onClick={() => handleReadAll({ dispatch, notifications })}
+                  >
                     đánh dấu đọc tất cả
                   </div>
                 )}
@@ -291,7 +318,9 @@ const IconGroup = ({
                   </div>
                 ) : (
                   notifications?.map((item, index) => {
-                    const isReadNotification = hasBeenRead(item);
+                    const isReadNotification = hasBeenRead({
+                      notification: item,
+                    });
                     const sender = item?.attributes?.sender?.data?.attributes;
                     const product = item?.attributes?.product?.data;
                     return (
@@ -299,7 +328,11 @@ const IconGroup = ({
                         key={item?.id}
                         className={isReadNotification ? "notify_read" : ""}
                         onClick={() =>
-                          handleReadNotification(item?.id, product)
+                          handleReadNotification({
+                            history,
+                            notificationId: item?.id,
+                            product,
+                          })
                         }
                       >
                         <div className="notify_avatar">
@@ -344,7 +377,7 @@ const IconGroup = ({
           </div>
         </ClickAwayListener>
       )}
-      
+
       {isLogin && (
         <div className="same-style header-wishlist">
           <Link to={process.env.PUBLIC_URL + "/wishlist"}>

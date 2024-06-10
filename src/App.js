@@ -44,7 +44,7 @@ const Cart = lazy(() => import("./pages/Cart"));
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 
 const NotFound = lazy(() => import("./pages/NotFound"));
-
+const Notification = lazy(() => import("./pages/notification"));
 const App = (props) => {
   const dispatch = useDispatch();
 
@@ -249,6 +249,10 @@ const App = (props) => {
                   <Route
                     path={process.env.PUBLIC_URL + "/not-found"}
                     component={NotFound}
+                  />
+                  <Route
+                    path={process.env.PUBLIC_URL + "/notification"}
+                    component={Notification}
                   />
                   {/* <Route
                     path={process.env.PUBLIC_URL + "/test"}
