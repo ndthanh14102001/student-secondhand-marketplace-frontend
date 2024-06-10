@@ -3,10 +3,7 @@ import { Link } from "react-router-dom";
 import useChatBubbleHook from "../../chat-bubble/useChatBubbleHook";
 const MobileChatIcon = () => {
   const chatBubbleHook = useChatBubbleHook();
-  console.log(
-    "MobileChatIcon",
-    chatBubbleHook.numberOfUnreadMessages
-  );
+
   return (
     <div className="same-style header-wishlist d-block d-lg-none">
       <Link to={process.env.PUBLIC_URL + "/chat"}>

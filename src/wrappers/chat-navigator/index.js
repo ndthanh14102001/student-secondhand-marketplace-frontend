@@ -50,7 +50,7 @@ function CustomizedInputBase(props) {
 function ChatsNavigator({ onCloseDrawer }) {
   const chatNavigatorHook = useChatNavigatorHook();
   const [isSearching, setIsSearching] = useState(false);
-  console.log("onCloseDrawer", onCloseDrawer);
+
   return (
     <Box
       sx={{

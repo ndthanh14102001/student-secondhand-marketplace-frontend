@@ -141,7 +141,6 @@ const IconGroup = ({
     };
     if (socket) {
       socket.on(NOTIFICATION, (message) => {
-        console.log("notifications", notifications);
         dispatch(
           addNotificationToTop(
             convertReceivedNotificationInSocketToNotifcation(message)
