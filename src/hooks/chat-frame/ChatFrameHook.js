@@ -3,28 +3,33 @@ import chatApi from "../../api/chat";
 import { useParams } from "react-router-dom";
 import { RESPONSE_TYPE } from "../../utils/callApi";
 import { getUserLogin } from "../../utils/userLoginStorage";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { v4 } from "uuid";
 import { PRIVATE_MESSAGE } from "../../constants/chat/constants";
 import { formatMessage } from "../../utils/chat";
+import { addChat, setChats } from "../../redux/actions/socketActions";
+import { updateNumberOfUnreadMessages } from "../../redux/actions/chatBubbleActions";
 
 const ChatFrameHook = () => {
+  const dispatch = useDispatch();
   const params = useParams();
   const loggedInUser = getUserLogin()?.user;
   const socket = useSelector((state) => state.socket.socket);
 
-  const [chats, setChats] = useState([]);
   const [partner, setPartner] = useState();
+
   useEffect(() => {
     const getChats = async () => {
       const response = await chatApi.getChats({ partnerId: params?.id });
       if (response.type === RESPONSE_TYPE) {
-        setChats(response?.data?.data || []);
+        dispatch(setChats(response?.data?.data || []));
       }
     };
     if (params?.id) {
       getChats();
+    } else {
+      dispatch(setChats([]));
     }
   }, [params?.id]);
 
@@ -33,15 +38,12 @@ const ChatFrameHook = () => {
       await chatApi.readChatsBySenderId({
         senderId: params?.id,
       });
+      dispatch(updateNumberOfUnreadMessages());
     };
     if (params?.id) {
       markMessagesAsSeen();
     }
   }, [params?.id]);
-
-  const addChat = (chat) => {
-    setChats((prev) => [chat, ...prev]);
-  };
 
   useEffect(() => {
     const getPartnerInfo = async () => {
@@ -56,36 +58,6 @@ const ChatFrameHook = () => {
       getPartnerInfo();
     }
   }, [params?.id]);
-
-  useEffect(() => {
-    const listener = (message) => {
-      const formattedMessage = formatMessage({
-        id: message?.id,
-
-        content: message?.content,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-
-        receiverId: loggedInUser?.id,
-        receiverAttribute: {
-          username: loggedInUser?.username,
-        },
-        senderId: message?.from?.id,
-        senderAttribute: {
-          username: partner?.username,
-        },
-      });
-      if (partner?.id === message?.from?.id) {
-        addChat(formattedMessage);
-      }
-    };
-
-    socket?.on(PRIVATE_MESSAGE, listener);
-
-    return () => {
-      socket?.off(PRIVATE_MESSAGE, listener);
-    };
-  }, [partner]);
 
   const sendMessageInSocket = (e) => {
     if (isEmtyMessageToSend()) {
@@ -114,7 +86,7 @@ const ChatFrameHook = () => {
       },
     });
     document.getElementById("MessageEditorBox").value = "";
-    addChat(formattedMessage);
+    dispatch(addChat(formattedMessage));
   };
   const isEmtyMessageToSend = () => {
     const targetMessBox = document.getElementById("MessageEditorBox");
@@ -130,10 +102,7 @@ const ChatFrameHook = () => {
   };
 
   return {
-    chats,
-    addChat,
     partner,
-    setPartner,
     sendMessageWhenPressEnter,
     sendMessageInSocket,
   };

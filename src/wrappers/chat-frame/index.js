@@ -81,7 +81,7 @@ function ChatFrame() {
           ) : (
             <Messages messages={chatFrameHook.chats} partner={chatFrameHook?.partner} />
           )}
-          {!params?.id && <WelcomeToChatPanel />}
+          {!chatFrameHook.partner && <WelcomeToChatPanel />}
         </Box>
       </Box>
 

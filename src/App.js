@@ -22,6 +22,8 @@ import {
 } from "./redux/actions/modalLoadingActions";
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
+import { useMediaQuery, useTheme } from "@mui/material";
+
 
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -47,7 +49,10 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 const Notification = lazy(() => import("./pages/notification"));
 const App = (props) => {
   const dispatch = useDispatch();
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
 
+ 
   const isLogin = useSelector((state) => state.userStorage.isLogin);
 
   const popup = useSelector((state) => state.popup);
@@ -93,6 +98,8 @@ const App = (props) => {
       })
     );
   });
+
+  
   return (
     <ThemeProvider>
       <ConnectSocket />
@@ -138,7 +145,7 @@ const App = (props) => {
                   </div>
                 }
               >
-                {chatBubble?.isShow && (
+                {chatBubble?.isShow && !isMobilePhone && (
                   <ChatBubble selectedChatPartner={selectedChatPartner} />
                 )}
                 <Switch>

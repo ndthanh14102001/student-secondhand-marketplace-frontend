@@ -73,7 +73,6 @@ const ProductDescriptionInfo = ({
   const userLoginData = getUserLogin()?.user;
 
   const isProductOwner = useMemo(() => {
-    console.log(userLoginData, attributes?.userId);
     return userLoginData?.id === user?.id;
   }, []);
 

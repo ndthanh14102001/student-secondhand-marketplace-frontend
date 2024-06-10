@@ -1,5 +1,6 @@
 const SHOW_CHAT_BUBBLE = "SHOW_CHAT_BUBBLE";
 const HIDE_CHAT_BUBBLE = "HIDE_CHAT_BUBBLE";
+const UPDATE_NUMBER_OF_UNREAD_MESSAGES = "UPDATE_NUMBER_OF_UNREAD_MESSAGES";
 
 const showChatBubble = () => {
   return {
@@ -13,4 +14,16 @@ const hideChatBubble = () => {
   };
 };
 
-export { SHOW_CHAT_BUBBLE, HIDE_CHAT_BUBBLE, showChatBubble, hideChatBubble };
+const updateNumberOfUnreadMessages = () => {
+  return {
+    type: UPDATE_NUMBER_OF_UNREAD_MESSAGES,
+  };
+};
+export {
+  SHOW_CHAT_BUBBLE,
+  HIDE_CHAT_BUBBLE,
+  UPDATE_NUMBER_OF_UNREAD_MESSAGES,
+  showChatBubble,
+  hideChatBubble,
+  updateNumberOfUnreadMessages
+};

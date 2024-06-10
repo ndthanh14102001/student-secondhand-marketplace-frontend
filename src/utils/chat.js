@@ -47,4 +47,9 @@ const formatDate = (date) => {
     minutes
   );
 };
-export { formatMessage, formatDate };
+const getPartnerIdByLocation = () => {
+  const pathName = window.location.pathname;
+  const partnerId = pathName.split("/chat/");
+  return Number(partnerId[partnerId.length - 1]);
+};
+export { formatMessage, formatDate, getPartnerIdByLocation };

@@ -1,42 +1,36 @@
 import { useEffect, useState } from "react";
 import chatApi from "../../api/chat";
 import { RESPONSE_TYPE } from "../../utils/callApi";
-import { useSelector } from "react-redux";
-import { PRIVATE_MESSAGE } from "../../constants/chat/constants";
+import { useDispatch, useSelector } from "react-redux";
+import { setNumberOfUnreadMessages } from "../../redux/actions/socketActions";
 
 const useChatBubbleHook = () => {
-  const [numberOfUnreadMessages, setNumberOfUnreadMessages] = useState(0);
+  const dispatch = useDispatch();
   const [isOpenRequireLoginPopup, setIsOpenRequireLoginPopup] = useState(false);
   const isLogin = useSelector((state) => state.userStorage?.isLogin);
+  const numberOfUnreadMessages = useSelector(
+    (state) => state.socket?.numberOfUnreadMessages
+  );
 
-  const socket = useSelector((state) => state.socket.socket);
+  const flagUpdateNumberOfUnreadMessages = useSelector(
+    (state) => state.chatBubble?.flagUpdateNumberOfUnreadMessages
+  );
 
   useEffect(() => {
     const getNumberOfUnreadMessages = async () => {
       if (isLogin) {
         const response = await chatApi.getNumberOfUnreadMessages();
         if (response.type === RESPONSE_TYPE) {
-          setNumberOfUnreadMessages(response?.numberOfUnreadMessages || 0);
+          dispatch(
+            setNumberOfUnreadMessages(response?.numberOfUnreadMessages || 0)
+          );
         }
       } else {
-        setNumberOfUnreadMessages(0);
+        dispatch(setNumberOfUnreadMessages(0));
       }
     };
     getNumberOfUnreadMessages();
-  }, [isLogin]);
-
-  useEffect(() => {
-    const addNumberOfUnreadMessagesWhenReceiveMessage = () => {
-      setNumberOfUnreadMessages((prev) => prev + 1);
-    };
-    if (socket) {
-      socket?.on(PRIVATE_MESSAGE, addNumberOfUnreadMessagesWhenReceiveMessage);
-    }
-
-    return () => {
-      socket?.off(PRIVATE_MESSAGE, addNumberOfUnreadMessagesWhenReceiveMessage);
-    };
-  }, [socket]);
+  }, [isLogin, flagUpdateNumberOfUnreadMessages]);
 
   const closeRequireLoginPopup = () => {
     if (isOpenRequireLoginPopup) {

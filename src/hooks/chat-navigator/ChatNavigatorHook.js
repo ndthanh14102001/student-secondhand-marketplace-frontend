@@ -1,75 +1,26 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { useHistory, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 import chatApi from "../../api/chat";
 import { RESPONSE_TYPE } from "../../utils/callApi";
-import { PRIVATE_MESSAGE } from "../../constants/chat/constants";
+import { clearSeenCountByPartnerId ,setPartners} from "../../redux/actions/socketActions";
 const useChatNavigatorHook = () => {
+  const dispatch = useDispatch();
   const history = useHistory();
-  const params = useParams();
-  const [partners, setPartners] = useState([]);
 
-  const socket = useSelector((state) => state.socket.socket);
+  const partners = useSelector((state) => state.socket.partners);
+
   useEffect(() => {
     (async function getPartnerts() {
       const response = await chatApi.getPartners();
       if (response.type === RESPONSE_TYPE) {
-        setPartners(response?.partners || []);
+        dispatch(setPartners(response?.partners || []));
       }
     })();
   }, []);
 
-  useEffect(() => {
-    const handleReceiveNewChat = async (chat) => {
-      if (chat?.from?.id?.toString() !== params?.id?.toString()) {
-        setPartners((oldPartners) => {
-          for (let index = 0; index < oldPartners?.length; index++) {
-            const oldPartner = oldPartners[index];
-            if (oldPartner?.user_id === chat?.from?.id) {
-              oldPartner.seencount = Number(oldPartner.seencount) + 1;
-              movePartnerToTop(oldPartners, index);
-              break;
-            }
-          }
-
-          return [...oldPartners];
-        });
-      } else {
-        await markMessagesAsSeen();
-      }
-    };
-
-    const movePartnerToTop = (partners, index) => {
-      partners.unshift(partners.splice(index, 1)[0]);
-    };
-
-    const markMessagesAsSeen = async () => {
-      await chatApi.readChatsBySenderId({
-        senderId: params?.id,
-      });
-    };
-
-    if (socket) {
-      socket.on(PRIVATE_MESSAGE, handleReceiveNewChat);
-    }
-    return () => {
-      if (socket) {
-        socket?.off(PRIVATE_MESSAGE);
-      }
-    };
-  }, [socket, params, setPartners]);
-
   const onClickUser = (userId) => {
-    setPartners((oldPartners) => {
-      for (let index = 0; index < oldPartners?.length; index++) {
-        const oldPartner = oldPartners[index];
-        if (oldPartner?.user_id === userId) {
-          oldPartner.seencount = 0;
-          break;
-        }
-      }
-      return oldPartners;
-    });
+    dispatch(clearSeenCountByPartnerId({ partnerId: userId }));
     history.push("/chat/" + userId);
   };
   return { partners, onClickUser };

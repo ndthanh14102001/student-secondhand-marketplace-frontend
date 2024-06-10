@@ -34,6 +34,7 @@ import {
   setNotifications,
   setUnreadNotifications,
 } from "../../redux/actions/notificationActions";
+import MobileChatIcon from "./sub-components/MobileChatIcon";
 
 const IconGroup = ({
   wishlistData,
@@ -264,16 +265,7 @@ const IconGroup = ({
           </div>
         </div>
       </ClickAwayListener>
-      {isLogin && (
-        <div className="same-style header-wishlist d-block d-lg-none">
-          <Link to={process.env.PUBLIC_URL + "/chat"}>
-            <i className="pe-7s-chat" />
-            <span className="count-style">
-              {wishlistData && wishlistData?.length ? wishlistData?.length : 0}
-            </span>
-          </Link>
-        </div>
-      )}
+      {isLogin && <MobileChatIcon />}
       {isLogin && (
         <ClickAwayListener onClickAway={handleCloseBell}>
           <div className="same-style account-setting ">
