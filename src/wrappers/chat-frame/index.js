@@ -1,6 +1,14 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { Avatar, Box, IconButton, InputBase, Typography } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Drawer,
+  IconButton,
+  InputBase,
+  Stack,
+  Typography,
+} from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Messages from "../../components/message";
 import useChatFrameHook from "../../hooks/chat-frame/ChatFrameHook";
@@ -8,8 +16,13 @@ import { CHAT_TEXT_BOX_HEIGHT } from "../../constants/chat/constants";
 import WelcomeToChatPanel from "../../components/chat-frame/WelcomeToChatPanel";
 import NoChatYetPanel from "../../components/chat-frame/NoChatYetPanel";
 import { getImageUrl } from "../../utils/image";
+import ChatsNavigator from "../chat-navigator";
 
-function ChatFrame() {
+function ChatFrame({
+  onOpenNavigatorDrawer,
+  onCloseNavigatorDrawer,
+  isOpenNavigatorDrawer,
+}) {
   const chatFrameHook = useChatFrameHook();
   const params = useParams();
 
@@ -18,7 +31,6 @@ function ChatFrame() {
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "calc(90vw - 300px)",
         height: "600px",
         borderRadius: "12px",
         overflow: "hidden",
@@ -37,24 +49,40 @@ function ChatFrame() {
           borderBottom: "1px solid #f0f0f0",
         }}
       >
-        {chatFrameHook.partner && (
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              flexDirection: "row",
-            }}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "row",
+            width: "100%",
+          }}
+        >
+          <Stack flex={1} direction={"row"} alignItems={"center"} spacing={2}>
+            {chatFrameHook.partner && (
+              <>
+                <Avatar
+                  alt={chatFrameHook.partner?.fullName}
+                  src={getImageUrl(chatFrameHook.partner?.avatar)}
+                  sx={{ width: 32, height: 32 }}
+                />
+                <Typography>{chatFrameHook.partner?.fullName}</Typography>
+              </>
+            )}
+          </Stack>
+
+          <div className="same-style mobile-off-canvas d-block d-lg-none">
+            <IconButton onClick={onOpenNavigatorDrawer}>
+              <i className="pe-7s-menu" />
+            </IconButton>
+          </div>
+          <Drawer
+            anchor={"right"}
+            open={isOpenNavigatorDrawer}
+            // onClose={toggleDrawer(anchor, false)}
           >
-            <Avatar
-              alt={chatFrameHook.partner?.fullName}
-              src={getImageUrl(chatFrameHook.partner?.avatar)}
-              sx={{ width: 32, height: 32 }}
-            />
-            <Typography sx={{ ml: "12px" }}>
-              {chatFrameHook.partner?.fullName}
-            </Typography>
-          </Box>
-        )}
+            {<ChatsNavigator onCloseDrawer={onCloseNavigatorDrawer}/>}
+          </Drawer>
+        </Box>
       </Box>
 
       {/* Display chatFrameHook?.chats */}
@@ -79,7 +107,10 @@ function ChatFrame() {
           {params?.id && chatFrameHook?.chats?.length === 0 ? (
             <NoChatYetPanel />
           ) : (
-            <Messages messages={chatFrameHook.chats} partner={chatFrameHook?.partner} />
+            <Messages
+              messages={chatFrameHook.chats}
+              partner={chatFrameHook?.partner}
+            />
           )}
           {!chatFrameHook.partner && <WelcomeToChatPanel />}
         </Box>
@@ -116,7 +147,10 @@ function ChatFrame() {
           }}
           onKeyUp={chatFrameHook?.sendMessageWhenPressEnter}
         />
-        <IconButton sx={{ margin: "8px 4px" }} onClick={chatFrameHook?.sendMessageInSocket}>
+        <IconButton
+          sx={{ margin: "8px 4px" }}
+          onClick={chatFrameHook?.sendMessageInSocket}
+        >
           <SendIcon />
         </IconButton>
       </Box>

@@ -16,7 +16,7 @@ const ChatFrameHook = () => {
   const params = useParams();
   const loggedInUser = getUserLogin()?.user;
   const socket = useSelector((state) => state.socket.socket);
-
+  const chats = useSelector((state) => state.socket.chats);
   const [partner, setPartner] = useState();
 
   useEffect(() => {
@@ -103,6 +103,7 @@ const ChatFrameHook = () => {
 
   return {
     partner,
+    chats,
     sendMessageWhenPressEnter,
     sendMessageInSocket,
   };

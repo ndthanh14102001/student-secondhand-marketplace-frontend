@@ -16,7 +16,6 @@ const NoChatYetPanel = () => {
           flexDirection: "column",
           backgroundColor: "white",
           padding: "18px",
-          width: "420px",
           border: "1px solid lightgrey",
           borderRadius: "10px",
           overflow: "hidden",

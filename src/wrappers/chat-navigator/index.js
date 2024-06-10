@@ -1,14 +1,8 @@
-import React, {  useState } from "react";
-import {
-  Box,
-  Divider,
-  IconButton,
-  InputBase,
-  Paper,
-} from "@mui/material";
+import React, { useState } from "react";
+import { Box, Divider, IconButton, InputBase, Paper } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import KeyboardReturnIcon from "@mui/icons-material/KeyboardReturn";
-
+import KeyboardDoubleArrowRightIcon from "@mui/icons-material/KeyboardDoubleArrowRight";
 import ChatNavigatorSingle from "../../components/chat-navigator/ChatNavigatorSingle";
 import useChatNavigatorHook from "../../hooks/chat-navigator/ChatNavigatorHook";
 
@@ -53,10 +47,10 @@ function CustomizedInputBase(props) {
   );
 }
 
-function ChatsNavigator() {
+function ChatsNavigator({ onCloseDrawer }) {
   const chatNavigatorHook = useChatNavigatorHook();
   const [isSearching, setIsSearching] = useState(false);
-
+  console.log("onCloseDrawer", onCloseDrawer);
   return (
     <Box
       sx={{
@@ -71,20 +65,38 @@ function ChatsNavigator() {
         flexDirection: "column",
       }}
     >
-      <CustomizedInputBase
-        handleSetSearchKey={() => {}}
-        handleSearchingMode={() => {
-          setIsSearching(true);
-        }}
-        cancelSearchingMode={() => {
-          setIsSearching(false);
-        }}
-        isSearching={isSearching}
-      />
+      <Box>
+        <IconButton
+          sx={{
+            display: {
+              xs: "block",
+              md: "none",
+            },
+          }}
+          onClick={onCloseDrawer}
+        >
+          <KeyboardDoubleArrowRightIcon />
+        </IconButton>
+        <CustomizedInputBase
+          handleSetSearchKey={() => {}}
+          handleSearchingMode={() => {
+            setIsSearching(true);
+          }}
+          cancelSearchingMode={() => {
+            setIsSearching(false);
+          }}
+          isSearching={isSearching}
+        />
+      </Box>
       <Divider variant="middle" sx={{ m: "14px 0" }} />
       <ChatNavigatorSingle
         users={chatNavigatorHook.partners}
-        onClickUser={chatNavigatorHook.onClickUser}
+        onClickUser={(userId) => {
+          chatNavigatorHook.onClickUser(userId);
+          if (typeof onCloseDrawer === "function") {
+            onCloseDrawer();
+          }
+        }}
       />
     </Box>
   );

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { MetaTags } from "react-meta-tags";
 import { useDispatch, useSelector } from "react-redux";
 import LayoutOne from "../../layouts/LayoutOne";
@@ -8,10 +8,12 @@ import {
 } from "../../redux/actions/chatBubbleActions";
 import ChatFrame from "../../wrappers/chat-frame";
 import ChatsNavigator from "../../wrappers/chat-navigator";
+import { Box } from "@mui/material";
 
 function ChatsFrame(props) {
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
+  const [isOpenNavigatorDrawer, setIsOpenNavigatorDrawer] = useState(false);
 
   useEffect(() => {
     dispatch(hideChatBubble());
@@ -20,6 +22,13 @@ function ChatsFrame(props) {
     };
   }, []);
 
+  const onCloseNavigatorDrawer = () => {
+    setIsOpenNavigatorDrawer(false);
+  };
+
+  const onOpenNavigatorDrawer = () => {
+    setIsOpenNavigatorDrawer(true);
+  };
   return (
     <Fragment>
       <MetaTags>
@@ -39,11 +48,25 @@ function ChatsFrame(props) {
                 flexDirection: "row",
               }}
             >
-              <div style={{ margin: "8px" }}>
+              <Box
+                sx={{
+                  margin: "8px",
+                  display: {
+                    xs: "none",
+                    md: "block",
+                  },
+                }}
+              >
                 <ChatsNavigator />
-              </div>
-              <div style={{ marginLeft: "8px", marginTop: "8px" }}>
-                {socket !== null && <ChatFrame />}
+              </Box>
+              <div style={{ marginLeft: "8px", marginTop: "8px", flex: 1 }}>
+                {socket !== null && (
+                  <ChatFrame
+                    onOpenNavigatorDrawer={onOpenNavigatorDrawer}
+                    isOpenNavigatorDrawer={isOpenNavigatorDrawer}
+                    onCloseNavigatorDrawer={onCloseNavigatorDrawer}
+                  />
+                )}
               </div>
             </div>
           </div>

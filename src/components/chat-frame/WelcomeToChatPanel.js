@@ -1,4 +1,4 @@
-import { Box } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 const WelcomeToChatPanel = () => {
@@ -17,7 +17,7 @@ const WelcomeToChatPanel = () => {
           flexDirection: "column",
           backgroundColor: "white",
           padding: "18px",
-          width: "420px",
+          maxWidth: "420px",
           border: "1px solid lightgrey",
           borderRadius: "10px",
           overflow: "hidden",
@@ -37,17 +37,20 @@ const WelcomeToChatPanel = () => {
           }}
         />
         <div style={{ height: "60px", zIndex: "2" }}>
-          <h3
-            style={{
+          <Typography
+            sx={{
               textAlign: "center",
               color: "white",
               fontFamily: "Verdana,sans-serif",
-              fontSize: "20px",
+              fontSize: {
+                md: "20px",
+                xs: "1rem",
+              },
               fontWeight: "bold",
             }}
           >
             Chào mừng đến với chat
-          </h3>
+          </Typography>
         </div>
         <div
           style={{
