@@ -13,7 +13,7 @@ import { v4 } from "uuid";
 import { IMAGE_SIZE_THUMBNAIL, getImageUrl } from "../../utils/image";
 import categoryApi from "../../api/category";
 const CAT_ITEM_EACH_PAGE = 5;
-const MOBILE_CAT_ITEM_EACH_PAGE = 2;
+const MOBILE_CAT_ITEM_EACH_PAGE = 1;
 
 const useCategorySlideHook = () => {
   const dispatch = useDispatch();
