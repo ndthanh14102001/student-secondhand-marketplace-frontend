@@ -191,13 +191,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                                         }
                                       </h4>
                                     </div>
-                                    {/* <div className="review-rating">
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                               </div> */}
                                   </div>
                                 </div>
                                 <div className="review-date">
@@ -208,41 +201,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                                 </div>
                               </div>
                             </div>
-                            {/* <div className="single-review child-review">
-                         <div className="review-img">
-                           <img
-                             src={
-                               process.env.PUBLIC_URL +
-                               "/assets/img/testimonial/2.jpg"
-                             }
-                             alt=""
-                           />
-                         </div>
-                         <div className="review-content">
-                           <div className="review-top-wrap">
-                             <div className="review-left">
-                               <div className="review-name">
-                                 <h4>White Lewis</h4>
-                               </div>
-                               <div className="review-rating">
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                                 <i className="fa fa-star" />
-                               </div>
-                             </div>
-                           </div>
-                           <div className="review-bottom">
-                             <p>
-                               Vestibulum ante ipsum primis aucibus orci
-                               luctustrices posuere cubilia Curae Suspendisse
-                               viverra ed viverra. Mauris ullarper euismod
-                               vehicula. Phasellus quam nisi, congue id nulla.
-                             </p>
-                           </div>
-                         </div>
-                       </div> */}
                           </div>
                         </div>
                       </div>
@@ -254,7 +212,6 @@ const ProductDescriptionTab = ({ spaceBottomClass, productFullDesc, id }) => {
                     sx={{
                       display: "flex",
                       flexDirection: "row",
-                      flexWrap: "wrap",
                       mt: 1,
                     }}
                   >

@@ -33,18 +33,18 @@ const ProductPost = () => {
           <div className="container">
             <div className="row">
               <Box
-                sx={{ width: "100%" }}
+                sx={{ width: "100%", p: 2 }}
                 component={"form"}
                 onSubmit={productPostHook.handleSubmit}
               >
                 <Grid container spacing={2}>
-                  <Grid item xs={4}>
+                  <Grid item xs={12} md={4}>
                     <ImageUpload
                       productInfo={productPostHook.productInfo}
                       setProductInfo={productPostHook.setProductInfo}
                     />
                   </Grid>
-                  <Grid item xs={8}>
+                  <Grid item xs={12} md={8}>
                     <FormInfoProduct
                       productInfo={productPostHook.productInfo}
                       setProductInfo={productPostHook.setProductInfo}

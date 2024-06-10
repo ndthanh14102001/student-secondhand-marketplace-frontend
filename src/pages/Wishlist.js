@@ -15,10 +15,7 @@ import { addToCart } from "../redux/actions/cartActions";
 import LayoutOne from "../layouts/LayoutOne";
 import Breadcrumb from "../wrappers/breadcrumb/Breadcrumb";
 import { PRODUCT_ON_SALE_STATUS } from "../constants";
-import {
-  getProductImages,
-  getVietNamMoneyFormat,
-} from "../utils/handleData";
+import { getProductImages, getVietNamMoneyFormat } from "../utils/handleData";
 import wishlistApi from "../api/wishlist-api";
 import { RESPONSE_TYPE } from "../utils/callApi";
 import { getImageUrl } from "../utils/image";
@@ -233,7 +230,7 @@ const Wishlist = ({
                   <div className="col-lg-12">
                     <div className="cart-shiping-update-wrapper">
                       <div className="cart-shiping-update">
-                        <Link to={process.env.PUBLIC_URL + "/category"}>
+                        <Link to={process.env.PUBLIC_URL + "/category"} >
                           Tiếp tục mua sắm
                         </Link>
                       </div>

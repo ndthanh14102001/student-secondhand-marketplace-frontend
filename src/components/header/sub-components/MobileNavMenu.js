@@ -14,6 +14,9 @@ const MobileNavMenu = ({ handleLogout }) => {
         <li>
           <Link to={process.env.PUBLIC_URL + "/category"}>{"Danh mục"}</Link>
         </li>
+        <li>
+          <Link to={process.env.PUBLIC_URL + "/product-post"}>{"Đăng bán sản phẩm"}</Link>
+        </li>
         {isLogin && (
           <li className="menu-item-has-children">
             <Link to={process.env.PUBLIC_URL + "/my-account"}>

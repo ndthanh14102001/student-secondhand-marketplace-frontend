@@ -198,7 +198,6 @@ const FormInfoProduct = ({ productInfo, setProductInfo }) => {
         display: "flex",
         justifyContent: "space-between"
       }}>
-        <Button variant='outlined' sx={{ ...ActionStyles, marginRight: "1rem" }} disabled type="button">Xem trước</Button>
         <Button variant='contained' sx={ActionStyles} type="submit" >Cập nhật thông tin</Button>
       </Box>
     </Box >
