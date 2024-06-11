@@ -8,13 +8,17 @@ import {
 } from "../../redux/actions/chatBubbleActions";
 import ChatFrame from "../../wrappers/chat-frame";
 import ChatsNavigator from "../../wrappers/chat-navigator";
-import { Box, useMediaQuery, useTheme } from "@mui/material";
+import { Box } from "@mui/material";
+import { useParams } from "react-router-dom";
 
 function ChatsFrame(props) {
+  const params = useParams();
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
- 
-  const [isOpenNavigatorDrawer, setIsOpenNavigatorDrawer] = useState(true);
+  const hasPartner = params?.id;
+  const [isOpenNavigatorDrawer, setIsOpenNavigatorDrawer] = useState(
+    hasPartner ? false : true
+  );
 
   useEffect(() => {
     dispatch(hideChatBubble());
