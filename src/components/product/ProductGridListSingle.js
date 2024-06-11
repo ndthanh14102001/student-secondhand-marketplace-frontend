@@ -56,7 +56,7 @@ const ProductGridListSingle = ({
   );
   const images = getProductImages(attributes) || product?.images;
   const user = attributes?.userId?.data?.attributes || product?.userId;
-  const avatar = getImageUrl(user?.avatar?.data?.attributes);
+  const avatar = getImageUrl(user?.avatar?.data?.attributes || user?.avatar);
 
   return (
     <Fragment>

@@ -19,6 +19,7 @@ const BoxInfo = styled(Box)(() => ({
   justifyContent: "flex-start",
   alignItems: "center",
   marginTop: "0.6rem",
+  overflow: "hidden",
 }));
 const ProductGridSingle = ({
   product,

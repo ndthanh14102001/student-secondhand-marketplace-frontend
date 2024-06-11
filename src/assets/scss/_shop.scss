@@ -356,6 +356,8 @@
 }
 
 .shop-bottom-area {
+  max-width: 100%;
+  overflow: hidden;
   .col-xl-4 {
     transition: 0.5s;
   }
