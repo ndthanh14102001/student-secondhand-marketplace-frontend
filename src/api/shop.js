@@ -1,6 +1,8 @@
 import { ALL_UNIVERSITY } from "../components/product/ShopUniversityFilter";
+import { PRODUCT_ON_SALE_STATUS } from "../constants";
 import { PAGE_LIMIT } from "../constants/shop/constants";
 import callApi from "../utils/callApi";
+import { getUserLogin } from "../utils/userLoginStorage";
 const shopApi = {
   getProducts: async ({
     categoriesQuery,
@@ -9,6 +11,7 @@ const shopApi = {
     currentPage,
     priceSortType,
   }) => {
+    const loggedUser = getUserLogin()?.user;
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/products",
       method: "get",
@@ -16,7 +19,7 @@ const shopApi = {
         filters: {
           $or: categoriesQuery,
           status: {
-            $eq: "onSale",
+            $eq: PRODUCT_ON_SALE_STATUS,
           },
           userId: {
             universityId: {
@@ -24,6 +27,9 @@ const shopApi = {
                 universityFilter === ALL_UNIVERSITY
                   ? undefined
                   : universityFilter,
+            },
+            id: {
+              $ne: loggedUser?.id,
             },
           },
           name: {

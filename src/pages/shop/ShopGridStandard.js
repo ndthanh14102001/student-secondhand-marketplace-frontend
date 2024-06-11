@@ -11,6 +11,7 @@ import ShopSidebar from "../../wrappers/product/ShopSidebar";
 import ShopTopbar from "../../wrappers/product/ShopTopbar";
 import ShopProducts from "../../wrappers/product/ShopProducts";
 import useShopHook from "../../hooks/shop/ShopHook";
+import { PAGE_LIMIT } from "../../constants/shop/constants";
 
 const ShopGridStandard = ({ products }) => {
   const { pathname } = useLocation();
@@ -67,7 +68,7 @@ const ShopGridStandard = ({ products }) => {
                 <div className="pro-pagination-style text-center mt-30">
                   <Paginator
                     totalRecords={shopHook.totalProduct}
-                    pageLimit={shopHook.pageLimit}
+                    pageLimit={PAGE_LIMIT}
                     pageNeighbours={2}
                     setOffset={shopHook.setOffset}
                     currentPage={shopHook.currentPage}

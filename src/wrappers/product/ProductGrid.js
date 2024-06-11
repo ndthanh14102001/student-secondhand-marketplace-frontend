@@ -149,6 +149,9 @@ const ProductGrid = ({
               $eq: recomenderInfo.distancesUniversityHasProduct[indexUniversity]
                 .id,
             },
+            id: {
+              $ne: userLogin?.user?.id,
+            },
           },
         });
       } else {
@@ -175,6 +178,7 @@ const ProductGrid = ({
           );
           universityIdFilter = filterUniversity.universityIdFilter;
           recomenderInfoCopy.hasMore = filterUniversity.hasMoreTmp;
+          console.log("filterUniversity", filterUniversity);
           if (recomenderInfoCopy.hasMore) {
             const response = await callApi({
               url: process.env.REACT_APP_API_ENDPOINT + "/products",

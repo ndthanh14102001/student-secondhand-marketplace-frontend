@@ -2,12 +2,15 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import {
   Avatar,
+  Badge,
   Box,
   Drawer,
   IconButton,
   InputBase,
   Stack,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import Messages from "../../components/message";
@@ -17,15 +20,20 @@ import WelcomeToChatPanel from "../../components/chat-frame/WelcomeToChatPanel";
 import NoChatYetPanel from "../../components/chat-frame/NoChatYetPanel";
 import { getImageUrl } from "../../utils/image";
 import ChatsNavigator from "../chat-navigator";
+import { useSelector } from "react-redux";
 
 function ChatFrame({
   onOpenNavigatorDrawer,
   onCloseNavigatorDrawer,
   isOpenNavigatorDrawer,
 }) {
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
   const chatFrameHook = useChatFrameHook();
   const params = useParams();
-
+  const numberOfUnreadMessages = useSelector(
+    (state) => state.socket?.numberOfUnreadMessages
+  );
   return (
     <div
       style={{
@@ -71,16 +79,18 @@ function ChatFrame({
           </Stack>
 
           <div className="same-style mobile-off-canvas d-block d-lg-none">
-            <IconButton onClick={onOpenNavigatorDrawer}>
-              <i className="pe-7s-menu" />
-            </IconButton>
+            <Badge badgeContent={numberOfUnreadMessages} color="primary">
+              <IconButton onClick={onOpenNavigatorDrawer}>
+                <i className="pe-7s-menu" />
+              </IconButton>
+            </Badge>
           </div>
           <Drawer
             anchor={"right"}
-            open={isOpenNavigatorDrawer}
+            open={isOpenNavigatorDrawer && isMobilePhone}
             // onClose={toggleDrawer(anchor, false)}
           >
-            {<ChatsNavigator onCloseDrawer={onCloseNavigatorDrawer}/>}
+            {<ChatsNavigator onCloseDrawer={onCloseNavigatorDrawer} />}
           </Drawer>
         </Box>
       </Box>

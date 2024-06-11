@@ -10,6 +10,7 @@ import { PRIVATE_MESSAGE } from "../../constants/chat/constants";
 import { formatMessage } from "../../utils/chat";
 import { addChat, setChats } from "../../redux/actions/socketActions";
 import { updateNumberOfUnreadMessages } from "../../redux/actions/chatBubbleActions";
+import { onCloseModalLoading, onOpenModalLoading } from "../../redux/actions/modalLoadingActions";
 
 const ChatFrameHook = () => {
   const dispatch = useDispatch();
@@ -21,10 +22,12 @@ const ChatFrameHook = () => {
 
   useEffect(() => {
     const getChats = async () => {
+      dispatch(onOpenModalLoading())
       const response = await chatApi.getChats({ partnerId: params?.id });
       if (response.type === RESPONSE_TYPE) {
         dispatch(setChats(response?.data?.data || []));
       }
+      dispatch(onCloseModalLoading())
     };
     if (params?.id) {
       getChats();

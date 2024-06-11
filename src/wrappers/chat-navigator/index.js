@@ -77,7 +77,7 @@ function ChatsNavigator({ onCloseDrawer }) {
         >
           <KeyboardDoubleArrowRightIcon />
         </IconButton>
-        <CustomizedInputBase
+        {/* <CustomizedInputBase
           handleSetSearchKey={() => {}}
           handleSearchingMode={() => {
             setIsSearching(true);
@@ -86,7 +86,7 @@ function ChatsNavigator({ onCloseDrawer }) {
             setIsSearching(false);
           }}
           isSearching={isSearching}
-        />
+        /> */}
       </Box>
       <Divider variant="middle" sx={{ m: "14px 0" }} />
       <ChatNavigatorSingle
