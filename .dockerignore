@@ -1,0 +1,11 @@
+node_modules
+build
+.git
+.gitignore
+.gitlab-ci.yml
+.editorconfig
+.prettierignore
+.prettierrc
+README.md
+Dockerfile
+.dockerignore
