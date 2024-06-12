@@ -21,19 +21,13 @@ import Typography from "@mui/material/Typography";
 import ProductOwnerInfo from "../wrappers/product/ProductOwnerInfo";
 import { getAllUniversity } from "../utils/data/university";
 import { getImageUrl } from "../utils/image";
-import { Box, CircularProgress, Grid } from "@mui/material";
+import { Grid } from "@mui/material";
 import {
   EDIT_MODE,
   EMAIL_ERROR_MESSAGE,
   INITIAL_ERROR_MESSAGES,
   READ_ONLY_MODE,
 } from "../constants/my-account/contants";
-import {
-  onCloseModalLoading,
-  onOpenModalLoading,
-} from "../redux/actions/modalLoadingActions";
-import { useDispatch } from "react-redux";
-import palette from "../assets/palette";
 import LoadingButton from "../components/button/LoadingButton";
 
 const MyAccount = ({ location }) => {
