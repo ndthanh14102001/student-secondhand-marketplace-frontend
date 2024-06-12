@@ -1,7 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useMediaQuery, useTheme } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonIcon from "@mui/icons-material/Person";
 const WelcomeToChatPanel = () => {
+  const theme = useTheme();
+  const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
   return (
     <Box
       sx={{
@@ -71,25 +73,10 @@ const WelcomeToChatPanel = () => {
               sx={{ fontSize: "20px", color: "white", margin: "5px" }}
             />
           </div>
-          Chọn người dùng bên thanh bên trái để bắt đầu trò chuyện.
+          {!isMobilePhone && "Chọn người dùng bên thanh bên trái để bắt đầu trò chuyện."}
+          {isMobilePhone && "Chọn người dùng bằng cách nhấn vào icon menu ở góc trên bên phải để bắt đầu trò chuyện"}
         </div>
-        <div
-          style={{ fontSize: "14px", display: "flex", alignItems: "center" }}
-        >
-          <div
-            style={{
-              backgroundColor: "#a749ff",
-              marginRight: "10px",
-              borderRadius: "50%",
-            }}
-          >
-            <SearchIcon
-              sx={{ fontSize: "20px", color: "white", margin: "5px" }}
-            />
-          </div>
-          Bạn cũng có thể tìm người dùng bằng thanh tìm kiếm, chọn trong danh
-          sách để bắt đầu cuộc trò chuyện mới.{" "}
-        </div>
+        
       </Box>
     </Box>
   );
