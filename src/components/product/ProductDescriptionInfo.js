@@ -415,7 +415,6 @@ const ProductDescriptionInfo = ({
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">Hello bạn ơi</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Bạn cần phải đăng nhập để thực hiện hành động này
