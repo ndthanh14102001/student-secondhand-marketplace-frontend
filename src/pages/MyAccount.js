@@ -21,7 +21,20 @@ import Typography from "@mui/material/Typography";
 import ProductOwnerInfo from "../wrappers/product/ProductOwnerInfo";
 import { getAllUniversity } from "../utils/data/university";
 import { getImageUrl } from "../utils/image";
-import { Grid } from "@mui/material";
+import { Box, CircularProgress, Grid } from "@mui/material";
+import {
+  EDIT_MODE,
+  EMAIL_ERROR_MESSAGE,
+  INITIAL_ERROR_MESSAGES,
+  READ_ONLY_MODE,
+} from "../constants/my-account/contants";
+import {
+  onCloseModalLoading,
+  onOpenModalLoading,
+} from "../redux/actions/modalLoadingActions";
+import { useDispatch } from "react-redux";
+import palette from "../assets/palette";
+import LoadingButton from "../components/button/LoadingButton";
 
 const MyAccount = ({ location }) => {
   const universityData = useMemo(() => {
@@ -34,17 +47,7 @@ const MyAccount = ({ location }) => {
   const { addToast } = useToasts();
 
   const [readonly, setReadonly] = useState(true);
-  const [messageError, setMessageError] = useState({
-    currentPassword: "",
-    password: "",
-    passwordConfirm: "",
-    username: "",
-    fullName: "",
-    email: "",
-    address: "",
-    phone: "",
-    universityId: "",
-  });
+  const [messageError, setMessageError] = useState(INITIAL_ERROR_MESSAGES);
 
   const [inputValue, setInputValue] = useState({
     username: user?.user?.username,
@@ -63,7 +66,7 @@ const MyAccount = ({ location }) => {
 
   const [buttonPressed, setButtonPressed] = useState(false);
 
-  const [statusProfile, setStatusProfile] = useState(0);
+  const [statusProfile, setStatusProfile] = useState(READ_ONLY_MODE);
   const [isChangeInput, setIsChangeInput] = useState(false);
   const [isChangeAvatar, setIsChangeAvatar] = useState(false);
   const [urlAvatar, setUrlAvatar] = useState();
@@ -72,6 +75,7 @@ const MyAccount = ({ location }) => {
   const [listId, setListId] = useState([]);
   const [isChangeList, setIsChangeList] = useState(false);
 
+  const [isLoading, setIsLoading] = useState(false);
   async function fetchData() {
     const response = await callApi({
       url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user?.user?.id,
@@ -111,141 +115,223 @@ const MyAccount = ({ location }) => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   const handleChangeProfile = async () => {
-    if (statusProfile === 0) {
-      setReadonly(false);
-      setButtonPressed(true);
-      setStatusProfile(1);
-    } else if (statusProfile === 1) {
-      let count = 0;
-      let toast = 0;
-      if (inputValue.username === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          username: "bạn chưa nhập tên tài khoản",
-        }));
-        count++;
-      } else if (inputValue.username.trim()?.length < 6) {
-        setMessageError((prev) => ({
-          ...prev,
-          username: "bạn phải nhập tên tài khoản ít nhất 6 kí tự",
-        }));
-        count++;
-      }
-      if (inputValue.fullName === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          fullName: "bạn chưa nhập họ và tên",
-        }));
-        count++;
-      }
-      if (inputValue.email === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          email: "bạn chưa nhập email",
-        }));
-        count++;
-      } else if (!emailRegex.test(inputValue.email.trim())) {
-        setMessageError((prev) => ({
-          ...prev,
-          email: "email của bạn chưa đúng định dạng",
-        }));
-        count++;
-      }
-      if (inputValue.address === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          address: "bạn chưa nhập địa chỉ của bạn",
-        }));
-        count++;
-      }
-      if (inputValue.phone === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          phone: "bạn chưa nhập số điện thoại",
-        }));
-        count++;
-      } else if (
-        inputValue.phone.trim()?.length > 11 ||
-        inputValue.phone.trim()?.length < 10
+    if (statusProfile === READ_ONLY_MODE) {
+      changeToEditMode();
+    } else if (statusProfile === EDIT_MODE) {
+      setIsLoading(true);
+      if (
+        (await callApiToUpdateUserInformation()) &&
+        (await callApiToUpdateAvatar())
       ) {
-        setMessageError((prev) => ({
-          ...prev,
-          phone: "bạn nhập sai số điện thoại",
-        }));
-        count++;
-      }
-      if (inputValue.universityId === "") {
-        setMessageError((prev) => ({
-          ...prev,
-          universityId: "bạn chọn trường đại học",
-        }));
-        count++;
-      }
-      if (count === 0) {
-        if (isChangeInput) {
-          const response = await callApi({
-            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
-            method: "put",
-            data: {
-              username: inputValue.username,
-              fullName: inputValue.fullName,
-              email: inputValue.email,
-              address: inputValue.address,
-              phone: inputValue.phone,
-              universityId: inputValue.universityId,
-            },
-            // headers: {
-            //   Authorization: user.token,
-            // }
-          });
-          if (response.type === RESPONSE_TYPE) {
-            toast++;
-            updateUser(response.data);
-          }
-        }
-      }
-      if (isChangeAvatar) {
-        let formData = new FormData();
-        formData.append("files", fileAvatarInput);
-
-        const response1 = await callApi({
-          url: process.env.REACT_APP_API_ENDPOINT + "/upload",
-          method: "post",
-          data: formData,
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: user.token,
-          },
-        });
-        if (response1.type === RESPONSE_TYPE) {
-          const response2 = await callApi({
-            url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
-            method: "put",
-            data: {
-              avatar: response1.data[0].id,
-            },
-            // headers: {
-            //   Authorization: user.token,
-            // },
-          });
-          if (response2.type === RESPONSE_TYPE) {
-            toast++;
-          }
-        }
-      }
-      if (toast > 0) {
-        addToast("thay đổi thông tin cá nhân thành công", {
+        addToast("Thay đổi thông tin cá nhân thành công", {
           appearance: "success",
           autoDismiss: true,
         });
+        changeToReadOnlytMode();
       }
-
-      setReadonly(true);
-      setButtonPressed(false);
-      setStatusProfile(0);
+      setIsLoading(false);
     }
   };
+  const changeToEditMode = () => {
+    setReadonly(false);
+    setButtonPressed(true);
+    setStatusProfile(EDIT_MODE);
+  };
 
+  const changeToReadOnlytMode = () => {
+    setReadonly(true);
+    setButtonPressed(false);
+    setStatusProfile(READ_ONLY_MODE);
+  };
+  const callApiToUpdateUserInformation = async () => {
+    if (isValidUserInformationInputs()) {
+      if (isChangeInput) {
+        const response = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+          method: "put",
+          data: {
+            username: inputValue.username,
+            fullName: inputValue.fullName,
+            email: inputValue.email,
+            address: inputValue.address,
+            phone: inputValue.phone,
+            universityId: inputValue.universityId,
+          },
+          // headers: {
+          //   Authorization: user.token,
+          // }
+        });
+        if (response.type === RESPONSE_TYPE) {
+          updateUser(response.data);
+          return true;
+        } else {
+          if (response.data?.error?.message === EMAIL_ERROR_MESSAGE) {
+            setMessageError((prev) => ({
+              ...prev,
+              email: "Email đã được sử dụng",
+            }));
+          }
+        }
+        return false;
+      }
+      return true;
+    }
+    return false;
+  };
+
+  const isValidUserInformationInputs = () => {
+    return (
+      validateUsername() &&
+      validateFullName() &&
+      validateEmail() &&
+      validateAddress() &&
+      validatePhoneNumber() &&
+      validateUniversity()
+    );
+  };
+
+  const validateUsername = () => {
+    if (inputValue.username === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        username: "Bạn chưa nhập tên tài khoản",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      username: "",
+    }));
+    return true;
+  };
+
+  const validateFullName = () => {
+    if (inputValue.fullName === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        fullName: "Bạn chưa nhập họ và tên",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      fullName: "",
+    }));
+    return true;
+  };
+
+  const validateEmail = () => {
+    if (inputValue.email === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        email: "Bạn chưa nhập email",
+      }));
+      return false;
+    } else if (!emailRegex.test(inputValue.email.trim())) {
+      setMessageError((prev) => ({
+        ...prev,
+        email: "Email của bạn chưa đúng định dạng (example@gmail.com)",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      email: "",
+    }));
+    return true;
+  };
+
+  const validateAddress = () => {
+    if (inputValue.address === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        address: "Bạn chưa nhập địa chỉ của bạn",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      address: "",
+    }));
+    return true;
+  };
+
+  const validatePhoneNumber = () => {
+    if (inputValue.phone === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        phone: "Bạn chưa nhập số điện thoại",
+      }));
+      return false;
+    } else if (isValidPhoneNumberLength()) {
+      setMessageError((prev) => ({
+        ...prev,
+        phone: "Số điện thoại không hợp lệ",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      phone: "",
+    }));
+    return true;
+  };
+
+  const isValidPhoneNumberLength = () => {
+    return (
+      inputValue.phone.trim()?.length > 11 ||
+      inputValue.phone.trim()?.length < 10
+    );
+  };
+
+  const validateUniversity = () => {
+    if (inputValue.universityId === "") {
+      setMessageError((prev) => ({
+        ...prev,
+        universityId: "Bạn chưa chọn trường đại học",
+      }));
+      return false;
+    }
+    setMessageError((prev) => ({
+      ...prev,
+      universityId: "",
+    }));
+    return true;
+  };
+
+  const callApiToUpdateAvatar = async () => {
+    if (isChangeAvatar) {
+      let formData = new FormData();
+      formData.append("files", fileAvatarInput);
+
+      const responsePostAvatar = await callApi({
+        url: process.env.REACT_APP_API_ENDPOINT + "/upload",
+        method: "post",
+        data: formData,
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: user.token,
+        },
+      });
+      if (responsePostAvatar.type === RESPONSE_TYPE) {
+        const responseMappingAvatarWithUser = await callApi({
+          url: process.env.REACT_APP_API_ENDPOINT + "/users/" + user.user.id,
+          method: "put",
+          data: {
+            avatar: responsePostAvatar.data[0].id,
+          },
+          // headers: {
+          //   Authorization: user.token,
+          // },
+        });
+        if (responseMappingAvatarWithUser.type === RESPONSE_TYPE) {
+          return true;
+        }
+        return false;
+      }
+    }
+    return true;
+  };
   const handleOpenImage = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -295,6 +381,7 @@ const MyAccount = ({ location }) => {
           passwordConfirm: "mật khẩu chưa chính xác",
         }));
       } else {
+        setIsLoading(true);
         setMessageError("");
         const response = await callApi({
           url: process.env.REACT_APP_API_ENDPOINT + "/auth/change-password/",
@@ -321,6 +408,7 @@ const MyAccount = ({ location }) => {
             });
           }
         }
+        setIsLoading(false);
       }
     }
   };
@@ -396,15 +484,15 @@ const MyAccount = ({ location }) => {
                                     type="text"
                                     name="username"
                                     value={inputValue?.username}
-                                    readOnly={readonly}
+                                    readOnly={true}
                                     onChange={handleInputChange}
-                                    className={
-                                      buttonPressed
-                                        ? "input-style-active"
-                                        : "input-style"
-                                    }
+                                    className={"input-style"}
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.username}
                                   </Typography>
                                 </div>
@@ -424,7 +512,11 @@ const MyAccount = ({ location }) => {
                                         : "input-style"
                                     }
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.fullName}
                                   </Typography>
                                 </div>
@@ -445,7 +537,11 @@ const MyAccount = ({ location }) => {
                                         : "input-style"
                                     }
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.email}
                                   </Typography>
                                 </div>
@@ -466,7 +562,11 @@ const MyAccount = ({ location }) => {
                                         : "input-style"
                                     }
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.address}
                                   </Typography>
                                 </div>
@@ -487,7 +587,11 @@ const MyAccount = ({ location }) => {
                                         : "input-style"
                                     }
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.phone}
                                   </Typography>
                                 </div>
@@ -507,16 +611,17 @@ const MyAccount = ({ location }) => {
                                         : "input-style"
                                     }
                                   >
-                                    <option value="">
-                                      --Chọn trường đại học của bạn--
-                                    </option>
                                     {universityData?.map((list, index) => (
                                       <option key={index} value={list.id}>
                                         {list?.teN_DON_VI}
                                       </option>
                                     ))}
                                   </select>
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.universityId}
                                   </Typography>
                                   {/* <input id="university" name="university" type="text" value={inputValue.university} readOnly={readonly} onChange={handleInputChange} className={buttonPressed ? "input-style-active" : "input-style"} /> */}
@@ -524,14 +629,12 @@ const MyAccount = ({ location }) => {
                               </div>
                             </div>
                             <div className="billing-back-btn">
-                              <div className="billing-btn">
-                                <button
-                                  type="button"
-                                  onClick={handleChangeProfile}
-                                >
-                                  Thay đổi
-                                </button>
-                              </div>
+                              <LoadingButton
+                                isLoading={isLoading}
+                                onClick={handleChangeProfile}
+                              >
+                                {readonly ? "Thay đổi" : "Lưu thông tin"}
+                              </LoadingButton>
                             </div>
                           </div>
                         </Card.Body>
@@ -561,7 +664,11 @@ const MyAccount = ({ location }) => {
                                     name="currentPassword"
                                     onChange={handleChangePassword}
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.currentPassword}
                                   </Typography>
                                 </div>
@@ -574,7 +681,11 @@ const MyAccount = ({ location }) => {
                                     name="password"
                                     onChange={handleChangePassword}
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.password}
                                   </Typography>
                                 </div>
@@ -587,21 +698,23 @@ const MyAccount = ({ location }) => {
                                     name="passwordConfirm"
                                     onChange={handleChangePassword}
                                   />
-                                  <Typography color="error" sx={{ mt: 1 }}>
+                                  <Typography
+                                    color="error"
+                                    fontSize="0.6rem"
+                                    sx={{ mt: 1 }}
+                                  >
                                     {messageError.passwordConfirm}
                                   </Typography>
                                 </div>
                               </div>
                             </div>
                             <div className="billing-back-btn">
-                              <div className="billing-btn">
-                                <button
-                                  type="button"
-                                  onClick={handlePasswordChange}
-                                >
-                                  Thay đổi
-                                </button>
-                              </div>
+                              <LoadingButton
+                                isLoading={isLoading}
+                                onClick={handlePasswordChange}
+                              >
+                                Thay đổi
+                              </LoadingButton>
                             </div>
                           </div>
                         </Card.Body>
