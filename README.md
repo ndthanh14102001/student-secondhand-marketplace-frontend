@@ -5,31 +5,6 @@
 </p>
 
 
-## Screenshots
-
-### Desktop
-
-<p align="center">
-  <img alt="Student Secondhand Marketplace - Home" src="public/assets/screenshots/home-desktop-1.png" />
-  <img alt="Student Secondhand Marketplace - Home" src="public/assets/screenshots/home-desktop-2.png" />
-  <img alt="Student Secondhand Marketplace - Post Product" src="public/assets/screenshots/post-product-desktop.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" src="public/assets/screenshots/product-detail-desktop.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" src="public/assets/screenshots/category-desktop.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" src="public/assets/screenshots/chat-desktop.png" />
-</p>
-
-### Mobile
-
-<p align="center">
-  <img alt="Student Secondhand Marketplace - Home" height="620" src="public/assets/screenshots/home-mobile.png" />
-  <img alt="Student Secondhand Marketplace - Post Product" height="620" src="public/assets/screenshots/post-product-mobile.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" height="620" src="public/assets/screenshots/product-detail-mobile-1.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" height="620" src="public/assets/screenshots/product-detail-mobile-2.png" />
-  <img alt="Student Secondhand Marketplace - Product Detail" height="620" src="public/assets/screenshots/chat-mobile.png" />
-</p>
-<br/>
-
-
 ## Features
 
 - [x] **Login and Registration**: Allows new users to create an account and existing users to login with their credentials.
