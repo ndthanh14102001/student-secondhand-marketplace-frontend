@@ -14,6 +14,7 @@ import { RESPONSE_TYPE } from "../../utils/callApi";
 import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { IMAGE_SIZE_MEDIUM, getImageUrl } from "../../utils/image";
+import { Helmet } from "react-helmet-async";
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
@@ -52,6 +53,20 @@ const ProductGridSingle = ({
   const avatar = user?.avatar?.data?.attributes;
   return (
     <Fragment>
+      <Helmet>
+        <link
+          rel="preload"
+          as="image"
+          href={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
+        />
+        {images && images?.length > 1 && (
+          <link
+            rel="preload"
+            as="image"
+            href={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
+          />
+        )}
+      </Helmet>
       <div
         style={{
           boxSizing: "border-box",

@@ -23,7 +23,7 @@ import {
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
 import { useMediaQuery, useTheme } from "@mui/material";
-
+import { HelmetProvider } from "react-helmet-async";
 
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -52,7 +52,6 @@ const App = (props) => {
   const theme = useTheme();
   const isMobilePhone = useMediaQuery(theme.breakpoints.down("md"));
 
- 
   const isLogin = useSelector((state) => state.userStorage.isLogin);
 
   const popup = useSelector((state) => state.popup);
@@ -99,180 +98,181 @@ const App = (props) => {
     );
   });
 
-  
   return (
-    <ThemeProvider>
-      <ConnectSocket />
-      <Popup
-        isOpen={popup.open}
-        onClose={popup.actions.closeAction}
-        onButtonClick={popup.actions.clickOkeAction}
-        type={popup.type}
-        title={popup.title}
-        isShowButtonCancel={popup.showButtonCancel}
-        onButtonCancelClick={popup.actions.clickCancelButton}
-        content={popup.content}
-      />
+    <HelmetProvider>
+      <ThemeProvider>
+        <ConnectSocket />
+        <Popup
+          isOpen={popup.open}
+          onClose={popup.actions.closeAction}
+          onButtonClick={popup.actions.clickOkeAction}
+          type={popup.type}
+          title={popup.title}
+          isShowButtonCancel={popup.showButtonCancel}
+          onButtonCancelClick={popup.actions.clickCancelButton}
+          content={popup.content}
+        />
 
-      {modalLoading.open && (
-        <div className="flone-preloader-wrapper">
-          <div className="flone-preloader">
-            <span></span>
-            <span></span>
+        {modalLoading.open && (
+          <div className="flone-preloader-wrapper">
+            <div className="flone-preloader">
+              <span></span>
+              <span></span>
+            </div>
           </div>
-        </div>
-      )}
-      <ToastProvider placement="bottom-left">
-        <BreadcrumbsProvider>
-          <Router>
-            <PopupErrorBase
-              open={popupErrorBase.open}
-              onClose={() => {
-                props.dispatch(onClosePopupErrorBase());
-              }}
-              type={popupErrorBase.type}
-              title={popupErrorBase.title}
-              content={popupErrorBase.content}
-            />
-            <ScrollToTop>
-              <Suspense
-                fallback={
-                  <div className="flone-preloader-wrapper">
-                    <div className="flone-preloader">
-                      <span></span>
-                      <span></span>
+        )}
+        <ToastProvider placement="bottom-left">
+          <BreadcrumbsProvider>
+            <Router>
+              <PopupErrorBase
+                open={popupErrorBase.open}
+                onClose={() => {
+                  props.dispatch(onClosePopupErrorBase());
+                }}
+                type={popupErrorBase.type}
+                title={popupErrorBase.title}
+                content={popupErrorBase.content}
+              />
+              <ScrollToTop>
+                <Suspense
+                  fallback={
+                    <div className="flone-preloader-wrapper">
+                      <div className="flone-preloader">
+                        <span></span>
+                        <span></span>
+                      </div>
                     </div>
-                  </div>
-                }
-              >
-                {chatBubble?.isShow && !isMobilePhone && (
-                  <ChatBubble selectedChatPartner={selectedChatPartner} />
-                )}
-                <Switch>
-                  <Route
-                    exact
-                    path={process.env.PUBLIC_URL + "/"}
-                    component={HomeFashion}
-                  />
-
-                  {/* Homepages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/home-fashion"}
-                    component={HomeFashion}
-                  />
-
-                  {/* Shop pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/category"}
-                    component={ShopGridStandard}
-                  />
-
-                  {/* Chat pages */}
-                  {loggedInUser !== undefined ? (
-                    <Route
-                      path={process.env.PUBLIC_URL + "/chat/:id"}
-                      render={(routeProps) => <Chat />}
-                    />
-                  ) : (
-                    <Route
-                      path={process.env.PUBLIC_URL + "/chat"}
-                      component={LoginAndRegister}
-                    />
+                  }
+                >
+                  {chatBubble?.isShow && !isMobilePhone && (
+                    <ChatBubble selectedChatPartner={selectedChatPartner} />
                   )}
-
-                  {loggedInUser !== undefined && (
+                  <Switch>
                     <Route
-                      path={process.env.PUBLIC_URL + "/chat"}
+                      exact
+                      path={process.env.PUBLIC_URL + "/"}
+                      component={HomeFashion}
+                    />
+
+                    {/* Homepages */}
+                    <Route
+                      path={process.env.PUBLIC_URL + "/home-fashion"}
+                      component={HomeFashion}
+                    />
+
+                    {/* Shop pages */}
+                    <Route
+                      path={process.env.PUBLIC_URL + "/category"}
+                      component={ShopGridStandard}
+                    />
+
+                    {/* Chat pages */}
+                    {loggedInUser !== undefined ? (
+                      <Route
+                        path={process.env.PUBLIC_URL + "/chat/:id"}
+                        render={(routeProps) => <Chat />}
+                      />
+                    ) : (
+                      <Route
+                        path={process.env.PUBLIC_URL + "/chat"}
+                        component={LoginAndRegister}
+                      />
+                    )}
+
+                    {loggedInUser !== undefined && (
+                      <Route
+                        path={process.env.PUBLIC_URL + "/chat"}
+                        render={(routeProps) => (
+                          <Chat
+                            {...routeProps}
+                            key={routeProps.match.params.id}
+                            parentHandleNavigateChats={handleNavigateChats}
+                          />
+                        )}
+                      />
+                    )}
+
+                    {/* Shop product pages */}
+                    <Route
+                      path={process.env.PUBLIC_URL + "/product/:id"}
                       render={(routeProps) => (
-                        <Chat
+                        <Product
                           {...routeProps}
                           key={routeProps.match.params.id}
-                          parentHandleNavigateChats={handleNavigateChats}
                         />
                       )}
                     />
-                  )}
 
-                  {/* Shop product pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/product/:id"}
-                    render={(routeProps) => (
-                      <Product
-                        {...routeProps}
-                        key={routeProps.match.params.id}
-                      />
-                    )}
-                  />
+                    {/* Other pages */}
+                    <Route
+                      path={process.env.PUBLIC_URL + "/my-account"}
+                      component={MyAccount}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/my-products"}
+                      component={MyProducts}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/product-post"}
+                      component={ProductPost}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/product-update/:id"}
+                      render={(routeProps) => (
+                        <ProductUpdate
+                          {...routeProps}
+                          key={routeProps.match.params.id}
+                          updatePage={true}
+                        />
+                      )}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/user/info/:id"}
+                      render={(routeProps) => (
+                        <UserInfo
+                          {...routeProps}
+                          key={routeProps.match.params.id}
+                        />
+                      )}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/login-register"}
+                      component={LoginAndRegister}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/forgot-password"}
+                      component={ForgotPassword}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/cart"}
+                      component={Cart}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/wishlist"}
+                      component={Wishlist}
+                    />
 
-                  {/* Other pages */}
-                  <Route
-                    path={process.env.PUBLIC_URL + "/my-account"}
-                    component={MyAccount}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/my-products"}
-                    component={MyProducts}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/product-post"}
-                    component={ProductPost}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/product-update/:id"}
-                    render={(routeProps) => (
-                      <ProductUpdate
-                        {...routeProps}
-                        key={routeProps.match.params.id}
-                        updatePage={true}
-                      />
-                    )}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/user/info/:id"}
-                    render={(routeProps) => (
-                      <UserInfo
-                        {...routeProps}
-                        key={routeProps.match.params.id}
-                      />
-                    )}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/login-register"}
-                    component={LoginAndRegister}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/forgot-password"}
-                    component={ForgotPassword}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/cart"}
-                    component={Cart}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/wishlist"}
-                    component={Wishlist}
-                  />
-
-                  <Route
-                    path={process.env.PUBLIC_URL + "/not-found"}
-                    component={NotFound}
-                  />
-                  <Route
-                    path={process.env.PUBLIC_URL + "/notification"}
-                    component={Notification}
-                  />
-                  {/* <Route
+                    <Route
+                      path={process.env.PUBLIC_URL + "/not-found"}
+                      component={NotFound}
+                    />
+                    <Route
+                      path={process.env.PUBLIC_URL + "/notification"}
+                      component={Notification}
+                    />
+                    {/* <Route
                     path={process.env.PUBLIC_URL + "/test"}
                     component={DistanceCalculator}
                   /> */}
-                  <Route exact component={NotFound} />
-                </Switch>
-              </Suspense>
-            </ScrollToTop>
-          </Router>
-        </BreadcrumbsProvider>
-      </ToastProvider>
-    </ThemeProvider>
+                    <Route exact component={NotFound} />
+                  </Switch>
+                </Suspense>
+              </ScrollToTop>
+            </Router>
+          </BreadcrumbsProvider>
+        </ToastProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 };
 
