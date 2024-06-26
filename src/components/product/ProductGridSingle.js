@@ -66,12 +66,14 @@ const ProductGridSingle = ({
           <div className="product-img">
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
               <img
+                fetchpriority="high"
                 className="default-img"
                 src={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
                 alt=""
               />
               {images && images?.length > 1 ? (
                 <img
+                  fetchpriority="high"
                   className="hover-img"
                   src={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
                   alt=""
