@@ -17,7 +17,7 @@ const TabProduct = ({
       className={`product-area ${spaceTopClass ? spaceTopClass : ""} ${spaceBottomClass ? spaceBottomClass : ""
         } ${bgColorClass ? bgColorClass : ""}`}
     >
-      <div className="container">
+      <div className="container products">
         <SectionTitle titleText="Sản phẩm mới" positionClass="text-center mb-55" />
         <Tab.Container defaultActiveKey="bestSeller">
           {/* <Nav
