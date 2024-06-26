@@ -14,6 +14,7 @@ import {
 import productApi from "../../api/product";
 import { PRODUCT_INFO_INIT_STATE } from "../../constants/product-post/constants";
 import fileApi from "../../api/file";
+import { convertImageFileToWebp } from "../../utils/image";
 
 const useProductPostHook = () => {
   const dispatch = useDispatch();
@@ -88,9 +89,8 @@ const useProductPostHook = () => {
     if (response.type === RESPONSE_TYPE) {
       const productResponse = response.data;
       let formData = new FormData();
-      productInfo.images.forEach((image) => {
-        formData.append("files", image);
-      });
+      await addImagesToFormData(formData);
+
       formData.append("ref", "api::product.product");
       formData.append("refId", productResponse?.id);
       formData.append("field", "images");
@@ -109,6 +109,18 @@ const useProductPostHook = () => {
       dispatch(onShowPopupErrorBase(response));
     }
     dispatch(onCloseModalLoading());
+  };
+
+  const addImagesToFormData = async (formData) => {
+    const promise = [];
+    for (let index = 0; index < productInfo.images.length; index++) {
+      const image = productInfo.images[index];
+      promise.push(convertImageFileToWebp(image));
+    }
+    const result = await Promise.all(promise);
+    result.forEach((image, index) => {
+      formData.append("files", image, "converted" + index + ".webp");
+    });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();

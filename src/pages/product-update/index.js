@@ -20,6 +20,7 @@ import {
   onCloseModalLoading,
   onOpenModalLoading,
 } from "../../redux/actions/modalLoadingActions";
+import { convertImageFileToWebp } from "../../utils/image";
 
 const PRODUCT_INFO_INIT_STATE = {
   price: 0,
@@ -198,9 +199,8 @@ const ProductUpdate = ({ match }) => {
     if (response.type === RESPONSE_TYPE) {
       if (imagesNew?.length > 0) {
         let formData = new FormData();
-        imagesNew.forEach((image) => {
-          formData.append("files", image);
-        });
+        await addImagesToFormData(formData, imagesNew);
+
         formData.append("ref", "api::product.product");
         formData.append("refId", productId);
         formData.append("field", "images");
@@ -223,6 +223,17 @@ const ProductUpdate = ({ match }) => {
       dispatch(onShowPopupErrorBase(response));
     }
     dispatch(onCloseModalLoading());
+  };
+  const addImagesToFormData = async (formData, images) => {
+    const promise = [];
+    for (let index = 0; index < images.length; index++) {
+      const image = images[index];
+      promise.push(convertImageFileToWebp(image));
+    }
+    const result = await Promise.all(promise);
+    result.forEach((image, index) => {
+      formData.append("files", image, "converted" + index + ".webp");
+    });
   };
   const handleSubmit = async (e) => {
     e.preventDefault();

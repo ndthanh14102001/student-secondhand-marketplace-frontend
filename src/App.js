@@ -23,6 +23,7 @@ import {
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
 import { useMediaQuery, useTheme } from "@mui/material";
+import ImageConverter from "./pages/Test.js";
 
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -146,6 +147,11 @@ const App = (props) => {
                     <ChatBubble selectedChatPartner={selectedChatPartner} />
                   )}
                   <Switch>
+                  <Route
+                      exact
+                      path={process.env.PUBLIC_URL + "/test"}
+                      component={ImageConverter}
+                    />
                     <Route
                       exact
                       path={process.env.PUBLIC_URL + "/"}
