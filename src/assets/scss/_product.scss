@@ -2,7 +2,7 @@
 
 .product-area {
   position: relative;
-
+  aspect-ratio: 3/2;
   .row {
     &.three-column {
       .col-xl-3 {
@@ -693,7 +693,7 @@
   p {
     font-size: 15px;
     line-height: 28px;
-    
+
     margin: 0;
     white-space: nowrap;
     color: #333;
