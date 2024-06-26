@@ -23,7 +23,6 @@ import {
 import { setWishlist } from "./redux/actions/wishlistActions";
 import ConnectSocket from "./components/socket-connection/ConnectSocket.js";
 import { useMediaQuery, useTheme } from "@mui/material";
-import { HelmetProvider } from "react-helmet-async";
 
 const HomeFashion = lazy(() => import("./pages/home/HomeFashion"));
 
@@ -99,7 +98,6 @@ const App = (props) => {
   });
 
   return (
-    <HelmetProvider>
       <ThemeProvider>
         <ConnectSocket />
         <Popup
@@ -272,7 +270,6 @@ const App = (props) => {
           </BreadcrumbsProvider>
         </ToastProvider>
       </ThemeProvider>
-    </HelmetProvider>
   );
 };
 

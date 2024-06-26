@@ -9,12 +9,10 @@ import { ddmmyyhhmm } from "../../utils/DateFormat";
 import styled from "@emotion/styled";
 import { getUniversityById } from "../../utils/data/university";
 import { useSelector } from "react-redux";
-import wishlistApi from "../../api/wishlist-api";
-import { RESPONSE_TYPE } from "../../utils/callApi";
 import { handleAddToWishlist } from "../../redux/actions/wishlistActions";
 import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
 import { IMAGE_SIZE_MEDIUM, getImageUrl } from "../../utils/image";
-import { Helmet } from "react-helmet-async";
+import { LazyLoadImage } from "react-lazy-load-image-component";
 const BoxInfo = styled(Box)(() => ({
   display: "flex",
   justifyContent: "flex-start",
@@ -53,20 +51,6 @@ const ProductGridSingle = ({
   const avatar = user?.avatar?.data?.attributes;
   return (
     <Fragment>
-      <Helmet>
-        <link
-          rel="preload"
-          as="image"
-          href={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
-        />
-        {images && images?.length > 1 && (
-          <link
-            rel="preload"
-            as="image"
-            href={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
-          />
-        )}
-      </Helmet>
       <div
         style={{
           boxSizing: "border-box",
@@ -80,14 +64,14 @@ const ProductGridSingle = ({
         >
           <div className="product-img">
             <Link to={process.env.PUBLIC_URL + "/product/" + product.id}>
-              <img
+              <LazyLoadImage
                 fetchpriority="high"
                 className="default-img"
                 src={getImageUrl(images?.[0], IMAGE_SIZE_MEDIUM)}
                 alt=""
               />
               {images && images?.length > 1 ? (
-                <img
+                <LazyLoadImage
                   fetchpriority="high"
                   className="hover-img"
                   src={getImageUrl(images?.[1], IMAGE_SIZE_MEDIUM)}
