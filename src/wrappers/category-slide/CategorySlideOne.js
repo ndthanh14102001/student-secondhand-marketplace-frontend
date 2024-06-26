@@ -14,7 +14,6 @@ const CategorySlideOne = () => {
   return (
     <Fragment>
       <div
-        className="product-area"
         style={{ marginTop: "3rem", marginBottom: "3rem" }}
       >
         <Box
